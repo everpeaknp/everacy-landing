@@ -1,0 +1,12 @@
+{
+  "name": "Everacy",
+  "short_name": "Everacy",
+  "description": "IT Engineering — Cloud, AI, Web & Security",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1428",
+  "theme_color": "#118ec6",
+  "icons": [
+    { "src": "/logo/everacy_wo_bg.png", "sizes": "any", "type": "image/png" }
+  ]
+}
