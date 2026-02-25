@@ -7,145 +7,146 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { archSectionCards, brandColors } from "@/lib/site-theme";
 
 export function ArchSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    let gsapCtx: { revert: () => void } | undefined;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let lenisInstance: any;
+    gsap.registerPlugin(ScrollTrigger);
 
-    (async () => {
-      const { default: gsap } = await import("gsap");
-      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-      const { default: Lenis } = await import("lenis");
+    // ── Mobile layout: set CSS order to interleave ───
+    function handleMobileLayout() {
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const leftItems = document.querySelectorAll<HTMLElement>(".arch__left .arch__info");
+      const rightItems = document.querySelectorAll<HTMLElement>(".arch__right .img-wrapper");
 
-      gsap.registerPlugin(ScrollTrigger);
-
-      // ── Lenis smooth scroll ──────────────────────────
-      lenisInstance = new Lenis({
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      });
-
-      function raf(time: number) {
-        lenisInstance.raf(time);
-        ScrollTrigger.update();
-        requestAnimationFrame(raf);
+      if (isMobile) {
+        leftItems.forEach((item, i) => { item.style.order = String(i * 2); });
+        rightItems.forEach((item, i) => { item.style.order = String(i * 2 + 1); });
+      } else {
+        leftItems.forEach((item) => { item.style.order = ""; });
+        rightItems.forEach((item) => { item.style.order = ""; });
       }
-      requestAnimationFrame(raf);
+    }
 
-      // ── Set z-index from data-index ──────────────────
-      document.querySelectorAll<HTMLElement>(".arch__right .img-wrapper").forEach((el) => {
-        const order = el.getAttribute("data-index");
-        if (order !== null) el.style.zIndex = order;
-      });
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleMobileLayout, 100);
+    };
+    window.addEventListener("resize", onResize);
+    handleMobileLayout();
 
-      // ── Mobile layout: set CSS order to interleave ───
-      function handleMobileLayout() {
-        const isMobile = window.matchMedia("(max-width: 768px)").matches;
-        const leftItems = document.querySelectorAll<HTMLElement>(".arch__left .arch__info");
-        const rightItems = document.querySelectorAll<HTMLElement>(".arch__right .img-wrapper");
+    // ── GSAP animations ──────────────────────────────
+    const bgColors = brandColors.archBgColors as readonly string[];
+    const mm = gsap.matchMedia();
 
-        if (isMobile) {
-          leftItems.forEach((item, i) => { item.style.order = String(i * 2); });
-          rightItems.forEach((item, i) => { item.style.order = String(i * 2 + 1); });
-        } else {
-          leftItems.forEach((item) => { item.style.order = ""; });
-          rightItems.forEach((item) => { item.style.order = ""; });
-        }
-      }
-
-      let resizeTimeout: ReturnType<typeof setTimeout>;
-      window.addEventListener("resize", () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(handleMobileLayout, 100);
-      });
-      handleMobileLayout();
-
-      // ── GSAP animations ──────────────────────────────
-      const imgs = Array.from(document.querySelectorAll<HTMLImageElement>(".img-wrapper img"));
-      const bgColors = brandColors.archBgColors as readonly string[];
-
-      const mm = gsap.matchMedia();
-
-      gsapCtx = gsap.context(() => {
-        mm.add("(min-width: 769px)", () => {
-          const mainTimeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: ".arch",
-              start: "top top",
-              end: "bottom bottom",
-              pin: ".arch__right",
-              scrub: true,
+    const gsapCtx = gsap.context(() => {
+      // Query elements inside context for maximum reliability
+      const imgs = gsap.utils.toArray(".img-wrapper img") as HTMLImageElement[];
+      
+      mm.add("(min-width: 769px)", () => {
+        const mainTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".arch",
+            start: "top top",
+            end: "bottom bottom",
+            pin: ".arch__right",
+            scrub: true,
+            onLeave: () => {
+              if (sectionRef.current) {
+                sectionRef.current.style.transition = "none";
+                sectionRef.current.style.backgroundColor = "#f0f9ff";
+              }
             },
-          });
-
-          gsap.set(imgs, { clipPath: "inset(0)", objectPosition: "0px 0%" });
-
-          imgs.forEach((_, index) => {
-            const currentImage = imgs[index];
-            const nextImage = imgs[index + 1] ?? null;
-            const sectionTimeline = gsap.timeline();
-
-            if (nextImage) {
-              sectionTimeline
-                .to(sectionRef.current, { backgroundColor: bgColors[index], duration: 1.5, ease: "power2.inOut" }, 0)
-                .to(currentImage, { clipPath: "inset(0px 0px 100%)", objectPosition: "0px 60%", duration: 1.5, ease: "none" }, 0)
-                .to(nextImage, { objectPosition: "0px 40%", duration: 1.5, ease: "none" }, 0);
-            }
-
-            mainTimeline.add(sectionTimeline);
-          });
-
-          return () => {
-            gsap.set(imgs, { clearProps: "clipPath,objectPosition" });
-          };
+            onLeaveBack: () => {
+              if (sectionRef.current) {
+                sectionRef.current.style.transition = "none";
+                sectionRef.current.style.backgroundColor = "#ffffff";
+              }
+            },
+          },
         });
 
-        mm.add("(max-width: 768px)", () => {
-          gsap.set(imgs, { objectPosition: "0px 60%" });
-
-          imgs.forEach((image, index) => {
-            const innerTimeline = gsap.timeline({
-              scrollTrigger: {
-                trigger: image,
-                start: "top-=70% top+=50%",
-                end: "bottom+=200% bottom",
-                scrub: true,
-              },
-            });
-
-            innerTimeline
-              .to(image, { objectPosition: "0px 30%", duration: 5, ease: "none" })
-              .to(sectionRef.current, { backgroundColor: bgColors[index], duration: 1.5, ease: "power2.inOut" });
-          });
-
-          return () => {
-            gsap.set(imgs, { clearProps: "objectPosition" });
-          };
+        // Set initial state
+        gsap.set(imgs, { 
+          clipPath: "inset(0% 0% 0% 0%)", 
+          objectPosition: "0px 0%",
+          willChange: "clip-path, object-position" 
         });
+
+        imgs.forEach((_, index) => {
+          const currentImage = imgs[index];
+          const nextImage = imgs[index + 1] ?? null;
+          const sectionTimeline = gsap.timeline();
+
+          if (nextImage) {
+            sectionTimeline
+              .to(sectionRef.current, { backgroundColor: bgColors[index], duration: 1.5, ease: "power2.inOut" }, 0)
+              .to(currentImage, { clipPath: "inset(0% 0% 100% 0%)", objectPosition: "0px 60%", duration: 1.5, ease: "none" }, 0)
+              .to(nextImage, { objectPosition: "0px 40%", duration: 1.5, ease: "none" }, 0);
+          }
+
+          mainTimeline.add(sectionTimeline);
+        });
+
+        return () => {
+          gsap.set(imgs, { clearProps: "all" });
+        };
       });
-    })();
+
+      // Mobile animations: disable scrubbing over clip paths, use simple scale/fade or leave static
+      // since they interleave as static vertical elements now in CSS flex layout.
+      mm.add("(max-width: 768px)", () => {
+        // Reset clipping/positioning for simple vertical flow
+        gsap.set(imgs, { 
+          clipPath: "inset(0% 0% 0% 0%)",
+          objectPosition: "50% 50%" 
+        });
+
+        // Just animate the background color as we scroll past each text block
+        const leftItems = gsap.utils.toArray(".arch__left .arch__info") as HTMLElement[];
+        leftItems.forEach((item, index) => {
+          gsap.to(sectionRef.current, {
+            backgroundColor: bgColors[index],
+            duration: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: item,
+              start: "top center",
+              end: "bottom center",
+              scrub: true,
+            }
+          });
+        });
+
+        return () => {
+          gsap.set(imgs, { clearProps: "all" });
+          gsap.set(sectionRef.current, { clearProps: "backgroundColor" });
+        };
+      });
+    }, sectionRef);
 
     return () => {
-      gsapCtx?.revert();
-      lenisInstance?.destroy?.();
+      window.removeEventListener("resize", onResize);
+      clearTimeout(resizeTimeout);
+      gsapCtx.revert();
     };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="bg-white transition-colors duration-700"
-      style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2 }}
+      className="arch-section"
+      style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2, backgroundColor: "#ffffff" }}
     >
       {/* Container */}
       <div style={{ maxWidth: 1440, padding: "2rem" }} className="mx-auto">
         {/* Top spacer */}
-        <div style={{ width: "100%", height: "30vh" }} />
+        <div style={{ width: "100%", height: "8vh" }} />
 
         {/*
           .arch: flex row on desktop, flex col on mobile.
@@ -221,12 +222,16 @@ export function ArchSection() {
             }}
           >
             {archSectionCards.map((card, i) => {
-              const dataIndex = archSectionCards.length - i;
+              // The top image should have the highest z-index.
+              // Since the GSAP animation reveals images from top to bottom (index 0, 1, 2),
+              // image 0 MUST be on top initially, image 1 below it, etc.
+              const zIndexValue = archSectionCards.length - i;
+              
               return (
                 <div
                   key={card.id}
                   className="img-wrapper"
-                  data-index={dataIndex}
+                  data-index={zIndexValue}
                   style={{
                     position: "absolute",
                     top: "50%",
@@ -236,6 +241,7 @@ export function ArchSection() {
                     width: "100%",
                     borderRadius: 16,
                     overflow: "hidden",
+                    zIndex: zIndexValue // Explicitly set zIndex inline for reliability
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -250,8 +256,7 @@ export function ArchSection() {
           </div>
         </div>
 
-        {/* Bottom spacer */}
-        <div style={{ width: "100%", height: "30vh" }} />
+        {/* No bottom spacer — testimonials follows immediately */}
       </div>
 
       {/* Responsive styles */}
@@ -265,7 +270,7 @@ export function ArchSection() {
           .arch__right .img-wrapper {
             position: static !important;
             transform: none !important;
-            height: 360px !important;
+            height: 340px !important;
             width: 100% !important;
             margin-bottom: 20px !important;
           }
@@ -278,7 +283,7 @@ export function ArchSection() {
           .arch { gap: 12px !important; }
           .arch__right .img-wrapper {
             border-radius: 10px !important;
-            height: 280px !important;
+            height: 260px !important;
           }
         }
       `}</style>

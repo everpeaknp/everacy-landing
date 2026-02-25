@@ -2,21 +2,31 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { NAV_LINKS } from "@/lib/constants";
 
-const BRAND_COLOR = "#118ec6";
+const BRAND_COLOR = "#27446e";
 
 export function Navbar() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
-  const [pastHero, setPastHero] = useState(false);
+  const [pastHero, setPastHero] = useState(!isHome); // Default to true if not on home
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
     setScrolled(y > 20);
-    setPastHero(y > window.innerHeight * 0.85); // 85vh = comfortably past hero
-  }, []);
+    
+    // STRICT RULE: Only transparent/dark if on homepage AND not scrolled past hero.
+    // Otherwise, it's ALWAYS white ('pastHero' style).
+    if (isHome) {
+      setPastHero(y > window.innerHeight * 0.85);
+    } else {
+      setPastHero(true);
+    }
+  }, [isHome]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -79,7 +89,7 @@ export function Navbar() {
               style={{
                 width: 34,
                 height: 34,
-                filter: pastHero ? "none" : "drop-shadow(0 0 8px rgba(17,142,198,0.5))",
+                filter: pastHero ? "none" : "drop-shadow(0 0 8px rgba(39,68,110,0.5))",
                 transition: "filter 0.3s",
               }}
             >
@@ -128,12 +138,12 @@ export function Navbar() {
             {/* CTA button */}
             <Link
               href="/contact"
-              className="ml-4 px-5 py-2 text-[13px] font-semibold rounded-full transition-all duration-200 hover:scale-105 hover:shadow-lg"
+              className="ml-4 px-5 py-2 text-[13px] font-medium rounded-full transition-all duration-200 hover:scale-105"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
-                background: `linear-gradient(135deg, ${BRAND_COLOR}, #00a6cb)`,
+                background: BRAND_COLOR,
                 color: "#fff",
-                boxShadow: `0 2px 16px rgba(17,142,198,0.35)`,
+                boxShadow: `0 4px 14px rgba(39,68,110,0.25)`,
               }}
             >
               Get In Touch
@@ -207,11 +217,11 @@ export function Navbar() {
           <Link
             href="/contact"
             onClick={() => setMenuOpen(false)}
-            className="mt-4 px-10 py-4 rounded-full text-base font-bold uppercase tracking-widest transition-all duration-200 hover:scale-105"
+            className="mt-4 px-10 py-4 rounded-full text-[15px] font-semibold uppercase tracking-widest transition-all duration-200 hover:scale-105"
             style={{
-              background: `linear-gradient(135deg, ${BRAND_COLOR}, #00a6cb)`,
+              background: BRAND_COLOR,
               color: "#fff",
-              boxShadow: `0 4px 32px rgba(17,142,198,0.4)`,
+              boxShadow: `0 4px 20px rgba(39,68,110,0.3)`,
               letterSpacing: "0.2em",
             }}
           >

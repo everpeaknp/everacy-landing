@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { NAV_LINKS, SITE_NAME, SOCIAL_LINKS } from "@/lib/constants";
+import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -12,16 +13,35 @@ export function Footer() {
         zIndex: 2,
         background: "transparent",
         color: "#ffffff",
-        overflow: "hidden"
+        overflow: "hidden",
+        isolation: "isolate"
       }}
     >
-      {/* Dark overlay for liquid visibility & text contrast */}
+      {/* Liquid background restricted to footer */}
+      <LiquidEffectAnimation fill="absolute" zIndex={-2} />
+
+      {/* Dark vignette (matching Hero) */}
       <div
         aria-hidden="true"
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(ellipse at center, rgba(3,8,24,0.4) 0%, rgba(2,6,20,0.85) 100%)",
+          background:
+            "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
+          pointerEvents: "none",
+          zIndex: -1,
+        }}
+      />
+
+      {/* Brand-blue atmospheric glow (matching Hero) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "radial-gradient(ellipse 55% 40% at 50% 80%, rgba(17,142,198,0.2) 0%, transparent 70%)",
+          pointerEvents: "none",
           zIndex: -1,
         }}
       />

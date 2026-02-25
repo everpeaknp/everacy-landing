@@ -2,6 +2,7 @@
 
 import { ThemeProvider } from "next-themes";
 import type { PropsWithChildren } from "@/types";
+import { SmoothScroll } from "@/components/common/SmoothScroll";
 
 /**
  * Root Providers component.
@@ -16,7 +17,7 @@ export function Providers({ children }: PropsWithChildren) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
+      <SmoothScroll>{children}</SmoothScroll>
     </ThemeProvider>
   );
 }

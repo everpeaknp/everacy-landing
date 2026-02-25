@@ -55,8 +55,8 @@ const config: Config = {
         // Edit these to update the entire site color scheme
         brand: {
           /** Deep blue — bottom logo layer, primary CTA */
-          DEFAULT: "#118ec6",
-          dark: "#0a6fa0",
+          DEFAULT: "#27446e",
+          dark: "#1d3354",
           /** Cyan-blue — mid logo layer */
           mid: "#00a6cb",
           /** Soft cyan — mid logo layer 2 */

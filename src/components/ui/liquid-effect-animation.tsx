@@ -13,81 +13,93 @@ declare global {
         uniforms: { displacementScale: { value: number } };
       };
       setRain?: (enabled: boolean) => void;
+      renderer?: { setPixelRatio?: (ratio: number) => void };
     };
   }
 }
 
-interface LiquidEffectAnimationProps {
-  /** Image URL to project onto the liquid surface */
-  imageUrl?: string;
-  metalness?: number;
-  roughness?: number;
-  displacementScale?: number;
-  rain?: boolean;
-  /** Whether to fix position (full page) or fill the parent container */
-  fill?: "fixed" | "absolute";
+/** Blue/teal brand gradient for the liquid background */
+function makeBrandGradient(): string {
+  if (typeof document === "undefined") return "";
+  const c = document.createElement("canvas");
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createRadialGradient(256, 256, 0, 256, 256, 360);
+  g.addColorStop(0, "#0d2a4a");
+  g.addColorStop(0.3, "#0a3d6e");
+  g.addColorStop(0.6, "#115e8c");
+  g.addColorStop(1, "#082035");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 512);
+
+  const h = ctx.createRadialGradient(256, 200, 0, 256, 200, 180);
+  h.addColorStop(0, "rgba(17,142,198,0.35)");
+  h.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = h;
+  ctx.fillRect(0, 0, 512, 512);
+  return c.toDataURL("image/png");
 }
 
-/**
- * LiquidEffectAnimation
- * Renders a WebGL liquid background via the threejscomponents CDN module.
- * Always rendered as a Client Component — never SSR-d.
- * Use dynamic(() => import(...), { ssr: false }) at the call site.
- */
+interface LiquidEffectAnimationProps {
+  fill?: "fixed" | "absolute";
+  zIndex?: number;
+}
+
 export function LiquidEffectAnimation({
-  imageUrl = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80",
-  metalness = 0.75,
-  roughness = 0.25,
-  displacementScale = 5,
-  rain = false,
   fill = "fixed",
+  zIndex = 0,
 }: LiquidEffectAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    // Inject ESM module script to load Three.js liquid background from CDN
-    const script = document.createElement("script");
-    script.type = "module";
-    script.id = "__liquid-bg-script";
-    script.textContent = `
-      import LiquidBackground from 'https://cdn.jsdelivr.net/npm/threejscomponents@0.0.22/build/backgrounds/liquid1.min.js';
-      const canvas = document.getElementById('liquid-canvas');
-      if (canvas && !window.__liquidApp) {
-        const app = LiquidBackground(canvas);
-        app.loadImage('${imageUrl}');
-        app.liquidPlane.material.metalness = ${metalness};
-        app.liquidPlane.material.roughness = ${roughness};
-        app.liquidPlane.uniforms.displacementScale.value = ${displacementScale};
-        app.setRain(${rain});
+    let app: any = null;
+    let disposed = false;
+
+    (async () => {
+      try {
+        const mod = await import(
+          /* webpackIgnore: true */
+          "https://cdn.jsdelivr.net/npm/threejs-components@0.0.27/build/backgrounds/liquid1.min.js"
+        );
+        if (disposed) return;
+
+        const LiquidBackground = mod.default ?? mod;
+        app = LiquidBackground(canvas);
+
+        if (app.renderer?.setPixelRatio) {
+          app.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        }
+
+        app.loadImage(makeBrandGradient());
+        app.liquidPlane.material.metalness = 0.4;
+        app.liquidPlane.material.roughness = 0.3;
+        app.liquidPlane.uniforms.displacementScale.value = 3;
+        app.setRain(false);
+        
         window.__liquidApp = app;
+      } catch (err) {
+        console.error("[Liquid] Global load failed:", err);
       }
-    `;
-    document.body.appendChild(script);
+    })();
 
     return () => {
-      if (window.__liquidApp?.dispose) {
-        window.__liquidApp.dispose();
-      }
+      disposed = true;
+      app?.dispose?.();
       window.__liquidApp = undefined;
-      const existing = document.getElementById("__liquid-bg-script");
-      if (existing) document.body.removeChild(existing);
     };
-  }, [imageUrl, metalness, roughness, displacementScale, rain]);
-
-  const positionClass = fill === "fixed" ? "fixed" : "absolute";
+  }, []);
 
   return (
-    <div
-      className={`${positionClass} inset-0 m-0 w-full h-full touch-none overflow-hidden`}
+    <canvas
+      ref={canvasRef}
+      id="liquid-canvas"
+      className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 w-full h-full pointer-events-none`}
+      style={{ zIndex, touchAction: "none" }}
       aria-hidden="true"
-    >
-      <canvas
-        ref={canvasRef}
-        id="liquid-canvas"
-        className={`${positionClass} inset-0 w-full h-full`}
-      />
-    </div>
+    />
   );
 }

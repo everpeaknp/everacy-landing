@@ -1,94 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Image from "next/image";
 
-declare global {
-  interface Window {
-    __liquidApp?: { dispose?: () => void };
-  }
-}
-
-/** Blue/teal gradient — resists warm env map reflections, stays on-brand */
-function makeBlueGradientDataURL(): string {
-  const c = document.createElement("canvas");
-  c.width = 512;
-  c.height = 512;
-  const ctx = c.getContext("2d")!;
-  const g = ctx.createRadialGradient(256, 256, 0, 256, 256, 360);
-  g.addColorStop(0, "#0d2a4a");
-  g.addColorStop(0.3, "#0a3d6e");
-  g.addColorStop(0.6, "#115e8c");
-  g.addColorStop(1, "#082035");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 512, 512);
-
-  // Add a faint cyan highlight to the centre for depth
-  const h = ctx.createRadialGradient(256, 200, 0, 256, 200, 180);
-  h.addColorStop(0, "rgba(17,142,198,0.35)");
-  h.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = h;
-  ctx.fillRect(0, 0, 512, 512);
-  return c.toDataURL("image/png");
-}
-
 export function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    let disposed = false;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let app: any = null;
-
-    (async () => {
-      try {
-        const mod = await import(
-          /* webpackIgnore: true */
-          "https://cdn.jsdelivr.net/npm/threejs-components@0.0.27/build/backgrounds/liquid1.min.js"
-        );
-        if (disposed) return;
-
-        const LiquidBackground = mod.default ?? mod;
-        app = LiquidBackground(canvas);
-
-        // Cap pixel ratio → reduces GPU load → smoother hover
-        if (app.renderer?.setPixelRatio) {
-          app.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-        }
-
-        app.loadImage(makeBlueGradientDataURL());
-
-        // Lower metalness so texture colour shows through, not just reflections
-        app.liquidPlane.material.metalness = 0.4;
-        app.liquidPlane.material.roughness = 0.3;
-        app.liquidPlane.uniforms.displacementScale.value = 3;
-        app.setRain(false);
-      } catch (err) {
-        console.error("[Liquid] load failed:", err);
-      }
-    })();
-
-    return () => {
-      disposed = true;
-      app?.dispose?.();
-      app = null;
-    };
-  }, []);
-
   return (
     <>
-      {/* Fixed full-viewport liquid canvas */}
-      <canvas
-        ref={canvasRef}
-        id="liquid-canvas"
-        className="fixed inset-0 w-full h-full"
-        style={{ zIndex: 0, touchAction: "none" }}
-        aria-hidden="true"
-      />
-
       {/*
         Hero section: exactly h-svh so it fills ONE viewport.
         overflow: visible so the wave SVG can bleed downward.
