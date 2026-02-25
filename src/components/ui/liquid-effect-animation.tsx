@@ -63,6 +63,7 @@ export function LiquidEffectAnimation({
       try {
         const mod = await import(
           /* webpackIgnore: true */
+          // @ts-ignore
           "https://cdn.jsdelivr.net/npm/threejs-components@0.0.27/build/backgrounds/liquid1.min.js"
         );
         if (disposed) return;

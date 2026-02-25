@@ -1,9 +1,8 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { THREE_DEFAULTS } from "@/lib/constants";
 import { Suspense, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
 import type * as THREE from "three";
 
 /** Placeholder animated mesh — replace with your actual 3D scene. */
