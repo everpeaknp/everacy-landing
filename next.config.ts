@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-slot",
     ],
   },
+  turbopack: {},
 
   // Image optimization
   images: {
