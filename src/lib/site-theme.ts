@@ -230,8 +230,8 @@ export const teamConfig = {
       followers: "12M",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop",
       links: {
-        linkedin: "https://linkedin.com/in/nirajadhikari",
-        github: "https://github.com/niraj",
+        linkedin: "https://www.linkedin.com/in/niraj-adhikari-301274320/",
+        github: "https://github.com/Nirajadh",
       },
     },
     {
@@ -242,8 +242,8 @@ export const teamConfig = {
       followers: "8M",
       image: "https://images.unsplash.com/photo-1543132220-4bf3de6e10ae?q=80&w=800&auto=format&fit=crop",
       links: {
-        linkedin: "https://linkedin.com/in/ramohan",
-        github: "https://github.com/ramohan",
+        linkedin: "https://www.linkedin.com/in/r-a-mohan/",
+        github: "https://github.com/ramoniswack",
       },
     },
     {
@@ -254,8 +254,8 @@ export const teamConfig = {
       followers: "5M",
       image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop",
       links: {
-        linkedin: "https://linkedin.com/in/mandeep",
-        github: "https://github.com/mandeep",
+        linkedin: "https://www.linkedin.com/in/mandeep-karki-3032472a3/",
+        github: "https://github.com/mandeepkarki69",
       },
     },
     {
@@ -324,7 +324,7 @@ export const teamConfig = {
       role: "Performance Optimizer",
       bio: "Obsessed with zero-latency benchmarks and sub-second load times.",
       followers: "10M",
-      image: "/images/person.png",
+      image: "https://assets.codepen.io/1480814/av+1.png",
       links: {
         linkedin: "https://linkedin.com/in/priya",
         github: "https://github.com/priya",
