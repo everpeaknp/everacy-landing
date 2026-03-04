@@ -167,3 +167,15 @@
 .eng-card-img:hover {
   --f: 1.35; /* hover scale */
 }
+
+/* ─── Career page custom hover physics ───────────────────────────────────── */
+.career-card {
+  transition: background-size 1s ease-in-out, background-position 1s ease-in-out;
+  background-size: 250px;
+  background-position: center center;
+}
+
+.career-card:hover {
+  background-size: 600px;
+  background-position: left center;
+}

@@ -12,21 +12,23 @@ export function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
-  const [pastHero, setPastHero] = useState(!isHome); // Default to true if not on home
+  const isProjects = pathname === "/projects";
+  const isCareers = pathname === "/careers";
+  const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
     setScrolled(y > 20);
     
-    // STRICT RULE: Only transparent/dark if on homepage AND not scrolled past hero.
+    // STRICT RULE: Only transparent/dark if on homepage, projects, OR careers AND not scrolled past hero/intro.
     // Otherwise, it's ALWAYS white ('pastHero' style).
-    if (isHome) {
+    if (isHome || isProjects || isCareers) {
       setPastHero(y > window.innerHeight * 0.85);
     } else {
       setPastHero(true);
     }
-  }, [isHome]);
+  }, [isHome, isProjects, isCareers]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });

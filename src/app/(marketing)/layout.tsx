@@ -2,7 +2,6 @@
 
 import { Navbar } from "@/components/common/Navbar";
 import { Footer } from "@/components/common/Footer";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import type { PropsWithChildren } from "@/types";
 import { usePathname } from "next/navigation";
 
@@ -18,7 +17,6 @@ export default function MarketingLayout({ children }: PropsWithChildren) {
   return (
     <>
       <Navbar />
-      {!isProjects && <LiquidEffectAnimation />}
       {children}
       <Footer />
     </>

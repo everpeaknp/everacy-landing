@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 
 export function Hero() {
   return (
@@ -23,21 +24,22 @@ export function Hero() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "visible",
+          overflow: "clip",
           pointerEvents: "none",
         }}
       >
-        {/* Dark vignette */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
-            pointerEvents: "none",
-          }}
-        />
+          <div className="absolute inset-0 w-full h-full -z-10 origin-top bg-[#040813] overflow-hidden">
+            <LiquidEffectAnimation fill="absolute" zIndex={0} />
+            {/* Dark vignette */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none z-10"
+              style={{
+                background:
+                  "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
+              }}
+            />
+          </div>
 
         {/* Brand-blue atmospheric glow */}
         <div

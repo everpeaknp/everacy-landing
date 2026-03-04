@@ -16,8 +16,14 @@ export const metadata: Metadata = genMeta({
 export default function HomePage() {
   return (
     <main style={{ position: "relative", zIndex: 1, background: "transparent" }}>
-      <Hero />
-      <ArchSection />
+      {/* Hero isolated — its own stacking context, overflow never bleeds into ArchSection */}
+      <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
+        <Hero />
+      </div>
+      {/* ArchSection isolated — GSAP background changes stay within this layer */}
+      <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
+        <ArchSection />
+      </div>
       <TestimonialsSection />
       <ProcessSection />
       <ContactSection />

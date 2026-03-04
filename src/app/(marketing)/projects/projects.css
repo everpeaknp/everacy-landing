@@ -1,0 +1,39 @@
+/* ─── Projects page styles ───────────────────────────────────────────────────
+   We apply scroll-snap to html/body via a class so they are valid scroll 
+   containers. All complex layout styling is now handled by Tailwind in page.tsx
+   so it naturally flows and doesn't conflict with Next.js constraints.
+──────────────────────────────────────────────────────────────────────────── */
+
+
+
+/* Native scroll requirement: must be on html/body to work globally */
+html.projects-active {
+  scroll-snap-type: y mandatory;
+}
+
+html.projects-active footer {
+  scroll-snap-align: end;
+}
+
+body.projects-active {
+  min-height: 100vh;
+  background: black;
+  color: hsl(0 0% 90%);
+}
+
+
+.projects-page *,
+.projects-page *:after,
+.projects-page *:before {
+  box-sizing: border-box;
+}
+
+.projects-page p {
+  max-width: 40ch;
+}
+
+/* Ensure each section/article acts as a proper snap point for the scroll */
+.projects-page section,
+.projects-page article {
+  scroll-snap-align: start;
+}
