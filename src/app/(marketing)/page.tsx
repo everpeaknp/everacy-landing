@@ -15,7 +15,7 @@ export const metadata: Metadata = genMeta({
 
 export default function HomePage() {
   return (
-    <main style={{ position: "relative", zIndex: 1, background: "transparent" }}>
+    <main className="section-clip-x" style={{ position: "relative", zIndex: 1, background: "transparent" }}>
       {/* Hero isolated — its own stacking context, overflow never bleeds into ArchSection */}
       <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
         <Hero />

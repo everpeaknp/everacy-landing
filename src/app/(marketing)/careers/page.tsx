@@ -39,7 +39,7 @@ export default function CareersPage() {
   return (
     <main className="relative z-[1] bg-slate-50 min-h-screen font-mont">
       {/* Dark Liquid Careers Hero */}
-      <section className="relative pt-40 pb-32 overflow-hidden flex items-center justify-center min-h-[70vh]">
+      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">
           <LiquidEffectAnimation fill="absolute" zIndex={0} />
           {/* Dark vignette matching home page */}
@@ -53,10 +53,10 @@ export default function CareersPage() {
         </div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-lg mb-6 uppercase tracking-tighter">
+            <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
                 Build the <span className="text-[#00a6cb]">Future.</span>
             </h1>
-            <p className="text-white/80 drop-shadow-md text-xl md:text-2xl font-medium max-w-3xl mx-auto">
+            <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
                 We are always looking for elite engineers, visionary designers, and relentless innovators to join our vanguard.
             </p>
         </div>
@@ -72,11 +72,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="flex flex-col space-y-10 items-center lg:flex-row lg:justify-around items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 sm:gap-10 justify-items-center">
             {VACANCIES.map((job) => (
               <div 
                 key={job.id} 
-                className={`career-card career-card-${job.id} group w-72 h-80 bg-black rounded overflow-hidden flex justify-center items-center relative transition-all duration-1000`}
+                className={`career-card career-card-${job.id} group w-full max-w-[19rem] h-80 bg-black rounded overflow-hidden flex justify-center items-center relative transition-all duration-1000`}
                 style={{
                   boxShadow: "0 20px 40px -10px rgba(0,0,0,0.5)",
                   backgroundImage: `url('${job.bgImage}')`,

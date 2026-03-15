@@ -13,7 +13,7 @@ export function TeamSection() {
   const { header, members } = teamConfig;
 
   return (
-    <section className="py-24 bg-white font-mont relative z-[2]">
+    <section className="py-24 bg-white font-mont relative z-[2] section-clip-x">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <header className="text-center mb-20 px-4">
@@ -68,7 +68,7 @@ export function TeamSection() {
           --text-color: rgba(255,255,255,0.75);
           background: var(--bg);
           border-radius: 2rem;
-          width: 20rem;
+          width: min(100%, 20rem);
           height: 30rem;
           overflow: hidden;
           position: relative;
@@ -237,6 +237,13 @@ export function TeamSection() {
         .morph-card:hover > section,
         .morph-card:focus-within > section {
           transform: translateY(-0.5rem);
+        }
+
+        @media (max-width: 768px) {
+          .morph-card {
+            width: min(100%, 19rem);
+            height: 28rem;
+          }
         }
       `}</style>
     </section>

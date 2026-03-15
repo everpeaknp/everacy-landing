@@ -14,7 +14,7 @@ export default function AboutPage() {
   return (
     <main className="relative z-[1] bg-white">
       {/* Dark Liquid About Hero */}
-      <section className="relative pt-40 pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh]">
+      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">
           <LiquidEffectAnimation fill="absolute" zIndex={0} />
           {/* Dark vignette matching home page */}
@@ -28,10 +28,10 @@ export default function AboutPage() {
         </div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-lg mb-6 uppercase tracking-tighter">
-                Everything Starts <br/> with <span className="text-[#00a6cb]">Elite Minds.</span>
+            <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
+                Everything Starts <br className="hidden sm:block" /> with <span className="text-[#00a6cb]">Elite Minds.</span>
             </h1>
-            <p className="text-white/80 drop-shadow-md text-xl md:text-2xl font-medium max-w-3xl mx-auto">
+            <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
                 Everacy is more than a firm — it&apos;s a collective of engineers, architects, and designers dedicated to building the future of digital infrastructure.
             </p>
         </div>

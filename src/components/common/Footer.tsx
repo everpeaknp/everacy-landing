@@ -8,6 +8,7 @@ export function Footer() {
 
   return (
     <footer
+      className="section-clip-x"
       style={{
         position: "relative",
         zIndex: 2,
@@ -86,10 +87,10 @@ export function Footer() {
                 />
               </div>
               <p 
-                className="text-2xl md:text-3xl font-black uppercase leading-none"
+                className="text-xl sm:text-2xl md:text-3xl font-black uppercase leading-none"
                 style={{ 
                   fontFamily: "'Montserrat', sans-serif",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "clamp(0.1em, 0.7vw, 0.2em)",
                   color: "#ffffff"
                 }}
               >
@@ -154,7 +155,7 @@ export function Footer() {
               <Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link>
             </div>
             
-            <div className="flex items-center gap-3 md:gap-4 text-[8px] md:text-[9px] uppercase tracking-[0.4em] md:tracking-[0.5em] text-white/20">
+            <div className="flex items-center gap-3 md:gap-4 text-[8px] md:text-[9px] uppercase tracking-[0.24em] md:tracking-[0.5em] text-white/20">
               <span>© {year} {SITE_NAME}</span>
               <span className="hidden xs:inline w-6 md:w-8 h-px bg-white/10" />
               <span className="opacity-60 hidden xs:inline">Engineering Tomorrow</span>

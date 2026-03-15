@@ -11,6 +11,10 @@ export default function ProjectsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!window.matchMedia("(min-width: 769px)").matches) {
+      return;
+    }
+
     // Register the GSAP plugin
     gsap.registerPlugin(ScrollTrigger);
 
@@ -113,12 +117,12 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <main className="projects-page overflow-x-hidden bg-black text-white min-h-screen">
+    <main className="projects-page overflow-x-hidden bg-black text-white min-h-screen section-clip-x">
       
       <div ref={containerRef} className="panel-container relative h-screen w-full">
         
         {/* SECTION 1: HERO */}
-        <section className="sec-1 absolute inset-0 w-full h-full z-10 flex flex-col justify-center items-center text-center p-8 bg-black">
+        <section className="projects-panel sec-1 absolute inset-0 w-full h-full z-10 flex flex-col justify-center items-center text-center p-8 bg-black">
           <div className="bg-elem absolute inset-0 w-full h-full origin-top bg-black overflow-hidden">
             <LiquidEffectAnimation fill="absolute" zIndex={0} />
             <div
@@ -139,7 +143,7 @@ export default function ProjectsPage() {
         </section>
 
         {/* SECTION 2: YUMMYEVER */}
-        <article className="art-1 absolute inset-0 w-full h-full z-20 flex flex-col justify-center items-center text-center p-8 bg-zinc-100 text-zinc-900 border-t border-white/10">
+        <article className="projects-panel art-1 absolute inset-0 w-full h-full z-20 flex flex-col justify-center items-center text-center p-8 bg-zinc-100 text-zinc-900 border-t border-white/10">
           <div className="content relative z-10 max-w-4xl mx-auto w-full flex flex-col justify-center items-center text-center">
             <div className="text-wrap">
               <div className="text-animate flex flex-col gap-6 items-center">
@@ -151,7 +155,7 @@ export default function ProjectsPage() {
         </article>
 
         {/* SECTION 3: SIKSHYAEVER */}
-        <article className="art-2 absolute inset-0 w-full h-full z-30 flex flex-col justify-center items-center text-center p-8 bg-[#0a192f] opacity-0 text-white">
+        <article className="projects-panel art-2 absolute inset-0 w-full h-full z-30 flex flex-col justify-center items-center text-center p-8 bg-[#0a192f] opacity-0 text-white">
           <div className="content relative z-10 max-w-4xl mx-auto w-full flex flex-col justify-center items-center text-center">
             <div className="text-wrap flex justify-center">
               <div className="text-animate flex flex-col items-center gap-6">
@@ -163,7 +167,7 @@ export default function ProjectsPage() {
         </article>
 
         {/* SECTION 4: TASKFLOW */}
-        <article className="art-3 absolute inset-0 w-full h-full z-40 flex flex-col p-8 opacity-0">
+        <article className="projects-panel art-3 absolute inset-0 w-full h-full z-40 flex flex-col p-8 opacity-0">
           <div className="absolute inset-0 w-full h-full -z-10 bg-black">
             <img className="absolute inset-0 w-full h-full object-cover brightness-50 saturate-50" src="https://picsum.photos/1920/1080?random=3" alt="" />
           </div>
@@ -182,7 +186,7 @@ export default function ProjectsPage() {
         </article>
 
         {/* SECTION 5: FIN */}
-        <article className="art-4 absolute inset-0 w-full h-full z-50 flex flex-col justify-center items-center text-center p-8 bg-black">
+        <article className="projects-panel art-4 absolute inset-0 w-full h-full z-50 flex flex-col justify-center items-center text-center p-8 bg-black">
           <div className="absolute inset-0 w-full h-full -z-10 bg-black">
             <img className="absolute inset-0 w-full h-full object-cover brightness-50" src="https://picsum.photos/1920/1080?random=4" alt="" />
           </div>

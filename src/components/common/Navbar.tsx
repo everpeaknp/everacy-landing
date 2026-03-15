@@ -52,7 +52,7 @@ export function Navbar() {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-[100] transition-all duration-500"
+        className="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 section-clip-x"
         style={
           pastHero
             ? {
@@ -77,7 +77,7 @@ export function Navbar() {
               }
         }
       >
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex h-16 items-center justify-between">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 flex h-16 items-center justify-between">
 
           {/* ── Logo ── */}
           <Link
@@ -105,10 +105,10 @@ export function Navbar() {
               />
             </div>
             <span
-              className="text-[15px] font-extrabold tracking-[0.18em] uppercase transition-colors duration-300"
+              className="text-[14px] sm:text-[15px] font-extrabold tracking-[0.12em] sm:tracking-[0.18em] uppercase transition-colors duration-300"
               style={{
                 color: pastHero ? "#0d1a26" : "#ffffff",
-                letterSpacing: "0.18em",
+                letterSpacing: "clamp(0.12em, 0.8vw, 0.18em)",
                 textShadow: pastHero ? "none" : scrolled ? "none" : "0 1px 8px rgba(0,0,0,0.5)",
               }}
             >
@@ -187,7 +187,7 @@ export function Navbar() {
 
       {/* ── Mobile full-screen menu ── */}
       <div
-        className="fixed inset-0 z-[99] md:hidden transition-all duration-500"
+        className="fixed inset-0 z-[99] md:hidden transition-all duration-500 section-clip-x"
         style={{
           background: "rgba(2,6,20,0.97)",
           backdropFilter: "blur(24px)",
@@ -206,7 +206,7 @@ export function Navbar() {
               key={href}
               href={href}
               onClick={() => setMenuOpen(false)}
-              className="text-3xl font-black uppercase tracking-[0.15em] text-white/80 hover:text-white transition-all duration-200 hover:tracking-[0.22em]"
+              className="text-3xl font-black uppercase tracking-[0.12em] sm:tracking-[0.15em] text-white/80 hover:text-white transition-all duration-200 hover:tracking-[0.2em]"
               style={{
                 transitionDelay: menuOpen ? `${i * 60}ms` : "0ms",
               }}
@@ -236,7 +236,7 @@ export function Navbar() {
               className="w-8 h-px"
               style={{ background: BRAND_COLOR }}
             />
-            <span className="text-[9px] tracking-[0.5em] uppercase text-white">
+            <span className="text-[9px] tracking-[0.36em] uppercase text-white">
               Everacy © 2025
             </span>
           </div>

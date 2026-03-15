@@ -14,6 +14,7 @@ export function Hero() {
       <section
         id="hero"
         aria-label="Hero"
+        className="section-clip-x"
         style={{
           fontFamily: "'Montserrat', sans-serif",
           zIndex: 1,
@@ -75,19 +76,19 @@ export function Hero() {
             />
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)", display: "block" }} />
-            <span style={{ fontSize: "11px", letterSpacing: "0.5em", textTransform: "uppercase", color: "rgba(140,212,221,0.92)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", maxWidth: "min(760px, 94vw)" }}>
+            <span className="hidden min-[360px]:block" style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)" }} />
+            <span style={{ fontSize: "clamp(0.56rem, 2.2vw, 0.72rem)", letterSpacing: "clamp(0.18em, 0.7vw, 0.5em)", textTransform: "uppercase", color: "rgba(140,212,221,0.92)", lineHeight: 1.65, maxWidth: "min(74vw, 600px)" }}>
               Building Digital Experiences That Scale
             </span>
-            <span style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)", display: "block" }} />
+            <span className="hidden min-[360px]:block" style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)" }} />
           </div>
 
           <h1 style={{
-            fontSize: "clamp(2.8rem, 10vw, 7rem)",
+            fontSize: "clamp(2.35rem, 11vw, 7rem)",
             fontWeight: 900,
             textTransform: "uppercase",
-            letterSpacing: "0.2em",
+            letterSpacing: "clamp(0.08em, 0.8vw, 0.2em)",
             lineHeight: 1,
             color: "#fff",
             textShadow: "0 0 80px rgba(17,142,198,0.4), 0 2px 40px rgba(0,0,0,0.7)",
@@ -96,7 +97,7 @@ export function Hero() {
             Everacy
           </h1>
 
-          <p style={{ fontSize: "11px", letterSpacing: "0.55em", textTransform: "uppercase", color: "rgba(180,227,250,0.75)", fontWeight: 300, margin: 0 }}>
+          <p style={{ fontSize: "clamp(0.52rem, 2.1vw, 0.72rem)", letterSpacing: "clamp(0.2em, 0.8vw, 0.55em)", textTransform: "uppercase", color: "rgba(180,227,250,0.75)", fontWeight: 300, margin: 0 }}>
             Engineering Tomorrow
           </p>
         </div>
@@ -123,7 +124,7 @@ export function Hero() {
             background: "linear-gradient(to bottom, rgba(17,142,198,0.7), transparent)",
             animation: "pulse 2s ease-in-out infinite",
           }} />
-          <span style={{ fontSize: "8px", letterSpacing: "0.5em", textTransform: "uppercase", color: "rgba(140,212,221,0.35)" }}>
+          <span style={{ fontSize: "8px", letterSpacing: "clamp(0.2em, 0.6vw, 0.5em)", textTransform: "uppercase", color: "rgba(140,212,221,0.35)" }}>
             Scroll
           </span>
         </div>
@@ -136,7 +137,7 @@ export function Hero() {
           aria-hidden="true"
           style={{
             position: "absolute",
-            bottom: "-60px",
+            bottom: "clamp(-52px, -8vw, -30px)",
             left: 0,
             right: 0,
             zIndex: 10,

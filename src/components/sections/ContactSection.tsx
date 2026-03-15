@@ -6,6 +6,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { contactConfig } from "@/lib/site-theme";
 
 export function ContactSection() {
@@ -30,6 +31,7 @@ export function ContactSection() {
 }
 
 const SpotlightButton = ({ label }: { label: string }) => {
+  const router = useRouter();
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const spanRef = useRef<HTMLSpanElement | null>(null);
 
@@ -71,6 +73,8 @@ const SpotlightButton = ({ label }: { label: string }) => {
     <motion.button
       whileTap={{ scale: 0.985 }}
       ref={btnRef}
+      type="button"
+      onClick={() => router.push("/contact")}
       className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-slate-950 px-8 py-5 text-xl font-bold text-white shadow-2xl transition-shadow hover:shadow-brand/20 active:shadow-none"
     >
       <span className="pointer-events-none relative z-10 mix-blend-difference">

@@ -37,3 +37,70 @@ body.projects-active {
 .projects-page article {
   scroll-snap-align: start;
 }
+
+@media (max-width: 768px) {
+  html.projects-active {
+    scroll-snap-type: none;
+  }
+
+  .projects-page .panel-container {
+    height: auto !important;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .projects-page .projects-panel {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100svh;
+    opacity: 1 !important;
+    clip-path: none !important;
+    transform: none !important;
+    filter: none !important;
+    padding: 5rem 1.25rem !important;
+  }
+
+  .projects-page .art-3 {
+    padding-inline: 1rem !important;
+  }
+
+  .projects-page .sec-1 .bg-elem {
+    transform: none !important;
+    opacity: 1 !important;
+    border-radius: 0 !important;
+  }
+
+  .projects-page .content-wrap,
+  .projects-page .content,
+  .projects-page .text-wrap {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .projects-page .mask-header {
+    clip-path: none !important;
+    mask: none !important;
+  }
+
+  .projects-page .text-blocks {
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .projects-page h1,
+  .projects-page h2 {
+    font-size: clamp(2.1rem, 10vw, 3.8rem) !important;
+    line-height: 1.05 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .projects-page p {
+    font-size: clamp(1rem, 4.4vw, 1.35rem) !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere;
+  }
+}

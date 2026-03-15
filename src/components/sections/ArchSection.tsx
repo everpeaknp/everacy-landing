@@ -140,11 +140,11 @@ export function ArchSection() {
   return (
     <section
       ref={sectionRef}
-      className="arch-section"
+      className="arch-section section-clip-x"
       style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2, backgroundColor: "#ffffff" }}
     >
       {/* Container */}
-      <div style={{ maxWidth: 1440, padding: "2rem" }} className="mx-auto">
+      <div style={{ maxWidth: 1440, padding: "clamp(1rem, 4vw, 2rem)", boxSizing: "border-box" }} className="mx-auto safe-mobile-block">
         {/* Top spacer */}
         <div style={{ width: "100%", height: "8vh" }} />
 
@@ -158,28 +158,29 @@ export function ArchSection() {
           className="arch"
           style={{
             display: "flex",
-            gap: 60,
+            gap: "clamp(20px, 6vw, 60px)",
             justifyContent: "space-between",
             maxWidth: 1100,
             marginInline: "auto",
+            width: "100%",
           }}
         >
           {/* Left: scrolling text cards */}
           <div
             className="arch__left"
-            style={{ display: "flex", flexDirection: "column", minWidth: 300 }}
+            style={{ display: "flex", flexDirection: "column", minWidth: "min(300px, 100%)" }}
           >
             {archSectionCards.map((card) => (
               <div
                 key={card.id}
                 className="arch__info"
-                style={{ maxWidth: 356, height: "100vh", display: "grid", placeItems: "center" }}
+                style={{ maxWidth: 356, width: "100%", height: "100vh", display: "grid", placeItems: "center" }}
               >
-                <div>
-                  <h2 style={{ fontSize: 42, fontWeight: 800, letterSpacing: "-0.84px", color: "#0d1a26" }}>
+                <div className="safe-mobile-block">
+                  <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 42px)", fontWeight: 800, letterSpacing: "-0.02em", color: "#0d1a26", lineHeight: 1.08 }}>
                     {card.title}
                   </h2>
-                  <p style={{ color: "rgba(13,26,38,0.75)", fontSize: 18, letterSpacing: "-0.54px", marginBlock: "6px 28px", lineHeight: "normal" }}>
+                  <p style={{ color: "rgba(13,26,38,0.75)", fontSize: "clamp(1rem, 1.55vw, 18px)", letterSpacing: "-0.01em", marginBlock: "6px 28px", lineHeight: 1.6 }}>
                     {card.description}
                   </p>
                   <Link
@@ -230,20 +231,21 @@ export function ArchSection() {
               return (
                 <div
                   key={card.id}
-                  className="img-wrapper"
-                  data-index={zIndexValue}
-                  style={{
+                    className="img-wrapper"
+                    data-index={zIndexValue}
+                    style={{
                     position: "absolute",
                     top: "50%",
                     left: 0,
                     transform: "translateY(-50%)",
                     height: 400,
                     width: "100%",
-                    borderRadius: 16,
-                    overflow: "hidden",
-                    zIndex: zIndexValue // Explicitly set zIndex inline for reliability
-                  }}
-                >
+                      borderRadius: 16,
+                      overflow: "hidden",
+                      zIndex: zIndexValue, // Explicitly set zIndex inline for reliability
+                      boxSizing: "border-box",
+                    }}
+                  >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={card.imageUrl}
@@ -265,25 +267,45 @@ export function ArchSection() {
           .arch { gap: 30px !important; }
         }
         @media (max-width: 768px) {
-          .arch { flex-direction: column !important; gap: 20px !important; }
+          .arch {
+            flex-direction: column !important;
+            gap: 18px !important;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
           .arch__left, .arch__right { display: contents !important; }
           .arch__right .img-wrapper {
             position: static !important;
             transform: none !important;
-            height: 340px !important;
+            height: clamp(220px, 58vw, 340px) !important;
             width: 100% !important;
-            margin-bottom: 20px !important;
+            margin: 0 0 18px 0 !important;
+            border-radius: 12px !important;
+          }
+          .arch__left .arch__info,
+          .arch__left .arch__info > div {
+            width: 100% !important;
+            max-width: 100% !important;
           }
           .arch__left .arch__info {
             height: auto !important;
+            min-height: auto !important;
             padding: 20px 0 !important;
+          }
+          .arch__left .arch__info h2 {
+            font-size: clamp(2rem, 10vw, 2.5rem) !important;
+            line-height: 1.08 !important;
+          }
+          .arch__left .arch__info p {
+            font-size: clamp(1rem, 4.3vw, 1.12rem) !important;
+            line-height: 1.55 !important;
+            margin-block: 10px 22px !important;
           }
         }
         @media (max-width: 560px) {
           .arch { gap: 12px !important; }
           .arch__right .img-wrapper {
-            border-radius: 10px !important;
-            height: 260px !important;
+            height: clamp(210px, 64vw, 280px) !important;
           }
         }
       `}</style>

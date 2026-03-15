@@ -29,7 +29,7 @@ export default function ContactPage() {
         <meta name="description" content="Get in touch with Everacy. Let's build what matters." />
       </Head>
 
-      <main className="relative min-h-screen bg-[#fafcff] overflow-hidden pt-32 pb-24 font-mont selection:bg-[#27446e] selection:text-white">
+      <main className="relative min-h-screen bg-[#fafcff] overflow-hidden pt-28 sm:pt-32 pb-24 font-mont selection:bg-[#27446e] selection:text-white section-clip-x">
         
         {/* Abstract Background Elements */}
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -37,7 +37,7 @@ export default function ContactPage() {
           <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-t from-[#e8f6fc] to-transparent opacity-70 blur-[100px]" />
         </div>
 
-        <section className="relative z-10 max-w-[1280px] mx-auto px-6 lg:px-12">
+        <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-12">
           
           {/* Header */}
           <motion.div 
@@ -46,10 +46,10 @@ export default function ContactPage() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="mb-16 lg:mb-24 text-center lg:text-left"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-[#0d1a26] tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-[clamp(2.1rem,10vw,4.7rem)] font-black text-[#0d1a26] tracking-tight leading-[1.1] mb-6">
               Let&apos;s build <br className="hidden lg:block"/> something <span style={{ color: BRAND_COLOR }}>extraordinary.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-500 max-w-2xl font-light leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl font-light leading-relaxed">
               Whether you need to scale your cloud infrastructure, build a robust web application, or engineer a complex SaaS product—we are ready to execute.
             </p>
           </motion.div>
@@ -79,7 +79,7 @@ export default function ContactPage() {
                         value={formState.name}
                         onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                         className="w-full bg-white/50 border-2 border-slate-200 shadow-sm px-4 py-4 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#27446e] focus:ring-4 focus:ring-[#27446e]/10 focus:bg-white transition-all duration-300"
-                        placeholder="John Doe"
+                        placeholder="Everacy tech"
                       />
                     </div>
                     <div className="flex flex-col gap-2 relative group">
@@ -91,7 +91,7 @@ export default function ContactPage() {
                         value={formState.email}
                         onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                         className="w-full bg-white/50 border-2 border-slate-200 shadow-sm px-4 py-4 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#27446e] focus:ring-4 focus:ring-[#27446e]/10 focus:bg-white transition-all duration-300"
-                        placeholder="john@company.com"
+                        placeholder="everacy@company.com"
                       />
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export default function ContactPage() {
                 <div className="flex flex-col gap-8 relative z-10">
                   <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-white/50 mb-2 font-bold">Inquiries</p>
-                    <a href="mailto:everacy.np@gmail.com" className="text-xl md:text-2xl font-medium hover:text-white/80 transition-colors">
+                    <a href="mailto:everacy.np@gmail.com" className="text-lg md:text-2xl font-medium hover:text-white/80 transition-colors break-all">
                       everacy.np@gmail.com
                     </a>
                   </div>
@@ -170,7 +170,7 @@ export default function ContactPage() {
               </div>
 
               {/* Minimal Socials Card */}
-              <div className="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/60 shadow-sm flex items-center justify-between">
+              <div className="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/60 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-[#0d1a26]/50 font-bold mb-1">Follow Us</p>
                   <p className="text-[#0d1a26] font-medium">Digital Footprint</p>

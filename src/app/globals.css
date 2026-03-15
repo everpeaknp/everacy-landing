@@ -77,6 +77,9 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
@@ -84,6 +87,9 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   /* Accessible focus ring */
@@ -102,6 +108,36 @@
       scroll-behavior: auto !important;
     }
   }
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+/* Shared responsive safety guards for sections with heavy absolute/decorative layers */
+.section-clip-x {
+  overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  .section-clip-x {
+    overflow-x: clip;
+  }
+}
+
+.safe-mobile-block {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 /* ── Three.js canvas utilities ── */
@@ -178,4 +214,11 @@
 .career-card:hover {
   background-size: 600px;
   background-position: left center;
+}
+
+@media (max-width: 360px) {
+  .eng-card-img {
+    --s: 228px;
+    --b: 4px;
+  }
 }

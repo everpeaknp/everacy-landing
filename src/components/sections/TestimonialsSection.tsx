@@ -61,18 +61,18 @@ export function TestimonialsSection() {
 
   return (
     <section
-      className="relative z-[3]"
+      className="relative z-[3] section-clip-x"
       style={{ background: testimonialBg }}
     >
       <div className="w-full max-w-4xl mx-auto px-4 md:px-6 pt-0 pb-16 text-center">
 
         {/* ── Avatar + 800px teal arc ── */}
-        <div className="relative h-44">
+        <div className="relative h-40 md:h-44">
           {/* 800×800 absolutely-positioned container — the inset-0 rotating divs
               use THIS as their anchor (the h-44 overflow div has no `relative`) */}
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
-            style={{ width: 800, height: 800 }}
+            style={{ width: "min(800px, calc(100vw + 120px))", height: "min(800px, calc(100vw + 120px))" }}
             aria-hidden
           >
             {/* Teal gradient arc */}
@@ -86,7 +86,7 @@ export function TestimonialsSection() {
 
             {/* Mask area — NO `relative` so inset-0 anchors to 800px container */}
             <div
-              className="h-44 overflow-hidden"
+              className="h-40 md:h-44 overflow-hidden"
               style={{
                 maskImage: "linear-gradient(0deg, transparent, white 18%, white)",
                 WebkitMaskImage: "linear-gradient(0deg, transparent, white 18%, white)",
@@ -140,15 +140,18 @@ export function TestimonialsSection() {
         </div>
 
         {/* ── Quote — fixed height, larger text ── */}
-        <div className="mb-10 h-64 md:h-52 flex items-center justify-center overflow-hidden">
+        <div className="mb-10 min-h-[15rem] md:min-h-[13rem] flex items-center justify-center overflow-hidden px-1">
           <p
             key={`qt-${animKey}`}
-            className="text-3xl md:text-4xl font-bold text-slate-900"
+            className="font-bold text-slate-900"
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              lineHeight: 1.4,
+              fontSize: "clamp(1.95rem, 7.4vw, 2.35rem)",
+              lineHeight: 1.3,
               letterSpacing: "-0.025em",
               animation: "quoteEnter 0.5s ease-in-out 0.2s both",
+              maxWidth: "100%",
+              overflowWrap: "anywhere",
             }}
           >
             &ldquo;{activeT.quote}&rdquo;
@@ -164,7 +167,7 @@ export function TestimonialsSection() {
                 key={item.id}
                 onClick={() => handleSelect(idx)}
                 className={[
-                  "inline-flex justify-center whitespace-nowrap rounded-full px-3 py-1.5 m-1.5 text-xs shadow-sm transition-colors duration-150 cursor-pointer",
+                  "testimonial-selector-pill inline-flex justify-center whitespace-nowrap rounded-full px-3 py-1.5 m-1.5 text-xs shadow-sm transition-colors duration-150 cursor-pointer",
                   isActive ? "text-white" : "bg-white hover:bg-sky-50 text-slate-900",
                 ].join(" ")}
                 style={isActive
@@ -194,6 +197,11 @@ export function TestimonialsSection() {
         @keyframes quoteEnter {
           from { opacity: 0; transform: translateX(-1rem); }
           to   { opacity: 1; transform: translateX(0); }
+        }
+        @media (max-width: 640px) {
+          .testimonial-selector-pill {
+            max-width: 100%;
+          }
         }
       `}</style>
     </section>
