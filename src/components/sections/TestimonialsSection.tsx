@@ -6,12 +6,53 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { testimonials, testimonialBg } from "@/lib/site-theme";
+import { testimonials as staticTestimonials, testimonialBg } from "@/lib/site-theme";
+import type { TestimonialData } from "@/lib/api";
 
 const AUTO_INTERVAL = 7000;
 const ANIM_DURATION = 700;
 
-export function TestimonialsSection() {
+// Normalise API data to the shape the component needs
+interface NormalisedTestimonial {
+  id: string;
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  rating: number;
+  accent: string;
+}
+
+function normalise(t: TestimonialData): NormalisedTestimonial {
+  return {
+    id: String(t.id),
+    quote: t.quote,
+    name: t.name,
+    role: t.designation,
+    company: t.company ?? "",
+    rating: t.rating,
+    accent: t.accent_color,
+  };
+}
+
+interface TestimonialsSectionProps {
+  data?: TestimonialData[];
+}
+
+export function TestimonialsSection({ data }: TestimonialsSectionProps) {
+  // Use API data when available, fall back to static config
+  const testimonials: NormalisedTestimonial[] = data && data.length > 0
+    ? data.map(normalise)
+    : staticTestimonials.map(t => ({
+        id: t.id,
+        quote: t.quote,
+        name: t.name,
+        role: t.role,
+        company: t.company,
+        rating: t.rating,
+        accent: t.accent,
+      }));
+
   const [active,  setActive]  = useState(0);
   const [leaving, setLeaving] = useState<number | null>(null);
   const [animKey, setAnimKey] = useState(0);
@@ -34,7 +75,7 @@ export function TestimonialsSection() {
         return prev; // goTo handles the real state update
       });
     }, AUTO_INTERVAL);
-  }, [goTo]);
+  }, [goTo, testimonials.length]);
 
   useEffect(() => {
     startAuto();
@@ -56,7 +97,7 @@ export function TestimonialsSection() {
   const activeT  = testimonials[active];
   const leavingT = leaving !== null ? testimonials[leaving] : null;
 
-  const initials = (t: typeof activeT) =>
+  const initials = (t: NormalisedTestimonial) =>
     t.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (

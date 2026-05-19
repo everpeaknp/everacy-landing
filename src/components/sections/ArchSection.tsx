@@ -10,8 +10,36 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { archSectionCards, brandColors } from "@/lib/site-theme";
+import type { ServiceCardData } from "@/lib/api";
 
-export function ArchSection() {
+interface ArchSectionProps {
+  data?: ServiceCardData[];
+}
+
+export function ArchSection({ data }: ArchSectionProps) {
+  // Normalise API data to the shape the component needs
+  const cards = data && data.length > 0
+    ? data.map(s => ({
+        id: String(s.id),
+        title: s.title,
+        description: s.description,
+        linkLabel: s.link_label,
+        linkHref: s.link_href,
+        accentColor: s.accent_color,
+        imageUrl: s.image ?? "",
+        imageAlt: s.image_alt,
+      }))
+    : archSectionCards.map(c => ({
+        id: c.id,
+        title: c.title,
+        description: c.description,
+        linkLabel: c.linkLabel,
+        linkHref: c.linkHref,
+        accentColor: c.accentColor,
+        imageUrl: c.imageUrl,
+        imageAlt: c.imageAlt,
+      }));
+
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -47,7 +75,7 @@ export function ArchSection() {
     const gsapCtx = gsap.context(() => {
       // Query elements inside context for maximum reliability
       const imgs = gsap.utils.toArray(".img-wrapper img") as HTMLImageElement[];
-      
+
       mm.add("(min-width: 769px)", () => {
         const mainTimeline = gsap.timeline({
           scrollTrigger: {
@@ -72,10 +100,10 @@ export function ArchSection() {
         });
 
         // Set initial state
-        gsap.set(imgs, { 
-          clipPath: "inset(0% 0% 0% 0%)", 
+        gsap.set(imgs, {
+          clipPath: "inset(0% 0% 0% 0%)",
           objectPosition: "0px 0%",
-          willChange: "clip-path, object-position" 
+          willChange: "clip-path, object-position"
         });
 
         imgs.forEach((_, index) => {
@@ -102,9 +130,9 @@ export function ArchSection() {
       // since they interleave as static vertical elements now in CSS flex layout.
       mm.add("(max-width: 768px)", () => {
         // Reset clipping/positioning for simple vertical flow
-        gsap.set(imgs, { 
+        gsap.set(imgs, {
           clipPath: "inset(0% 0% 0% 0%)",
-          objectPosition: "50% 50%" 
+          objectPosition: "50% 50%"
         });
 
         // Just animate the background color as we scroll past each text block
@@ -170,7 +198,7 @@ export function ArchSection() {
             className="arch__left"
             style={{ display: "flex", flexDirection: "column", minWidth: "min(300px, 100%)" }}
           >
-            {archSectionCards.map((card) => (
+            {cards.map((card) => (
               <div
                 key={card.id}
                 className="arch__info"
@@ -222,12 +250,12 @@ export function ArchSection() {
               flexDirection: "column",
             }}
           >
-            {archSectionCards.map((card, i) => {
+            {cards.map((card, i) => {
               // The top image should have the highest z-index.
               // Since the GSAP animation reveals images from top to bottom (index 0, 1, 2),
               // image 0 MUST be on top initially, image 1 below it, etc.
-              const zIndexValue = archSectionCards.length - i;
-              
+              const zIndexValue = cards.length - i;
+
               return (
                 <div
                   key={card.id}

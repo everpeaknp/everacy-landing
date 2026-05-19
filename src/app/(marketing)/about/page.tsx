@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
+import { TeamSection } from "@/components/sections/TeamSection";
+import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
+import { fetchAboutData } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = genMeta({
   title: "About",
@@ -7,10 +12,16 @@ export const metadata: Metadata = genMeta({
   canonicalPath: "/about",
 });
 
-import { TeamSection } from "@/components/sections/TeamSection";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
+export default async function AboutPage() {
+  const aboutData = await fetchAboutData();
 
-export default function AboutPage() {
+  const heroTitle = aboutData?.title ?? "Everything Starts with Elite Minds.";
+  const heroSubtitle =
+    aboutData?.subtitle ??
+    "Everacy is more than a firm — it's a collective of engineers, architects, and designers dedicated to building the future of digital infrastructure.";
+  const teamTitle = aboutData?.team_title;
+  const teamSubtitle = aboutData?.team_subtitle;
+
   return (
     <main className="relative z-[1] bg-white">
       {/* Dark Liquid About Hero */}
@@ -26,18 +37,29 @@ export default function AboutPage() {
             }}
           />
         </div>
-        
+
         <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
-                Everything Starts <br className="hidden sm:block" /> with <span className="text-[#00a6cb]">Elite Minds.</span>
-            </h1>
-            <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
-                Everacy is more than a firm — it&apos;s a collective of engineers, architects, and designers dedicated to building the future of digital infrastructure.
-            </p>
+          <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
+            {heroTitle.includes("Elite Minds") ? (
+              <>
+                Everything Starts <br className="hidden sm:block" /> with{" "}
+                <span className="text-[#00a6cb]">Elite Minds.</span>
+              </>
+            ) : (
+              heroTitle
+            )}
+          </h1>
+          <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
+            {heroSubtitle}
+          </p>
         </div>
       </section>
 
-      <TeamSection />
+      <TeamSection
+        data={aboutData?.sections}
+        headerTitle={teamTitle}
+        headerSubtitle={teamSubtitle}
+      />
     </main>
   );
 }

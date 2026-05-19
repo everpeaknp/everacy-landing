@@ -5,6 +5,9 @@ import { ArchSection } from "@/components/sections/ArchSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { ContactSection } from "@/components/sections/ContactSection";
+import { fetchHomeData } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = genMeta({
   title: "Home",
@@ -13,20 +16,24 @@ export const metadata: Metadata = genMeta({
   canonicalPath: "/",
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const homeData = await fetchHomeData();
+
   return (
     <main className="section-clip-x" style={{ position: "relative", zIndex: 1, background: "transparent" }}>
-      {/* Hero isolated — its own stacking context, overflow never bleeds into ArchSection */}
       <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
-        <Hero />
+        <Hero data={homeData?.hero} />
       </div>
-      {/* ArchSection isolated — GSAP background changes stay within this layer */}
       <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
-        <ArchSection />
+        <ArchSection data={homeData?.services} />
       </div>
-      <TestimonialsSection />
-      <ProcessSection />
-      <ContactSection />
+      <TestimonialsSection data={homeData?.testimonials} />
+      <ProcessSection
+        data={homeData?.process}
+        sectionTitle={homeData?.process_section?.title}
+        sectionSubtitle={homeData?.process_section?.subtitle}
+      />
+      <ContactSection data={homeData?.contact} />
     </main>
   );
 }

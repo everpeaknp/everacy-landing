@@ -2,8 +2,18 @@
 
 import Image from "next/image";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
+import type { HeroData } from "@/lib/api";
 
-export function Hero() {
+interface HeroProps {
+  data?: HeroData | null;
+}
+
+export function Hero({ data }: HeroProps) {
+  const tagline = data?.tagline ?? "Building Digital Experiences That Scale";
+  const heading = data?.heading ?? "Everacy";
+  const subtext = data?.subtext ?? "Engineering Tomorrow";
+  const scrollText = data?.scroll_text ?? "Scroll";
+  const logoSrc = data?.logo ?? "/logo/everacy_wo_bg.png";
   return (
     <>
       {/*
@@ -67,19 +77,20 @@ export function Hero() {
             }}
           >
             <Image
-              src="/logo/everacy_wo_bg.png"
-              alt="Everacy"
+              src={logoSrc}
+              alt={heading}
               fill
               sizes="208px"
               className="object-contain"
               priority
+              unoptimized={logoSrc.startsWith("http")}
             />
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", maxWidth: "min(760px, 94vw)" }}>
             <span className="hidden min-[360px]:block" style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)" }} />
             <span style={{ fontSize: "clamp(0.56rem, 2.2vw, 0.72rem)", letterSpacing: "clamp(0.18em, 0.7vw, 0.5em)", textTransform: "uppercase", color: "rgba(140,212,221,0.92)", lineHeight: 1.65, maxWidth: "min(74vw, 600px)" }}>
-              Building Digital Experiences That Scale
+              {tagline}
             </span>
             <span className="hidden min-[360px]:block" style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)" }} />
           </div>
@@ -94,11 +105,11 @@ export function Hero() {
             textShadow: "0 0 80px rgba(17,142,198,0.4), 0 2px 40px rgba(0,0,0,0.7)",
             margin: 0,
           }}>
-            Everacy
+            {heading}
           </h1>
 
           <p style={{ fontSize: "clamp(0.52rem, 2.1vw, 0.72rem)", letterSpacing: "clamp(0.2em, 0.8vw, 0.55em)", textTransform: "uppercase", color: "rgba(180,227,250,0.75)", fontWeight: 300, margin: 0 }}>
-            Engineering Tomorrow
+            {subtext}
           </p>
         </div>
 
@@ -125,7 +136,7 @@ export function Hero() {
             animation: "pulse 2s ease-in-out infinite",
           }} />
           <span style={{ fontSize: "8px", letterSpacing: "clamp(0.2em, 0.6vw, 0.5em)", textTransform: "uppercase", color: "rgba(140,212,221,0.35)" }}>
-            Scroll
+            {scrollText}
           </span>
         </div>
 
@@ -147,7 +158,7 @@ export function Hero() {
         >
           {/* Subtle atmospheric wave shadow/glow */}
           <div style={{ position: "absolute", bottom: "40px", left: 0, right: 0, height: "100px", background: "linear-gradient(to top, rgba(17,142,198,0.1) 0%, transparent 100%)", pointerEvents: "none" }} />
-          
+
           {/* Transparent floating layer */}
           <svg
             viewBox="0 0 1440 120"

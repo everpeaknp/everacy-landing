@@ -5,10 +5,30 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { NAV_LINKS } from "@/lib/constants";
+import type { NavbarData } from "@/lib/api";
 
 const BRAND_COLOR = "#27446e";
 
-export function Navbar() {
+interface NavbarProps {
+  data?: NavbarData | null;
+}
+
+export function Navbar({ data }: NavbarProps) {
+  // Resolve nav links: API → static fallback
+  const navLinks =
+    data?.items && data.items.length > 0
+      ? data.items.map((item) => ({ label: item.title, href: item.link }))
+      : NAV_LINKS.map((l) => ({ label: l.label, href: l.href }));
+
+  const siteName = data?.settings?.site_name ?? "Everacy";
+  const ctaText = data?.settings?.button_text ?? "Get In Touch";
+  const ctaLink = data?.settings?.button_link ?? "/contact";
+  const logoOnDark = data?.settings?.logo ?? "/logo/everacy_wo_bg.png";
+  // For the scrolled (light bg) state, always use the transparent logo —
+  // the navbar background itself provides the white backdrop.
+  // Only use scrolled_logo from admin if explicitly set.
+  const logoOnLight = data?.settings?.scrolled_logo ?? data?.settings?.logo ?? "/logo/everacy_wo_bg.png";
+
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
@@ -20,7 +40,7 @@ export function Navbar() {
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
     setScrolled(y > 20);
-    
+
     // STRICT RULE: Only transparent/dark if on homepage, projects, OR careers AND not scrolled past hero/intro.
     // Otherwise, it's ALWAYS white ('pastHero' style).
     if (isHome || isProjects || isCareers) {
@@ -87,21 +107,38 @@ export function Navbar() {
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             <div
-              className="relative"
-              style={{
-                width: 34,
-                height: 34,
-                filter: pastHero ? "none" : "drop-shadow(0 0 8px rgba(39,68,110,0.5))",
-                transition: "filter 0.3s",
-              }}
+              className="flex-shrink-0 relative overflow-hidden rounded-lg"
+              style={{ width: 35, height: 35, minWidth: 35, minHeight: 35 }}
             >
               <Image
-                src={pastHero ? "/logo/everacy_w_bg.jpeg" : "/logo/everacy_wo_bg.png"}
-                alt="Everacy logo mark"
-                fill
-                sizes="34px"
-                className="object-contain transition-opacity duration-300"
+                src={logoOnDark}
+                alt={`${siteName} logo`}
+                width={32}
+                height={32}
+                className="absolute inset-0 transition-opacity duration-300"
+                style={{
+                  width: 32,
+                  height: 32,
+                  objectFit: "contain",
+                  opacity: pastHero ? 0 : 1,
+                }}
                 priority
+                unoptimized={logoOnDark.startsWith("http")}
+              />
+              <Image
+                src={logoOnLight}
+                alt={`${siteName} logo`}
+                width={35}
+                height={35}
+                className="absolute inset-0 transition-opacity duration-300"
+                style={{
+                  width: 35,
+                  height: 35,
+                  objectFit: "cover",
+                  opacity: pastHero ? 1 : 0,
+                }}
+                priority
+                unoptimized={logoOnLight.startsWith("http")}
               />
             </div>
             <span
@@ -112,13 +149,13 @@ export function Navbar() {
                 textShadow: pastHero ? "none" : scrolled ? "none" : "0 1px 8px rgba(0,0,0,0.5)",
               }}
             >
-              Everacy
+              {siteName}
             </span>
           </Link>
 
           {/* ── Desktop nav links ── */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-            {NAV_LINKS.map(({ label, href }) => (
+            {navLinks.map(({ label, href }) => (
               <Link
                 key={href}
                 href={href}
@@ -129,7 +166,6 @@ export function Navbar() {
                 }}
               >
                 {label}
-                {/* Underline dot indicator on hover */}
                 <span
                   className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   style={{ background: BRAND_COLOR }}
@@ -139,7 +175,7 @@ export function Navbar() {
 
             {/* CTA button */}
             <Link
-              href="/contact"
+              href={ctaLink}
               className="ml-4 px-5 py-2 text-[13px] font-medium rounded-full transition-all duration-200 hover:scale-105"
               style={{
                 fontFamily: "'Montserrat', sans-serif",
@@ -148,8 +184,8 @@ export function Navbar() {
                 boxShadow: `0 4px 14px rgba(39,68,110,0.25)`,
               }}
             >
-              Get In Touch
-            </Link>
+              {ctaText}
+            </Link> 
           </nav>
 
           {/* ── Hamburger ── */}
@@ -201,7 +237,7 @@ export function Navbar() {
         <div className="flex flex-col h-full items-center justify-center gap-8 px-6"
           style={{ fontFamily: "'Montserrat', sans-serif" }}
         >
-          {NAV_LINKS.map(({ label, href }, i) => (
+          {navLinks.map(({ label, href }, i) => (
             <Link
               key={href}
               href={href}
@@ -217,7 +253,7 @@ export function Navbar() {
 
           {/* Mobile CTA */}
           <Link
-            href="/contact"
+            href={ctaLink}
             onClick={() => setMenuOpen(false)}
             className="mt-4 px-10 py-4 rounded-full text-[15px] font-semibold uppercase tracking-widest transition-all duration-200 hover:scale-105"
             style={{
@@ -227,7 +263,7 @@ export function Navbar() {
               letterSpacing: "0.2em",
             }}
           >
-            Get In Touch
+            {ctaText}
           </Link>
 
           {/* Bottom branding */}

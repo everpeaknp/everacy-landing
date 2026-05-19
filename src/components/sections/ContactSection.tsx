@@ -8,9 +8,15 @@ import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { contactConfig } from "@/lib/site-theme";
+import type { ContactPageData } from "@/lib/api";
 
-export function ContactSection() {
-  const { title, buttonLabel } = contactConfig;
+interface ContactSectionProps {
+  data?: ContactPageData | null;
+}
+
+export function ContactSection({ data }: ContactSectionProps) {
+  const title = data?.title ?? contactConfig.title;
+  const buttonLabel = data?.button_text ?? contactConfig.buttonLabel;
 
   return (
     <section className="relative z-[2] py-32 bg-white font-mont">

@@ -8,9 +8,44 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useRef } from "react";
 import { teamConfig } from "@/lib/site-theme";
 import Image from "next/image";
+import type { TeamSectionData } from "@/lib/api";
 
-export function TeamSection() {
-  const { header, members } = teamConfig;
+interface TeamSectionProps {
+  data?: TeamSectionData[];
+  headerTitle?: string;
+  headerSubtitle?: string;
+}
+
+export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionProps) {
+  // Flatten all members from all sections for the grid layout
+  const allMembers = data && data.length > 0
+    ? data.flatMap(section =>
+        section.members.map(m => ({
+          id: String(m.id),
+          name: m.name,
+          role: m.role,
+          bio: m.subtitle || "",
+          image: m.image ?? "/images/person.png",
+          links: {
+            linkedin: m.linkedin ?? undefined,
+            github: m.website ?? undefined,
+          },
+        }))
+      )
+    : teamConfig.members.map(m => ({
+        id: m.id,
+        name: m.name,
+        role: m.role,
+        bio: m.bio,
+        image: m.image,
+        links: {
+          linkedin: m.links.linkedin,
+          github: m.links.github,
+        },
+      }));
+
+  const title = headerTitle ?? teamConfig.header.title;
+  const subtitle = headerSubtitle ?? teamConfig.header.subtitle;
 
   return (
     <section className="py-24 bg-white font-mont relative z-[2] section-clip-x">
@@ -18,7 +53,7 @@ export function TeamSection() {
         {/* Section Header */}
         <header className="text-center mb-20 px-4">
           <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase tracking-tight" style={{ color: "#0d2a4a" }}>
-            {header.title}
+            {title}
           </h2>
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="h-[2px] w-12" style={{ backgroundColor: "#0d2a4a4d" }} />
@@ -26,7 +61,7 @@ export function TeamSection() {
             <div className="h-[2px] w-12" style={{ backgroundColor: "#0d2a4a4d" }} />
           </div>
           <p className="max-w-2xl mx-auto text-lg font-medium" style={{ color: "#0d2a4a" }}>
-            {header.subtitle}
+            {subtitle}
           </p>
         </header>
 
@@ -36,7 +71,7 @@ export function TeamSection() {
             Leadership
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-10">
-            {members.slice(0, 3).map((member, index) => (
+            {allMembers.slice(0, 3).map((member, index) => (
               <PremiumTeamCard key={member.id} member={member} dark={index === 1} />
             ))}
           </div>
@@ -53,7 +88,7 @@ export function TeamSection() {
             Engineering Team
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-20 gap-x-10 pt-24">
-            {members.slice(3).map((member) => (
+            {allMembers.slice(3).map((member) => (
               <TeamMemberCard key={member.id} member={member} />
             ))}
           </div>
@@ -332,7 +367,7 @@ function TeamMemberCard({ member }: { member: any }) {
       <img
         src={member.image}
         alt={member.name}
-        className="eng-card-img"
+        className="eng-card-img object-cover rounded-2xl w-full h-72 mb-6"
       />
 
       <div className="text-center w-full px-4 mt-8">
