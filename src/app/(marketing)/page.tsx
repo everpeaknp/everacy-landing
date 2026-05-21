@@ -4,7 +4,7 @@ import { Hero } from "@/components/sections/Hero";
 import { ArchSection } from "@/components/sections/ArchSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
-import { ContactSection } from "@/components/sections/ContactSection";
+import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
 import { fetchHomeData } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +33,7 @@ export default async function HomePage() {
         sectionTitle={homeData?.process_section?.title}
         sectionSubtitle={homeData?.process_section?.subtitle}
       />
-      <ContactSection data={homeData?.contact} />
+      <CTASectionComponent data={homeData?.cta} />
     </main>
   );
 }

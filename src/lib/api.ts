@@ -184,9 +184,18 @@ export interface FooterData {
   social_links: FooterSocialLinkData[];
 }
 
+export interface CTASectionData {
+  id: number;
+  heading: string;
+  button_text: string;
+  button_link: string;
+  background_image: string | null;
+}
+
 export interface HomeData {
   hero: HeroData | null;
   process_section?: { title: string; subtitle: string } | null;
+  cta: CTASectionData | null;
   navbar: NavbarData;
   services: ServiceCardData[];
   testimonials: TestimonialData[];
