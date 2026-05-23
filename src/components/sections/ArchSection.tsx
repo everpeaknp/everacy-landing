@@ -44,6 +44,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
       }));
 
   const sectionRef = useRef<HTMLElement>(null);
+  const initialBgColor = cards[0]?.backgroundColor || "#f0f9ff";
+  const finalBgColor = cards[cards.length - 1]?.backgroundColor || initialBgColor;
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -90,19 +92,22 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
             onLeave: () => {
               if (sectionRef.current) {
                 sectionRef.current.style.transition = "none";
-                sectionRef.current.style.backgroundColor = "#f0f9ff";
+                sectionRef.current.style.backgroundColor = finalBgColor;
               }
             },
             onLeaveBack: () => {
               if (sectionRef.current) {
                 sectionRef.current.style.transition = "none";
-                sectionRef.current.style.backgroundColor = "#ffffff";
+                sectionRef.current.style.backgroundColor = initialBgColor;
               }
             },
           },
         });
 
         // Set initial state
+        if (sectionRef.current) {
+          sectionRef.current.style.backgroundColor = initialBgColor;
+        }
         gsap.set(imgs, {
           clipPath: "inset(0% 0% 0% 0%)",
           objectPosition: "0px 0%",
@@ -133,6 +138,9 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
       // since they interleave as static vertical elements now in CSS flex layout.
       mm.add("(max-width: 768px)", () => {
         // Reset clipping/positioning for simple vertical flow
+        if (sectionRef.current) {
+          sectionRef.current.style.backgroundColor = initialBgColor;
+        }
         gsap.set(imgs, {
           clipPath: "inset(0% 0% 0% 0%)",
           objectPosition: "50% 50%"
@@ -172,7 +180,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
     <section
       ref={sectionRef}
       className="arch-section section-clip-x"
-      style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2, backgroundColor: "#ffffff", overflow: "visible" }}
+      style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2, backgroundColor: initialBgColor, overflow: "visible" }}
     >
       {/* Container */}
       <div style={{ maxWidth: 1440, padding: "clamp(1rem, 4vw, 2rem)", boxSizing: "border-box" }} className="mx-auto safe-mobile-block">
@@ -289,7 +297,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                     data-index={zIndexValue}
                     style={{
                     position: "absolute",
-                    top: "50%",
+                    top: "44%",
                     left: 0,
                     transform: "translateY(-50%)",
                     height: 400,
