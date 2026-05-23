@@ -79,28 +79,39 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
 
     const gsapCtx = gsap.context(() => {
       // Query elements inside context for maximum reliability
-      const imgs = gsap.utils.toArray(".img-wrapper img") as HTMLImageElement[];
+      const imgWrappers = gsap.utils.toArray(".img-wrapper") as HTMLElement[];
 
       mm.add("(min-width: 769px)", () => {
-        const mainTimeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".arch",
-            start: "top top",
-            end: "bottom bottom",
-            pin: ".arch__right",
-            scrub: true,
-            onLeave: () => {
-              if (sectionRef.current) {
-                sectionRef.current.style.transition = "none";
-                sectionRef.current.style.backgroundColor = finalBgColor;
-              }
-            },
-            onLeaveBack: () => {
-              if (sectionRef.current) {
-                sectionRef.current.style.transition = "none";
-                sectionRef.current.style.backgroundColor = initialBgColor;
-              }
-            },
+        const leftItems = gsap.utils.toArray(".arch__left .arch__info") as HTMLElement[];
+        const lastItem = leftItems[leftItems.length - 1] ?? null;
+        const fallbackScrollLength = Math.max(window.innerHeight * cards.length * 0.95, window.innerHeight * 3.5);
+
+        // 1. Pinned ScrollTrigger for the right panel & timeline height
+        ScrollTrigger.create({
+          trigger: ".arch",
+          start: "top top",
+          endTrigger: lastItem ?? ".arch",
+          end: lastItem ? "center 50%" : `+=${Math.round(fallbackScrollLength)}`, // Unpin exactly when the last card's center hits the screen center!
+          pin: ".arch__right",
+          onUpdate: (self) => {
+            // Smoothly animate vertical line progress height matching overall scroll
+            gsap.to(".services-timeline-progress", {
+              height: `${self.progress * 100}%`,
+              duration: 0.1,
+              ease: "none"
+            });
+          },
+          onLeave: () => {
+            if (sectionRef.current) {
+              sectionRef.current.style.transition = "none";
+              sectionRef.current.style.backgroundColor = finalBgColor;
+            }
+          },
+          onLeaveBack: () => {
+            if (sectionRef.current) {
+              sectionRef.current.style.transition = "none";
+              sectionRef.current.style.backgroundColor = initialBgColor;
+            }
           },
         });
 
@@ -108,43 +119,107 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
         if (sectionRef.current) {
           sectionRef.current.style.backgroundColor = initialBgColor;
         }
-        gsap.set(imgs, {
-          clipPath: "inset(0% 0% 0% 0%)",
-          objectPosition: "0px 0%",
-          willChange: "clip-path, object-position"
+
+        // Image stack zoom/fade reveals initial state
+        gsap.set(imgWrappers, {
+          scale: 0.92,
+          opacity: 0,
+          y: 40,
+          willChange: "transform, scale, opacity"
         });
 
-        imgs.forEach((_, index) => {
-          const currentImage = imgs[index];
-          const nextImage = imgs[index + 1] ?? null;
-          const sectionTimeline = gsap.timeline();
+        if (imgWrappers[0]) {
+          gsap.set(imgWrappers[0], { scale: 1, opacity: 1, y: 0 });
+        }
 
-          if (nextImage) {
-            sectionTimeline
-              .to(sectionRef.current, { backgroundColor: bgColors[index], duration: 1.5, ease: "power2.inOut" }, 0)
-              .to(currentImage, { clipPath: "inset(0% 0% 100% 0%)", objectPosition: "0px 60%", duration: 1.5, ease: "none" }, 0)
-              .to(nextImage, { objectPosition: "0px 40%", duration: 1.5, ease: "none" }, 0);
+        // Text cards focal highlight initial state
+        gsap.set(".arch__info", { opacity: 0.35, scale: 0.98 });
+        if (leftItems[0]) {
+          gsap.set(leftItems[0], { opacity: 1, scale: 1.02 });
+        }
+
+        leftItems.forEach((item, index) => {
+          const currentWrapper = imgWrappers[index];
+          if (!currentWrapper) return;
+          const nextWrapper = imgWrappers[index + 1] ?? null;
+
+          // 2. Active Text Card & Progress Dot Highlights (Fires when in viewport focal center)
+          ScrollTrigger.create({
+            trigger: item,
+            start: "top 55%",
+            end: "bottom 45%",
+            onToggle: (self) => {
+              if (self.isActive) {
+                gsap.to(item, { opacity: 1, scale: 1.02, duration: 0.4 });
+                gsap.to(`.progress-dot-${index}`, {
+                  backgroundColor: cards[index].accentColor,
+                  borderColor: "#0d2a4a",
+                  scale: 1.4,
+                  duration: 0.3
+                });
+              } else {
+                gsap.to(item, { opacity: 0.35, scale: 0.98, duration: 0.4 });
+                gsap.to(`.progress-dot-${index}`, {
+                  backgroundColor: "#e2e8f0",
+                  borderColor: "#cbd5e1",
+                  scale: 1,
+                  duration: 0.3
+                });
+              }
+            }
+          });
+
+          // 3. Image 3D Layer Stack Slide Transition (Scrubbed during focal handover to next item)
+          if (nextWrapper) {
+            const transitionTimeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: item,
+                start: "bottom 65%",
+                end: "bottom 35%",
+                scrub: true,
+              },
+            });
+
+            transitionTimeline
+              .to(sectionRef.current, { backgroundColor: bgColors[index + 1], ease: "none" }, 0)
+              .to(currentWrapper, { y: -40, scale: 0.92, opacity: 0, ease: "none" }, 0)
+              .to(nextWrapper, { y: 0, scale: 1, opacity: 1, ease: "none" }, 0);
+          } else {
+            // 4. Last Image Exit Transition: Fade out and slide upwards as last item leaves focus
+            const exitTimeline = gsap.timeline({
+              scrollTrigger: {
+                trigger: item,
+                start: "bottom 65%",
+                end: "bottom 35%",
+                scrub: true,
+              },
+            });
+
+            exitTimeline.to(currentWrapper, { 
+              y: -40,
+              scale: 0.92, 
+              opacity: 0, 
+              ease: "none" 
+            }, 0);
           }
-
-          mainTimeline.add(sectionTimeline);
         });
 
         return () => {
-          gsap.set(imgs, { clearProps: "all" });
+          // Revert handles all animated properties, leaving React inline styles completely safe!
         };
       });
 
-      // Mobile animations: disable scrubbing over clip paths, use simple scale/fade or leave static
-      // since they interleave as static vertical elements now in CSS flex layout.
+      // Mobile animations
       mm.add("(max-width: 768px)", () => {
-        // Reset clipping/positioning for simple vertical flow
         if (sectionRef.current) {
           sectionRef.current.style.backgroundColor = initialBgColor;
         }
-        gsap.set(imgs, {
+        gsap.set(imgWrappers, {
           clipPath: "inset(0% 0% 0% 0%)",
-          objectPosition: "50% 50%"
+          scale: 1,
+          opacity: 1
         });
+        gsap.set(".arch__info", { opacity: 1, scale: 1 });
 
         // Just animate the background color as we scroll past each text block
         const leftItems = gsap.utils.toArray(".arch__left .arch__info") as HTMLElement[];
@@ -163,15 +238,20 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
         });
 
         return () => {
-          gsap.set(imgs, { clearProps: "all" });
-          gsap.set(sectionRef.current, { clearProps: "backgroundColor" });
+          // Revert handles all animated properties, leaving React inline styles completely safe!
         };
       });
     }, sectionRef);
 
+    // Dynamic delay to allow Next.js route transitions and DOM adjustments to fully settle
+    const refreshTimeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
     return () => {
       window.removeEventListener("resize", onResize);
       clearTimeout(resizeTimeout);
+      clearTimeout(refreshTimeout);
       gsapCtx.revert();
     };
   }, []);
@@ -184,7 +264,6 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
     >
       {/* Container */}
       <div style={{ maxWidth: 1440, padding: "clamp(1rem, 4vw, 2rem)", boxSizing: "border-box" }} className="mx-auto safe-mobile-block">
-        {/* Keep only a tiny breathing space so hero wave blends into this section */}
         <div style={{ width: "100%", height: "clamp(0px, 1.5vh, 12px)" }} />
 
         {/* Section heading */}
@@ -210,110 +289,176 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
           </h2>
         </header>
 
-        {/*
-          .arch: flex row on desktop, flex col on mobile.
-          On mobile, .arch__left and .arch__right use display:contents
-          so their children become direct flex children of .arch,
-          allowing CSS order to interleave text + image.
-        */}
         <div
           className="arch"
           style={{
             display: "flex",
             gap: "clamp(20px, 6vw, 60px)",
             justifyContent: "space-between",
-            maxWidth: 1100,
+            maxWidth: 1200, // Expanded container to allow wider golden-ratio cards
             marginInline: "auto",
             width: "100%",
           }}
         >
-          {/* Left: scrolling text cards */}
+          {/* Left Column: Vertical Progress Timeline & Glassmorphic Service Cards */}
           <div
-            className="arch__left"
-            style={{ display: "flex", flexDirection: "column", minWidth: "min(300px, 100%)" }}
+            className="arch__left-container"
+            style={{ display: "flex", gap: "clamp(16px, 4vw, 48px)", position: "relative", width: "100%", maxWidth: 380 }} // Slender, elegant text column
           >
-            {cards.map((card) => (
+            {/* Desktop Vertical Progress Timeline */}
+            <div
+              className="services-timeline-nav"
+              style={{
+                position: "relative",
+                width: "2px", // Delicate, razor-thin progress line
+                backgroundColor: "rgba(13,26,38,0.08)",
+                borderRadius: "100px",
+                alignSelf: "stretch",
+                marginBlock: "12vh 0vh",
+              }}
+            >
+              {/* Dynamic scroll indicator fill */}
               <div
-                key={card.id}
-                className="arch__info"
-                style={{ maxWidth: 356, width: "100%", height: "clamp(460px, 68vh, 760px)", display: "grid", placeItems: "center" }}
-              >
-                <div className="safe-mobile-block">
-                  <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 42px)", fontWeight: 800, letterSpacing: "-0.02em", color: "#0d1a26", lineHeight: 1.08 }}>
-                    {card.title}
-                  </h2>
-                  <p style={{ color: "rgba(13,26,38,0.75)", fontSize: "clamp(1rem, 1.55vw, 18px)", letterSpacing: "-0.01em", marginBlock: "6px 28px", lineHeight: 1.6 }}>
-                    {card.description}
-                  </p>
-                  <Link
-                    href={card.linkHref}
-                    style={{
-                      textDecoration: "none",
-                      padding: "16px 18px",
-                      color: "#0d1a26",
-                      borderRadius: 40,
-                      display: "flex",
-                      gap: 4,
-                      width: "fit-content",
-                      alignItems: "center",
-                      backgroundColor: card.accentColor,
-                      fontSize: 14,
-                      fontWeight: 500,
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none">
-                      <path fill="#0d1a26" d="M5 2c0 1.105-1.895 2-3 2a2 2 0 1 1 0-4c1.105 0 3 .895 3 2ZM11 3.5c0 1.105-.895 3-2 3s-2-1.895-2-3a2 2 0 1 1 4 0ZM6 9a2 2 0 1 1-4 0c0-1.105.895-3 2-3s2 1.895 2 3Z" />
-                    </svg>
-                    <span>{card.linkLabel}</span>
-                  </Link>
+                className="services-timeline-progress"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "0%",
+                  backgroundColor: "#0d2a4a",
+                  borderRadius: "100px",
+                  transition: "height 0.1s ease-out",
+                }}
+              />
+              {/* Active Indicator Dots */}
+              {cards.map((card, idx) => (
+                <div
+                  key={`dot-${card.id}`}
+                  className={`progress-dot progress-dot-${idx}`}
+                  data-index={idx}
+                  style={{
+                    position: "absolute",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    top: `${(idx / (cards.length - 1)) * 100}%`,
+                    width: "10px", // Smaller, elegant dots
+                    height: "10px",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                  }}
+                />
+              ))}
+            </div>
+
+            <div
+              className="arch__left"
+              style={{ 
+                display: "flex", 
+                flexDirection: "column", 
+                width: "100%",
+                paddingTop: "12vh",
+                paddingBottom: "0vh"
+              }}
+            >
+              {cards.map((card, idx) => (
+                <div
+                  key={card.id}
+                  className="arch__info"
+                  style={{ 
+                    width: "100%", 
+                    height: "clamp(440px, 64vh, 720px)", 
+                    display: "grid", 
+                    placeItems: "center",
+                    opacity: idx === 0 ? 1 : 0.35,
+                    transform: idx === 0 ? "scale(1.02)" : "scale(0.98)",
+                  }}
+                >
+                  <div className="service-glass-card safe-mobile-block">
+                    <h2 style={{ fontSize: "clamp(1.75rem, 3.2vw, 36px)", fontWeight: 800, letterSpacing: "-0.02em", color: "#0d1a26", lineHeight: 1.15, margin: 0 }}>
+                      {card.title}
+                    </h2>
+                    <p style={{ color: "rgba(13,26,38,0.75)", fontSize: "clamp(0.95rem, 1.45vw, 16px)", letterSpacing: "-0.01em", marginBlock: "14px 28px", lineHeight: 1.6 }}>
+                      {card.description}
+                    </p>
+                    <Link
+                      href={card.linkHref}
+                      style={{
+                        textDecoration: "none",
+                        padding: "14px 24px",
+                        color: "#ffffff",
+                        borderRadius: 40,
+                        display: "flex",
+                        gap: 8,
+                        width: "fit-content",
+                        alignItems: "center",
+                        backgroundColor: "#0d2a4a",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        boxShadow: "0 4px 14px rgba(13,42,74,0.25)",
+                        transition: "all 0.2s ease",
+                      }}
+                      className="hover-scale-btn"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                      <span>{card.linkLabel}</span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* Right: stacked images (absolute positioned, z-indexed) */}
+          {/* Right Column: Stacked images (centered vertically in focal screen) */}
           <div
             className="arch__right"
             style={{
               flexShrink: 1,
               height: "100vh",
               width: "100%",
-              maxWidth: 540,
+              maxWidth: 640, // Wider column for cinematic golden-ratio widescreen display
               position: "relative",
-              display: "flex",
-              flexDirection: "column",
             }}
           >
             {cards.map((card, i) => {
-              // The top image should have the highest z-index.
-              // Since the GSAP animation reveals images from top to bottom (index 0, 1, 2),
-              // image 0 MUST be on top initially, image 1 below it, etc.
               const zIndexValue = cards.length - i;
+              const isFirst = i === 0;
 
               return (
                 <div
                   key={card.id}
-                    className="img-wrapper"
-                    data-index={zIndexValue}
-                    style={{
+                  className="img-wrapper"
+                  data-index={zIndexValue}
+                  style={{
                     position: "absolute",
-                    top: "44%",
+                    top: "50%",
                     left: 0,
                     transform: "translateY(-50%)",
-                    height: 400,
+                    opacity: isFirst ? 1 : 0,
+                    height: 400, // Cinematic widescreen height (aspect ratio ~1.6:1)
                     width: "100%",
-                      borderRadius: 16,
-                      overflow: "hidden",
-                      zIndex: zIndexValue, // Explicitly set zIndex inline for reliability
-                      boxSizing: "border-box",
-                    }}
-                  >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                    borderRadius: 28, // Soft, premium rounded corners
+                    overflow: "hidden",
+                    zIndex: zIndexValue,
+                    boxShadow: "0 20px 48px rgba(13, 42, 74, 0.12)", // Softer shadow for cleaner aesthetic
+                    border: "1px solid rgba(255,255,255,0.3)",
+                    boxSizing: "border-box",
+                    clipPath: "inset(0% 0% 0% 0%)", // Ensure initial state is 100% unclipped on load on the wrapper itself
+                  }}
+                >
                   {card.imageUrl ? (
                     <img
                       src={card.imageUrl}
                       alt={card.imageAlt}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
+                      style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "cover", 
+                        objectPosition: "center", 
+                        display: "block",
+                      }}
                     />
                   ) : (
                     <div
@@ -330,12 +475,47 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
             })}
           </div>
         </div>
-
-        {/* No bottom spacer — testimonials follows immediately */}
       </div>
 
-      {/* Responsive styles */}
+      {/* Responsive & Premium Animation Styles */}
       <style>{`
+        .service-glass-card {
+          padding: clamp(1.5rem, 2.5vw, 2.25rem);
+          border-radius: 28px; // Matching the curves of the image card
+          background: rgba(255, 255, 255, 0.45); // Lighter glass fill
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.45);
+          box-shadow: 0 10px 40px 0 rgba(13, 42, 74, 0.02); // Tonal shadow
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .service-glass-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(255, 255, 255, 0.95);
+          box-shadow: 0 12px 40px 0 rgba(13, 42, 74, 0.08);
+          background: rgba(255, 255, 255, 0.7);
+        }
+        .hover-scale-btn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 6px 20px rgba(13, 42, 74, 0.35) !important;
+          background-color: #123d6b !important;
+        }
+        .img-wrapper img:hover {
+          transform: scale(1.03);
+        }
+        .progress-dot {
+          width: 8px !important;
+          height: 8px !important;
+          background-color: #ffffff !important;
+          border: 2px solid #cbd5e1 !important;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .progress-dot.active {
+          scale: 1.6 !important;
+          border-color: #0d2a4a !important;
+          box-shadow: 0 0 12px rgba(13, 42, 74, 0.2) !important;
+        }
+
         @media (max-width: 900px) {
           .arch { gap: 30px !important; }
         }
@@ -346,14 +526,28 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
             width: 100% !important;
             max-width: 100% !important;
           }
-          .arch__left, .arch__right { display: contents !important; }
+          .arch__left-container {
+            display: contents !important;
+          }
+          .services-timeline-nav {
+            display: none !important;
+          }
+          .arch__left, .arch__right { 
+            display: contents !important; 
+          }
+          .arch__left {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+          }
           .arch__right .img-wrapper {
             position: static !important;
             transform: none !important;
+            opacity: 1 !important;
             height: clamp(220px, 58vw, 340px) !important;
             width: 100% !important;
             margin: 0 0 18px 0 !important;
-            border-radius: 12px !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 24px rgba(13, 42, 74, 0.08) !important;
           }
           .arch__left .arch__info,
           .arch__left .arch__info > div {
@@ -363,14 +557,27 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
           .arch__left .arch__info {
             height: auto !important;
             min-height: auto !important;
-            padding: 20px 0 !important;
+            padding: 10px 0 !important;
+            opacity: 1 !important;
+            transform: none !important;
+          }
+          .service-glass-card {
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: 1px solid rgba(13, 42, 74, 0.05) !important;
+            padding: 1.5rem !important;
+            box-shadow: none !important;
+          }
+          .service-glass-card:hover {
+            transform: none !important;
           }
           .arch__left .arch__info h2 {
-            font-size: clamp(2rem, 10vw, 2.5rem) !important;
-            line-height: 1.08 !important;
+            font-size: clamp(1.6rem, 8vw, 2.2rem) !important;
+            line-height: 1.15 !important;
           }
           .arch__left .arch__info p {
-            font-size: clamp(1rem, 4.3vw, 1.12rem) !important;
+            font-size: clamp(0.95rem, 4vw, 1.05rem) !important;
             line-height: 1.55 !important;
             margin-block: 10px 22px !important;
           }

@@ -30,7 +30,11 @@ export default async function HomePage() {
           sectionTitle={homeData?.services_section?.title}
         />
       </div>
-      <TestimonialsSection data={homeData?.testimonials} />
+      <TestimonialsSection 
+        data={homeData?.testimonials} 
+        sectionTitle={homeData?.testimonials_section?.title}
+        sectionSubtitle={homeData?.testimonials_section?.subtitle}
+      />
       <ProcessSection
         data={homeData?.process}
         sectionTitle={homeData?.process_section?.title}

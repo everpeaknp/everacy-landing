@@ -69,6 +69,18 @@ export interface HeroData {
   scroll_text: string;
 }
 
+export interface ServiceCapabilityData {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export interface ServicePipelineStepData {
+  step: string;
+  title: string;
+  detail: string;
+}
+
 export interface ServiceCardData {
   id: number;
   title: string;
@@ -81,6 +93,25 @@ export interface ServiceCardData {
   image_alt: string;
   layout: "left" | "right";
   order: number;
+  // Dynamic drawer fields
+  tagline: string | null;
+  cta_label: string | null;
+  capabilities: ServiceCapabilityData[] | null;
+  tech_stack: string[] | null;
+  pipeline: ServicePipelineStepData[] | null;
+}
+
+export interface ServicesPageHeroData {
+  id: number;
+  title: string;
+  subtitle: string;
+  background_image: string | null;
+  scroll_text: string | null;
+}
+
+export interface ServicesPageData {
+  hero: ServicesPageHeroData | null;
+  services: ServiceCardData[];
 }
 
 export interface TestimonialData {
@@ -90,6 +121,7 @@ export interface TestimonialData {
   company: string | null;
   quote: string;
   image: string | null;
+  company_logo: string | null;
   rating: number;
   accent_color: string;
   order: number;
@@ -197,6 +229,7 @@ export interface HomeData {
   hero: HeroData | null;
   process_section?: { title: string; subtitle: string } | null;
   services_section?: { title: string } | null;
+  testimonials_section?: { title: string; subtitle: string } | null;
   cta: CTASectionData | null;
   navbar: NavbarData;
   services: ServiceCardData[];
@@ -313,6 +346,10 @@ export async function fetchNavbar(): Promise<NavbarData | null> {
 export async function fetchServices(): Promise<ServiceCardData[]> {
   const data = await apiFetch<ServiceCardData[]>("/services/");
   return data ?? [];
+}
+
+export async function fetchServicesPage(): Promise<ServicesPageData | null> {
+  return apiFetch<ServicesPageData>("/services-page/");
 }
 
 export async function fetchTestimonials(): Promise<TestimonialData[]> {
