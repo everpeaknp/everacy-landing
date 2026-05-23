@@ -111,12 +111,12 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
   return (
     <section
       ref={sectionRef}
-      className="relative z-[2] py-24 font-mont overflow-hidden"
+      className="relative z-[2] py-12 font-mont overflow-hidden"
       style={{ background: processBg }}
     >
       <div className="max-w-5xl mx-auto px-4 md:px-6 relative">
         {/* Header */}
-        <div className="mb-24 text-center">
+        <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">
             {title}
           </h2>

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
 import { NAV_LINKS } from "@/lib/constants";
+import { archSectionCards } from "@/lib/site-theme";
+import { Layers } from "lucide-react";
 import type { NavbarData } from "@/lib/api";
 
 const BRAND_COLOR = "#27446e";
@@ -38,6 +40,9 @@ export function Navbar({ data }: NavbarProps) {
   const isCareers = pathname === "/careers";
   const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers && !isAbout && !isServices);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
+
+  const navIsLight = pastHero || servicesMenuOpen;
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
@@ -74,16 +79,17 @@ export function Navbar({ data }: NavbarProps) {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 section-clip-x"
+        className="fixed top-0 left-0 right-0 z-[100] transition-all duration-300 section-clip-x"
         style={
-          pastHero
+          navIsLight
             ? {
-                // White glass — over the light ArchSection
-                background: "rgba(255,255,255,0.88)",
+                // Keep navbar and services mega menu as a single connected layer
+                background: servicesMenuOpen ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.88)",
                 backdropFilter: "blur(24px) saturate(180%)",
                 WebkitBackdropFilter: "blur(24px) saturate(180%)",
-                borderBottom: "1px solid rgba(0,0,0,0.06)",
-                boxShadow: "0 2px 20px rgba(0,0,0,0.07)",
+                borderBottom: servicesMenuOpen ? "1px solid rgba(0,0,0,0)" : "1px solid rgba(0,0,0,0.06)",
+                boxShadow: servicesMenuOpen ? "none" : "0 2px 20px rgba(0,0,0,0.07)",
+                transitionTimingFunction: "cubic-bezier(0.2, 0.7, 0.2, 1)",
               }
             : scrolled
             ? {
@@ -109,11 +115,11 @@ export function Navbar({ data }: NavbarProps) {
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             <div
-              className={pastHero ? "relative overflow-hidden rounded-lg" : "relative"}
+              className={navIsLight ? "relative overflow-hidden rounded-lg" : "relative"}
               style={{
                 width: 34,
                 height: 34,
-                filter: pastHero ? "none" : "drop-shadow(0 0 8px rgba(39,68,110,0.5))",
+                filter: navIsLight ? "none" : "drop-shadow(0 0 8px rgba(39,68,110,0.5))",
                 transition: "filter 0.3s",
               }}
             >
@@ -123,8 +129,8 @@ export function Navbar({ data }: NavbarProps) {
                 fill
                 sizes="34px"
                 className="object-contain transition-opacity duration-300"
-                style={{ opacity: pastHero ? 0 : 1 }}
-                priority={!pastHero}
+                style={{ opacity: navIsLight ? 0 : 1 }}
+                priority={!navIsLight}
                 unoptimized={logoOnDark.startsWith("http")}
               />
               <Image
@@ -133,17 +139,17 @@ export function Navbar({ data }: NavbarProps) {
                 fill
                 sizes="34px"
                 className="object-contain transition-opacity duration-300"
-                style={{ opacity: pastHero ? 1 : 0 }}
-                priority={pastHero}
+                style={{ opacity: navIsLight ? 1 : 0 }}
+                priority={navIsLight}
                 unoptimized={logoOnLight.startsWith("http")}
               />
             </div>
             <span
               className="text-[14px] sm:text-[15px] font-extrabold tracking-[0.12em] sm:tracking-[0.18em] uppercase transition-colors duration-300"
               style={{
-                color: pastHero ? "#0d1a26" : "#ffffff",
+                color: navIsLight ? "#0d1a26" : "#ffffff",
                 letterSpacing: "clamp(0.12em, 0.8vw, 0.18em)",
-                textShadow: pastHero ? "none" : scrolled ? "none" : "0 1px 8px rgba(0,0,0,0.5)",
+                textShadow: navIsLight ? "none" : scrolled ? "none" : "0 1px 8px rgba(0,0,0,0.5)",
               }}
             >
               {siteName}
@@ -152,23 +158,90 @@ export function Navbar({ data }: NavbarProps) {
 
           {/* ── Desktop nav links ── */}
           <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-            {navLinks.map(({ label, href }) => (
-              <Link
-                key={href}
-                href={href}
-                className="relative px-4 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200 group"
-                style={{
-                  fontFamily: "'Montserrat', sans-serif",
-                  color: pastHero ? "rgba(13,26,38,0.7)" : "rgba(255,255,255,0.7)",
-                }}
-              >
-                {label}
-                <span
-                  className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                  style={{ background: BRAND_COLOR }}
-                />
-              </Link>
-            ))}
+            {navLinks.map(({ label, href }) => {
+              // Render a Services nav item with a mega menu
+              if (href === "/services" || label.toLowerCase() === "services") {
+                return (
+                  <div
+                    key={href}
+                    className="hoverable hidden md:block group"
+                    onMouseEnter={() => setServicesMenuOpen(true)}
+                    onMouseLeave={() => setServicesMenuOpen(false)}
+                  >
+                    <Link
+                      href={href}
+                      className="relative px-4 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200 block"
+                      style={{
+                        fontFamily: "'Montserrat', sans-serif",
+                        color: navIsLight ? "rgba(13,26,38,0.72)" : "rgba(255,255,255,0.7)",
+                      }}
+                    >
+                      {label}
+                    </Link>
+
+                    {/* Reset mega menu to Tailwind-style: full-width dropdown showing small image + title only */}
+                    <div className="mega-menu absolute left-0 right-0 top-[calc(100%-1px)] z-[1000] mt-0 w-full border-t border-[#e8edf2] bg-[rgba(255,255,255,0.88)] bg-clip-padding origin-top transition-all duration-200 opacity-0 scale-y-95 pointer-events-none group-hover:opacity-100 group-hover:scale-y-100 group-hover:pointer-events-auto"
+                      style={{
+                        transitionTimingFunction: "cubic-bezier(0.2, 0.7, 0.2, 1)",
+                        backdropFilter: "blur(24px) saturate(180%)",
+                        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+                        boxShadow: "0 16px 26px rgba(6,14,36,0.06)",
+                      }}
+                    >
+                      <div className="mega-inner px-6 py-5 lg:px-8">
+                        <div className="grid gap-x-10 gap-y-4 md:grid-cols-2 xl:grid-cols-4">
+                          {archSectionCards.map((c) => (
+                            <Link
+                              key={c.id}
+                              href={c.linkHref}
+                              className="flex w-full items-center gap-3 border-b border-neutral-200/70 py-2 text-neutral-700 hover:text-neutral-950 transition-colors min-h-[72px]"
+                            >
+                              <div className="shrink-0 mt-0.5">
+                                {c.imageUrl ? (
+                                  <Image
+                                    src={c.imageUrl}
+                                    alt={c.imageAlt ?? c.title}
+                                    width={36}
+                                    height={36}
+                                    className="w-9 h-9 rounded-md object-cover border border-[#d8e3ed]"
+                                    unoptimized={c.imageUrl.startsWith("http")}
+                                  />
+                                ) : (
+                                  <div className="w-9 h-9 rounded-md bg-[#e9eff7] text-[#27446e] flex items-center justify-center border border-[#d8e3ed]">
+                                    <Layers className="w-4 h-4" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="grow min-w-0">
+                                <p className="mb-0 font-semibold text-[#1f2937] leading-tight">{c.title}</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className="relative px-4 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200 group"
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    color: navIsLight ? "rgba(13,26,38,0.72)" : "rgba(255,255,255,0.7)",
+                  }}
+                >
+                  {label}
+                  <span
+                    className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    style={{ background: BRAND_COLOR }}
+                  />
+                </Link>
+              );
+            })}
 
             {/* CTA button */}
             <Link
@@ -195,14 +268,14 @@ export function Navbar({ data }: NavbarProps) {
             <span
               className="block w-5 h-[1.5px] rounded-full transition-all duration-300 origin-center"
               style={{
-                background: pastHero ? "#0d1a26" : "#fff",
+                background: navIsLight ? "#0d1a26" : "#fff",
                 transform: menuOpen ? "rotate(45deg) translateY(6.5px)" : "none",
               }}
             />
             <span
               className="block w-5 h-[1.5px] rounded-full transition-all duration-300"
               style={{
-                background: pastHero ? "#0d1a26" : "#fff",
+                background: navIsLight ? "#0d1a26" : "#fff",
                 opacity: menuOpen ? 0 : 1,
                 transform: menuOpen ? "scaleX(0)" : "none",
               }}
@@ -210,7 +283,7 @@ export function Navbar({ data }: NavbarProps) {
             <span
               className="block w-5 h-[1.5px] rounded-full transition-all duration-300 origin-center"
               style={{
-                background: pastHero ? "#0d1a26" : "#fff",
+                background: navIsLight ? "#0d1a26" : "#fff",
                 transform: menuOpen ? "rotate(-45deg) translateY(-6.5px)" : "none",
               }}
             />

@@ -1,291 +1,526 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import "./projects.css";
 import type { ProjectData, ProjectsPageHeroData } from "@/lib/api";
-
-// ── Static fallback data ──────────────────────────────────
-const STATIC_PROJECTS = [
-  {
-    name: "Yummyever",
-    description: "The #1 Restaurant OS in Nepal. IRD Approved Billing, Inventory, and KOT. Stop worrying about operations and focus on your food.",
-    accent_color: "#f97316",
-    bg: "bg-zinc-100",
-    textColor: "text-zinc-900",
-    descColor: "text-zinc-800",
-    artClass: "art-1",
-    zIndex: "z-20",
-    opacity: "",
-    bgStyle: {},
-  },
-  {
-    name: "Sikshyaever",
-    description: "The complete Learning Institute management system.",
-    accent_color: "#00a6cb",
-    bg: "bg-[#0a192f]",
-    textColor: "text-white",
-    descColor: "text-white/80",
-    artClass: "art-2",
-    zIndex: "z-30",
-    opacity: "opacity-0",
-    bgStyle: {},
-  },
-];
 
 interface ProjectsClientProps {
   pageHero?: ProjectsPageHeroData | null;
   projects?: ProjectData[];
 }
 
+type FancyItem = {
+  id: string;
+  title: string;
+  short: string;
+  image: string;
+  accentColor: string;
+  readMore: {
+    description: string;
+    techStack: string[];
+    platforms: string[];
+    challenges: string[];
+    features: string[];
+    teamMembers: string[];
+    downloadLinks: { label: string; href: string }[];
+  };
+};
+
+const FALLBACK_ITEMS: FancyItem[] = [
+  {
+    id: "p1",
+    title: "We're not afraid to rethink things",
+    short: "Enterprise architecture and cloud modernization.",
+    image: "https://assets.codepen.io/3341051/interior1.jpg",
+    accentColor: "#304949",
+    readMore: {
+      description:
+        "We design resilient platforms that balance speed, security, and maintainability with measurable delivery outcomes.",
+      techStack: ["Next.js", "TypeScript", "Django", "PostgreSQL", "Docker"],
+      platforms: ["Web", "Admin Panel"],
+      challenges: ["Legacy modernization", "Cross-team data consistency", "Scale readiness"],
+      features: ["Real-time dashboards", "Role-based access", "Automation workflows"],
+      teamMembers: ["Product Lead", "Frontend Engineer", "Backend Engineer", "QA Engineer"],
+      downloadLinks: [
+        { label: "Case Study PDF", href: "#" },
+        { label: "Product One-Pager", href: "#" },
+      ],
+    },
+  },
+  {
+    id: "p2",
+    title: "Enthusiastic creators for living environments",
+    short: "Cross-platform systems engineered for performance.",
+    image: "https://assets.codepen.io/3341051/interior2.jpg",
+    accentColor: "#954722",
+    readMore: {
+      description: "Cross-platform product system with unified UX and stable release cadence.",
+      techStack: ["Flutter", "React", "Node.js", "Redis"],
+      platforms: ["iOS", "Android", "Web"],
+      challenges: ["Offline sync", "Performance on low-end devices"],
+      features: ["Unified account system", "Smart notifications", "Analytics events"],
+      teamMembers: ["Mobile Lead", "Backend Lead", "Designer"],
+      downloadLinks: [
+        { label: "App Overview", href: "#" },
+      ],
+    },
+  },
+  {
+    id: "p3",
+    title: "Create modern yet timeless experiences",
+    short: "Design systems and interfaces that scale with products.",
+    image: "https://assets.codepen.io/3341051/interior3.jpg",
+    accentColor: "#ca4985",
+    readMore: {
+      description: "Design system and engineering alignment for long-term product consistency.",
+      techStack: ["Figma", "Next.js", "Tailwind CSS"],
+      platforms: ["Web"],
+      challenges: ["Design debt", "Inconsistent component states"],
+      features: ["Tokenized theming", "Reusable UI primitives"],
+      teamMembers: ["UI Engineer", "UX Designer"],
+      downloadLinks: [{ label: "Design System Notes", href: "#" }],
+    },
+  },
+  {
+    id: "p4",
+    title: "Ultimately, design is about being",
+    short: "Reliable delivery for mission-critical product teams.",
+    image: "https://assets.codepen.io/3341051/interior4.jpg",
+    accentColor: "#5c7450",
+    readMore: {
+      description: "Delivery-focused engagement with observability, QA, and operational discipline.",
+      techStack: ["AWS", "Kubernetes", "Prometheus", "Grafana"],
+      platforms: ["Web", "Cloud"],
+      challenges: ["Incident response time", "Deployment reliability"],
+      features: ["SLO monitoring", "Blue-green releases", "Auto rollback"],
+      teamMembers: ["SRE", "DevOps Engineer", "Tech Lead"],
+      downloadLinks: [{ label: "Operations Brief", href: "#" }],
+    },
+  },
+];
+
+function toFancyItems(projects?: ProjectData[]): FancyItem[] {
+  if (!projects || projects.length === 0) return FALLBACK_ITEMS;
+
+  const source = projects.slice(0, 4);
+  while (source.length < 4) {
+    source.push(source[source.length - 1]);
+  }
+
+  return source.map((p, idx) => {
+    const detailsText =
+      p.details && p.details.length > 0
+        ? p.details
+            .sort((a, b) => a.order - b.order)
+            .map((d) => [d.question, d.answer].filter(Boolean).join(" "))
+            .filter(Boolean)
+        : [p.description || FALLBACK_ITEMS[idx].readMore.description];
+
+    return {
+      id: `p-${p.id}`,
+      title: p.name || FALLBACK_ITEMS[idx].title,
+      short: p.description || FALLBACK_ITEMS[idx].short,
+      image:
+        p.background_image ||
+        p.hero?.background_image ||
+        p.tagline?.background_image ||
+        FALLBACK_ITEMS[idx].image,
+      accentColor: p.accent_color || FALLBACK_ITEMS[idx].accentColor,
+      readMore: {
+        description: detailsText[0] || FALLBACK_ITEMS[idx].readMore.description,
+        techStack: p.tech_stack?.length ? p.tech_stack : FALLBACK_ITEMS[idx].readMore.techStack,
+        platforms: p.platforms?.length ? p.platforms : FALLBACK_ITEMS[idx].readMore.platforms,
+        challenges: p.challenges?.length ? p.challenges : FALLBACK_ITEMS[idx].readMore.challenges,
+        features: p.features?.length ? p.features : FALLBACK_ITEMS[idx].readMore.features,
+        teamMembers:
+          p.team_composition?.length
+            ? p.team_composition
+                .filter((m) => m && m.role && Number(m.count) > 0)
+                .map((m) => `${m.count} ${m.role}`)
+            : FALLBACK_ITEMS[idx].readMore.teamMembers,
+        downloadLinks: p.visit_links?.length ? p.visit_links : FALLBACK_ITEMS[idx].readMore.downloadLinks,
+      },
+    };
+  });
+}
+
+function toFancyItemFromProject(project: ProjectData, idx: number): FancyItem {
+  const detailsText =
+    project.details && project.details.length > 0
+      ? project.details
+          .sort((a, b) => a.order - b.order)
+          .map((d) => [d.question, d.answer].filter(Boolean).join(" "))
+          .filter(Boolean)
+      : [project.description || "Digital product case study."];
+
+  return {
+    id: `all-${project.id}`,
+    title: project.name || `Project ${idx + 1}`,
+    short: project.description || "Digital Product",
+    image:
+      project.background_image ||
+      project.hero?.background_image ||
+      project.tagline?.background_image ||
+      "https://images.unsplash.com/photo-1588515724527-074a7a56616c?auto=format&fit=crop&q=80&w=1160",
+    accentColor: project.accent_color || "#304949",
+    readMore: {
+      description: detailsText[0] || "Digital product case study.",
+      techStack: project.tech_stack?.length ? project.tech_stack : ["Next.js", "TypeScript", "Django", "PostgreSQL"],
+      platforms: project.platforms?.length ? project.platforms : ["Web"],
+      challenges: project.challenges?.length ? project.challenges : ["Scalability", "Release velocity"],
+      features: project.features?.length ? project.features : ["Modular architecture", "Secure APIs"],
+      teamMembers:
+        project.team_composition?.length
+          ? project.team_composition
+              .filter((m) => m && m.role && Number(m.count) > 0)
+              .map((m) => `${m.count} ${m.role}`)
+          : ["Product Lead", "Frontend", "Backend", "QA"],
+      downloadLinks: project.visit_links?.length ? project.visit_links : [{ label: "Visit", href: "#" }],
+    },
+  };
+}
+
+function DetailSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <section style={{ marginTop: 16 }}>
+      <h4 style={{ margin: "0 0 8px 0", fontSize: 14, letterSpacing: "0.08em", textTransform: "uppercase", color: "#4b5563" }}>{label}</h4>
+      {children}
+    </section>
+  );
+}
+
+function PillList({ items }: { items: string[] }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+      {items.map((item, index) => (
+        <span
+          key={`${item}-${index}`}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 12px",
+            borderRadius: 999,
+            border: "1px solid #d8e2ef",
+            background: "#f8fbff",
+            color: "#1f3654",
+            fontSize: 14,
+            lineHeight: 1.2,
+            fontWeight: 600,
+          }}
+        >
+          <span style={{ width: 8, height: 8, borderRadius: 999, background: "#3b82f6", display: "inline-block" }} />
+          {item}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function CheckList({ items }: { items: string[] }) {
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
+      {items.map((item, index) => (
+        <li
+          key={`${item}-${index}`}
+          style={{ display: "flex", alignItems: "flex-start", gap: 10, color: "#24364f", fontSize: 15, lineHeight: 1.5 }}
+        >
+          <span
+            style={{
+              marginTop: 5,
+              width: 12,
+              height: 12,
+              borderRadius: 999,
+              border: "2px solid #1d4ed8",
+              display: "inline-block",
+              flexShrink: 0,
+            }}
+          />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const featuredProjects = useMemo(() => {
+    if (!projects || projects.length === 0) return [];
+    const featured = projects
+      .filter((p) => p.is_featured)
+      .sort((a, b) => a.order - b.order);
+    return featured.slice(0, 4);
+  }, [projects]);
 
-  // Resolve display data — gracefully handle any number of projects (1, 2, 3+)
-  const p0 = projects?.[0];
-  const p1 = projects?.[1] ?? projects?.[0]; // fall back to p0 if only 1 project
-  const p2 = projects?.[2] ?? projects?.[0]; // fall back to p0 if fewer than 3
-  const pLast = projects && projects.length > 0 ? projects[projects.length - 1] : null;
+  const items = useMemo(() => {
+    if (featuredProjects.length > 0) return toFancyItems(featuredProjects);
+    return toFancyItems(projects);
+  }, [featuredProjects, projects]);
 
-  const heroTitle = pageHero?.title ?? "Our Projects.";
-  const heroSubtitle = pageHero?.subtitle ?? "Discover the products powering the next generation of businesses. Built by Everacy.";
-  const heroLogo = pageHero?.logo ?? "/logo/everacy_wo_bg.png";
-
-  // Project 1 (art-1)
-  const art1Name = p0?.name ?? "Yummyever";
-  const art1Desc = p0?.description ?? "The #1 Restaurant OS in Nepal. IRD Approved Billing, Inventory, and KOT. Stop worrying about operations and focus on your food.";
-  const art1Color = p0?.accent_color ?? "#f97316";
-  const art1Bg = p0?.hero?.background_image ?? null;
-
-  // Project 2 (art-2)
-  const art2Name = p1?.name ?? "Sikshyaever";
-  const art2Desc = p1?.description ?? "The complete Learning Institute management system.";
-  const art2Color = p1?.accent_color ?? "#00a6cb";
-  const art2Bg = p1?.hero?.background_image ?? null;
-
-  // Project 3 (art-3) — chat/Q&A style
-  const art3Name = p2?.name ?? "Taskflow";
-  const art3Color = p2?.accent_color ?? "#8cd4dd";
-  const art3Bg = p2?.hero?.background_image ?? null;
-  // Use the project's details if available; generate Q&A pairs from description as fallback
-  const art3Details = p2?.details && p2.details.length > 0
-    ? p2.details
-    : [
-        { id: 1, question: `What is ${art3Name}?`, answer: p2?.description ?? "A powerful Project Management system.", order: 0 },
-        { id: 2, question: "Why do we need it?", answer: "To streamline workflows and accelerate delivery.", order: 1 },
-        { id: 3, question: "Let's get things done.", answer: "", order: 2 },
-      ];
-
-  // Final tagline (art-4)
-  const art4Bg = pLast?.tagline?.background_image ?? null;
-  const art4Text = pLast?.tagline?.text ?? "Everacy.\nEngineering Tomorrow.";
+  const allProjects = useMemo(() => {
+    if (!projects || projects.length === 0) return [] as ProjectData[];
+    const featuredIds = new Set(featuredProjects.map((p) => p.id));
+    const nonFeatured = projects
+      .filter((p) => !featuredIds.has(p.id))
+      .sort((a, b) => a.order - b.order);
+    if (nonFeatured.length > 0) return nonFeatured;
+    return [] as ProjectData[];
+  }, [projects, featuredProjects]);
+  const [activeImage, setActiveImage] = useState(0);
+  const [openTab, setOpenTab] = useState<number | null>(null);
+  const [openAllProject, setOpenAllProject] = useState<FancyItem | null>(null);
+  const overlayOpen = openTab !== null || openAllProject !== null;
 
   useEffect(() => {
-    if (!window.matchMedia("(min-width: 769px)").matches) {
-      return;
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevBodyPosition = body.style.position;
+    const prevBodyTop = body.style.top;
+    const prevBodyWidth = body.style.width;
+
+    if (overlayOpen) {
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      body.style.position = "fixed";
+      body.style.top = `-${scrollY}px`;
+      body.style.width = "100%";
+    } else {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      body.style.position = prevBodyPosition;
+      body.style.top = prevBodyTop;
+      body.style.width = prevBodyWidth;
     }
 
-    gsap.registerPlugin(ScrollTrigger);
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      body.style.position = prevBodyPosition;
+      body.style.top = prevBodyTop;
+      body.style.width = prevBodyWidth;
+      if (overlayOpen) {
+        window.scrollTo(0, scrollY);
+      }
+    };
+  }, [overlayOpen]);
 
-    const ctx = gsap.context(() => {
-      gsap.set(".art-1", { clipPath: "ellipse(220% 200% at 50% 300%)" });
-      gsap.set(".art-4", { clipPath: "ellipse(220% 200% at 50% 300%)" });
-
-      gsap.set(".mask-header", {
-        clipPath: "inset(0 0 0 0)",
-        mask: "linear-gradient(white 50%, transparent) 0 100% / 100% 200% no-repeat",
-      });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=1800%",
-          pin: true,
-          scrub: 1,
-        },
-      });
-
-      tl
-        .to(".sec-1 .bg-elem", { scale: 0.6, yPercent: -5, opacity: 0, borderRadius: "40px", duration: 1 })
-        .to(".sec-1 .content", { opacity: 0, yPercent: -20, duration: 1 }, "<")
-        .to(".art-1", { clipPath: "ellipse(220% 200% at 50% 175%)", duration: 1.5 }, "<0.2")
-        .to(".art-1 .mask-header", { maskPosition: "0 0", duration: 1 }, "<")
-        .to({}, { duration: 0.5 })
-        .from(".art-1 .mask-desc", { yPercent: 20, opacity: 0, duration: 1 })
-        .to({}, { duration: 2.5 })
-        .to(".art-1 .text-wrap", { filter: "blur(2rem)", opacity: 0, yPercent: -30, duration: 1 })
-        .to(".art-2", { opacity: 1, duration: 1 }, "-=0.5")
-        .to(".art-2 .mask-header", { maskPosition: "0 0", duration: 1 }, "<")
-        .to({}, { duration: 0.5 })
-        .from(".art-2 .mask-desc", { yPercent: 20, opacity: 0, duration: 1 })
-        .to({}, { duration: 2.5 })
-        .to(".art-2 .text-wrap", { filter: "blur(2rem)", opacity: 0, yPercent: -30, duration: 1 })
-        .to(".art-3", { opacity: 1, duration: 1 }, "-=0.5")
-        .from(".art-3 .taskflow-header", { yPercent: 20, opacity: 0, duration: 0.8 }, "<0.5")
-        .from(".tf-chat-1", { yPercent: 40, opacity: 0, duration: 0.8 })
-        .to({}, { duration: 0.8 })
-        .from(".tf-chat-2", { yPercent: 40, opacity: 0, duration: 0.8 })
-        .to({}, { duration: 0.8 })
-        .from(".tf-chat-3", { yPercent: 40, opacity: 0, duration: 0.8 })
-        .to({}, { duration: 0.8 })
-        .from(".tf-chat-4", { yPercent: 40, opacity: 0, duration: 0.8 })
-        .to({}, { duration: 0.8 })
-        .from(".tf-chat-5", { yPercent: 40, opacity: 0, duration: 0.8 })
-        .to({}, { duration: 2.5 })
-        .to(".art-3 .content-wrap", { opacity: 0, filter: "blur(2rem)", yPercent: -10, duration: 1 })
-        .to(".art-4", { clipPath: "ellipse(220% 200% at 50% 175%)", duration: 1.5 }, "-=0.4")
-        .to({}, { duration: 2 });
-    }, containerRef);
-
-    return () => { ctx.revert(); };
-  }, []);
+  const title = pageHero?.title || "Our Projects";
+  const allProjectsTitle = pageHero?.title || "All Projects";
+  const allProjectsSubtitle = pageHero?.subtitle || "Explore more project work beyond featured showcases.";
 
   return (
-    <main className="projects-page overflow-x-hidden bg-black text-white min-h-screen section-clip-x">
-      <div ref={containerRef} className="panel-container relative h-screen w-full">
-
-        {/* SECTION 1: HERO */}
-        <section className="projects-panel sec-1 absolute inset-0 w-full h-full z-10 flex flex-col justify-center items-center text-center p-8 bg-black">
-          <div className="bg-elem absolute inset-0 w-full h-full origin-top bg-black overflow-hidden">
-            <LiquidEffectAnimation fill="absolute" zIndex={0} />
+    <main className="projects-fancy-page section-clip-x">
+      <section className="fancy-nav" aria-label={title}>
+        <div className="fancy-nav__imgs" aria-hidden="true">
+          {items.map((item, idx) => (
             <div
-              aria-hidden="true"
-              className="absolute inset-0 pointer-events-none z-10"
-              style={{ background: "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)" }}
-            />
-          </div>
-          <div className="content relative z-20 max-w-4xl mx-auto w-full flex flex-col items-center">
-            <div className="relative w-24 h-24 md:w-32 md:h-32 mb-6 filter drop-shadow-[0_0_15px_rgba(17,142,198,0.5)]">
-              <Image src={heroLogo} alt="Everacy Logo" fill className="object-contain" />
+              key={`img-${item.id}`}
+              className="fancy-nav__img"
+              style={{ opacity: activeImage === idx ? 1 : 0 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={item.image} alt={item.title} />
             </div>
-            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-4 font-mont uppercase drop-shadow-lg">
-              {heroTitle}
-            </h1>
-            <p className="text-xl md:text-2xl max-w-md text-white/80 drop-shadow-md">{heroSubtitle}</p>
+          ))}
+        </div>
+
+        <div className="fancy-nav__list">
+          {items.map((item, idx) => (
+            <button
+              key={item.id}
+              className="fancy-nav__item"
+              type="button"
+              onMouseEnter={() => setActiveImage(idx)}
+              onFocus={() => setActiveImage(idx)}
+              onClick={() => setOpenTab(idx)}
+            >
+              <div className="fancy-nav__item-details" style={{ backgroundColor: item.accentColor }}>
+                <h3 className="fancy-nav__title">{item.title}</h3>
+                <div className="fancy-nav__description">
+                  <p>{item.short}</p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className={`fancy-nav__tabs ${openTab !== null ? "is-visible" : ""}`}>
+          {items.map((item, idx) => {
+            const isVisible = openTab === idx;
+            return (
+              <div
+                key={`tab-${item.id}`}
+                className={`fancy-nav__tab ${isVisible ? "is-visible" : ""}`}
+                style={{ backgroundColor: item.accentColor }}
+              >
+                <div className="fancy-nav__tab-container">
+                  <button
+                    type="button"
+                    className={`fancy-nav__close-btn ${isVisible ? "is-visible" : ""}`}
+                    title="Close"
+                    onClick={() => setOpenTab(null)}
+                  />
+
+                  <div className={`fancy-nav__tab-img ${isVisible ? "is-visible" : ""}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.image} alt={item.title} />
+                  </div>
+
+                  <div className={`fancy-nav__tab-description ${isVisible ? "is-visible" : ""}`}>
+                    <h3 className="fancy-nav__tab-title">{item.title}</h3>
+
+                    <div className="fancy-nav__tab-content">
+                      <DetailSection label="Description"><p>{item.readMore.description}</p></DetailSection>
+                      <DetailSection label="Tech Stack Used"><PillList items={item.readMore.techStack} /></DetailSection>
+                      <DetailSection label="Platforms Availability"><PillList items={item.readMore.platforms} /></DetailSection>
+                      <DetailSection label="Challenges"><CheckList items={item.readMore.challenges} /></DetailSection>
+                      <DetailSection label="Features"><CheckList items={item.readMore.features} /></DetailSection>
+                      <DetailSection label="Team Members"><PillList items={item.readMore.teamMembers} /></DetailSection>
+                      <DetailSection label="Links">
+                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                          {item.readMore.downloadLinks.map((dl, i) => (
+                            <a
+                              key={`${item.id}-dl-${i}`}
+                              href={dl.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                borderRadius: 999,
+                                border: "1px solid #123a68",
+                                padding: "8px 14px",
+                                color: "#123a68",
+                                fontWeight: 700,
+                                textDecoration: "none",
+                              }}
+                            >
+                              Visit
+                            </a>
+                          ))}
+                        </div>
+                      </DetailSection>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {openAllProject && (
+        <section className="fancy-nav__tabs is-visible" style={{ position: "fixed", inset: 0, zIndex: 120 }}>
+          <div className="fancy-nav__tab is-visible" style={{ backgroundColor: openAllProject.accentColor || "#304949" }}>
+            <div className="fancy-nav__tab-container">
+              <button
+                type="button"
+                className="fancy-nav__close-btn is-visible"
+                title="Close"
+                onClick={() => setOpenAllProject(null)}
+              />
+
+              <div className="fancy-nav__tab-img is-visible">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={openAllProject.image} alt={openAllProject.title} />
+              </div>
+
+              <div className="fancy-nav__tab-description is-visible">
+                <h3 className="fancy-nav__tab-title">{openAllProject.title}</h3>
+                <div className="fancy-nav__tab-content">
+                  <DetailSection label="Description"><p>{openAllProject.readMore.description}</p></DetailSection>
+                  <DetailSection label="Tech Stack Used"><PillList items={openAllProject.readMore.techStack} /></DetailSection>
+                  <DetailSection label="Platforms Availability"><PillList items={openAllProject.readMore.platforms} /></DetailSection>
+                  <DetailSection label="Challenges"><CheckList items={openAllProject.readMore.challenges} /></DetailSection>
+                  <DetailSection label="Features"><CheckList items={openAllProject.readMore.features} /></DetailSection>
+                  <DetailSection label="Team Members"><PillList items={openAllProject.readMore.teamMembers} /></DetailSection>
+                  <DetailSection label="Links">
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      {openAllProject.readMore.downloadLinks.map((dl, i) => (
+                        <a
+                          key={`all-dl-${i}`}
+                          href={dl.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            borderRadius: 999,
+                            border: "1px solid #123a68",
+                            padding: "8px 14px",
+                            color: "#123a68",
+                            fontWeight: 700,
+                            textDecoration: "none",
+                          }}
+                        >
+                          Visit
+                        </a>
+                      ))}
+                    </div>
+                  </DetailSection>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
+      )}
 
-        {/* SECTION 2: PROJECT 1 */}
-        <article
-          className="projects-panel art-1 absolute inset-0 w-full h-full z-20 flex flex-col justify-center items-center text-center p-8 border-t border-white/10"
-          style={{ backgroundColor: art1Bg ? "transparent" : "#f4f4f5" }}
-        >
-          {art1Bg && (
-            <div className="absolute inset-0 w-full h-full -z-10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="absolute inset-0 w-full h-full object-cover brightness-75" src={art1Bg} alt="" />
-            </div>
-          )}
-          <div className="content relative z-10 max-w-4xl mx-auto w-full flex flex-col justify-center items-center text-center">
-            <div className="text-wrap">
-              <div className="text-animate flex flex-col gap-6 items-center">
-                <h2
-                  className="mask-header text-5xl md:text-7xl font-bold tracking-tighter font-mont uppercase"
-                  style={{ color: art1Color }}
-                >
-                  {art1Name}.
-                </h2>
-                <p className={`mask-desc text-xl md:text-3xl font-medium max-w-2xl ${art1Bg ? "text-white/90" : "text-zinc-800"}`}>
-                  {art1Desc}
-                </p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        {/* SECTION 3: PROJECT 2 */}
-        <article
-          className="projects-panel art-2 absolute inset-0 w-full h-full z-30 flex flex-col justify-center items-center text-center p-8 opacity-0 text-white"
-          style={{ backgroundColor: art2Bg ? "transparent" : "#0a192f" }}
-        >
-          {art2Bg && (
-            <div className="absolute inset-0 w-full h-full -z-10">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="absolute inset-0 w-full h-full object-cover brightness-50" src={art2Bg} alt="" />
-            </div>
-          )}
-          <div className="content relative z-10 max-w-4xl mx-auto w-full flex flex-col justify-center items-center text-center">
-            <div className="text-wrap flex justify-center">
-              <div className="text-animate flex flex-col items-center gap-6">
-                <h2
-                  className="mask-header text-5xl md:text-7xl font-bold tracking-tighter font-mont uppercase"
-                  style={{ color: art2Color }}
-                >
-                  {art2Name}.
-                </h2>
-                <p className="mask-desc text-xl md:text-3xl font-medium max-w-2xl text-white/80">
-                  {art2Desc}
-                </p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        {/* SECTION 4: PROJECT 3 — Chat/Q&A style */}
-        <article className="projects-panel art-3 absolute inset-0 w-full h-full z-40 flex flex-col p-8 opacity-0">
-          <div className="absolute inset-0 w-full h-full -z-10 bg-black">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="absolute inset-0 w-full h-full object-cover brightness-50 saturate-50"
-              src={art3Bg ?? "https://picsum.photos/1920/1080?random=3"}
-              alt=""
-            />
-          </div>
-          <div className="content-wrap relative z-10 max-w-4xl mx-auto w-full pt-20 md:pt-32 h-full flex flex-col justify-between">
-            <h2
-              className="taskflow-header text-5xl md:text-7xl font-bold tracking-tighter font-mont uppercase"
-              style={{ color: art3Color }}
-            >
-              {art3Name}.
+      <section className="bg-white py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <header className="text-center mb-10 md:mb-12">
+            <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-black tracking-tight text-[#123a68] uppercase">
+              {allProjectsTitle}
             </h2>
-            <div className="chat-container flex-1 mt-8 w-full flex flex-col justify-center pb-12">
-              <div className="text-blocks flex flex-col gap-4 md:gap-6 ml-auto mr-0 max-w-md w-full">
-                {art3Details.slice(0, 5).map((detail, idx) => {
-                  const chatClass = `tf-chat-${idx + 1}`;
-                  const isAnswer = idx % 2 === 1;
-                  return isAnswer ? (
-                    <p
-                      key={detail.id}
-                      className={`${chatClass} bg-black/50 border border-[#00a6cb] shadow-[0_0_15px_rgba(0,166,203,0.3)] text-white p-3 md:p-4 rounded-lg self-end text-right text-lg md:text-2xl font-bold font-mont`}
-                    >
-                      {detail.answer}
-                    </p>
-                  ) : (
-                    <p
-                      key={detail.id}
-                      className={`${chatClass} bg-white/10 p-3 md:p-4 rounded-lg self-start text-lg md:text-2xl font-bold font-mont${idx === art3Details.length - 1 ? " border border-white/20" : ""}`}
-                    >
-                      {detail.question}
-                    </p>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </article>
+            <p className="mt-3 text-[#5a6b7d] text-base md:text-lg">
+              {allProjectsSubtitle}
+            </p>
+          </header>
 
-        {/* SECTION 5: FINAL TAGLINE */}
-        <article className="projects-panel art-4 absolute inset-0 w-full h-full z-50 flex flex-col justify-center items-center text-center p-8 bg-black">
-          <div className="absolute inset-0 w-full h-full -z-10 bg-black">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="absolute inset-0 w-full h-full object-cover brightness-50"
-              src={art4Bg ?? "https://picsum.photos/1920/1080?random=4"}
-              alt=""
-            />
-          </div>
-          <div className="content relative z-10 drop-shadow-xl">
-            <h2 className="text-5xl md:text-8xl font-bold tracking-tighter font-mont uppercase text-white shadow-black whitespace-pre-line">
-              {art4Text}
-            </h2>
-          </div>
-        </article>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {(allProjects.length > 0
+              ? allProjects
+              : projects && projects.length > 0
+              ? projects
+              : []
+            ).map((project, idx) => {
+              const cardImg =
+                project.background_image ||
+                project.hero?.background_image ||
+                project.tagline?.background_image ||
+                "https://images.unsplash.com/photo-1588515724527-074a7a56616c?auto=format&fit=crop&q=80&w=1160";
+              const cardDetail = toFancyItemFromProject(project, idx);
 
-      </div>
+              return (
+                <div key={`all-${project.id}`} className="block group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt={project.name}
+                    src={cardImg}
+                    className="h-56 w-full rounded-se-3xl rounded-es-3xl object-cover sm:h-64 lg:h-72 transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+
+                  <div className="mt-4 sm:flex sm:items-center sm:justify-center sm:gap-4">
+                    <strong className="font-semibold text-[#1f2937]">{project.name}</strong>
+
+                    <span className="hidden sm:block sm:h-px sm:w-8 sm:bg-[#27446e]" />
+
+                    <button
+                      type="button"
+                      onClick={() => setOpenAllProject(cardDetail)}
+                      className="mt-2 sm:mt-0 inline-flex items-center rounded-full border border-[#27446e] px-4 py-1.5 text-sm font-semibold text-[#27446e] hover:bg-[#27446e] hover:text-white transition-colors"
+                    >
+                      Read More
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

@@ -30,8 +30,8 @@ export function Hero({ data }: HeroProps) {
           zIndex: 1,
           position: "relative",
           width: "100%",
-          height: "100vh",
-          minHeight: "100dvh",
+          height: "100dvh",
+          minHeight: "100svh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -140,50 +140,7 @@ export function Hero({ data }: HeroProps) {
           </span>
         </div>
 
-        {/*
-          Premium multi-layer floating wave divider.
-          Lives inside hero, overflows downward over ArchSection (z-2).
-        */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            bottom: "clamp(-52px, -8vw, -30px)",
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            lineHeight: 0,
-            pointerEvents: "none",
-          }}
-        >
-          {/* Subtle atmospheric wave shadow/glow */}
-          <div style={{ position: "absolute", bottom: "40px", left: 0, right: 0, height: "100px", background: "linear-gradient(to top, rgba(17,142,198,0.1) 0%, transparent 100%)", pointerEvents: "none" }} />
-
-          {/* Transparent floating layer */}
-          <svg
-            viewBox="0 0 1440 120"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-            style={{ display: "block", width: "100%", height: "80px", opacity: 0.4 }}
-          >
-            <path
-              d="M0,60 C180,110 360,10 540,70 C720,130 900,20 1080,75 C1260,130 1360,55 1440,65 L1440,120 L0,120 Z"
-              fill="#ffffff"
-            />
-          </svg>
-          {/* Solid base layer */}
-          <svg
-            viewBox="0 0 1440 100"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-            style={{ display: "block", width: "100%", height: "65px", marginTop: "-30px" }}
-          >
-            <path
-              d="M0,40 C200,90 400,5 600,55 C800,105 1000,15 1200,60 C1340,90 1400,40 1440,50 L1440,100 L0,100 Z"
-              fill="#ffffff"
-            />
-          </svg>
-        </div>
+        {/* Divider removed so hero fills first viewport cleanly */}
       </section>
     </>
   );

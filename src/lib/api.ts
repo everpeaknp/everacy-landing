@@ -274,9 +274,17 @@ export interface ProjectData {
   slug: string;
   description: string | null;
   logo: string | null;
+  background_image?: string | null;
   accent_color: string;
+  tech_stack?: string[] | null;
+  platforms?: string[] | null;
+  challenges?: string[] | null;
+  features?: string[] | null;
+  team_composition?: { role: string; count: number }[] | null;
+  visit_links?: { label: string; href: string }[] | null;
   order: number;
   is_active: boolean;
+  is_featured?: boolean;
   hero: ProjectHeroData | null;
   details: ProjectDetailData[];
   tagline: ProjectTaglineData | null;

@@ -222,3 +222,165 @@ canvas {
     --b: 4px;
   }
 }
+
+/* Custom slim overlay scrollbar for horizontal service lists */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari/WebKit */
+}
+
+.services-scroll-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px; /* overlap into the tab row */
+  height: 10px;
+  margin-top: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.services-scroll-track .services-scroll-thumb {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-40%);
+  height: 6px;
+  background: rgba(18,58,104,0.98);
+  border-radius: 999px;
+  transition: transform .12s linear, opacity .15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  opacity: 0.98;
+}
+.services-scroll-track .services-scroll-thumb.hidden {
+  opacity: 0;
+}
+
+@media (min-width: 1024px) {
+  /* On desktop rely on native scrollbars; hide custom track */
+  .services-scroll-track { display: none; }
+}
+
+/* Mega menu styles */
+.mega-menu {
+  width: 100%;
+  transform-origin: top center;
+}
+.mega-menu .bg-white {
+  background-clip: padding-box;
+}
+
+@media (max-width: 767px) {
+  .mega-menu { display: none !important; }
+}
+
+/* Full-width mega menu wrapper */
+.mega-menu-wrapper {
+  display: block;
+  width: 100%;
+  transform-origin: top center;
+}
+.mega-menu-wrapper .rounded-2xl {
+  border-radius: 14px;
+}
+.mega-menu-wrapper a { text-decoration: none; }
+
+/* Converted Mega Menu styles using Tailwind @apply where possible */
+@layer components {
+  .mega-menu {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 100% !important;
+    width: 100% !important;
+    display: none;
+    z-index: 9999 !important;
+    -webkit-transform: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  /* Ensure hoverable itself does not create a new positioned context so
+     the mega menu can span the full header width. Also disable the
+     auto-injected caret so markup controls it. */
+  .hoverable {
+    position: static;
+  }
+
+  .hoverable > a::after {
+    content: none !important;
+  }
+
+  .hoverable:hover .mega-menu {
+    display: block !important;
+    z-index: 9999 !important;
+  }
+
+  /* Styling for the inner content so the dropdown visually matches the reference */
+  /* Style the deterministic inner wrapper so rules reliably apply */
+  .mega-menu .mega-inner {
+    background: #ffffff;
+    border-top: 4px solid rgba(0,0,0,0.04);
+    box-shadow: 0 12px 36px rgba(2,6,23,0.28);
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .mega-menu .mega-inner .grid {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    align-items: center;
+  }
+
+  .mega-menu a {
+    text-decoration: none !important;
+  }
+
+  /* Thumbnail sizing inside menu rows */
+  .mega-menu img {
+    width: 68px !important;
+    height: 44px !important;
+    object-fit: cover !important;
+    border-radius: 6px !important;
+  }
+
+  /* Toggleable (checkbox) helper classes */
+  .toggleable > label::after {
+    content: "\25BC";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+  }
+
+  .toggle-input {
+    @apply hidden;
+  }
+
+  .toggle-input:not(:checked) ~ .mega-menu {
+    opacity: 0;
+    visibility: hidden;
+    z-index: -900;
+  }
+
+  .toggle-input:checked ~ .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    z-index: 900;
+  }
+
+  .toggle-input:checked + label {
+    @apply text-white bg-teal-700;
+  }
+
+  .toggle-input:checked ~ label::after {
+    content: "\25B2";
+    font-size: 10px;
+    padding-left: 6px;
+    position: relative;
+    top: -1px;
+  }
+}

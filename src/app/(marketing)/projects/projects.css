@@ -1,106 +1,455 @@
-/* ─── Projects page styles ───────────────────────────────────────────────────
-   We apply scroll-snap to html/body via a class so they are valid scroll 
-   containers. All complex layout styling is now handled by Tailwind in page.tsx
-   so it naturally flows and doesn't conflict with Next.js constraints.
-──────────────────────────────────────────────────────────────────────────── */
+/* Fancy navigation block for /projects */
 
-
-
-/* Native scroll requirement: must be on html/body to work globally */
-html.projects-active {
-  scroll-snap-type: y mandatory;
+.projects-fancy-page {
+  font-family: "Montserrat", sans-serif;
 }
 
-html.projects-active footer {
-  scroll-snap-align: end;
+.fancy-nav {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  color: #393838;
+  overflow: hidden;
 }
 
-body.projects-active {
-  min-height: 100vh;
-  background: black;
-  color: hsl(0 0% 90%);
+.fancy-nav::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: "";
+  background-color: rgba(0, 0, 0, 0.55);
+  z-index: 1;
 }
 
+.fancy-nav__imgs {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
 
-.projects-page *,
-.projects-page *:after,
-.projects-page *:before {
+.fancy-nav__img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.25s linear;
+}
+
+.fancy-nav__img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fancy-nav__list {
+  position: relative;
+  display: flex;
+  height: 100%;
+  z-index: 2;
+  flex-wrap: wrap;
+}
+
+.fancy-nav__item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 25%;
+  flex-shrink: 0;
+  align-items: flex-end;
   box-sizing: border-box;
+  cursor: pointer;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0;
 }
 
-.projects-page p {
-  max-width: 40ch;
+.fancy-nav__item:not(:last-child) {
+  border-bottom: 2px solid #fff;
 }
 
-/* Ensure each section/article acts as a proper snap point for the scroll */
-.projects-page section,
-.projects-page article {
-  scroll-snap-align: start;
+.fancy-nav__item-details {
+  transition: all 0.2s linear;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  transform: translateY(110px);
 }
 
-@media (max-width: 768px) {
-  html.projects-active {
-    scroll-snap-type: none;
+.fancy-nav__title,
+.fancy-nav__tab-title {
+  margin-top: 0;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  line-height: 1.2em;
+  font-size: 1rem;
+}
+
+.fancy-nav__title {
+  color: #fff;
+}
+
+.fancy-nav__description {
+  color: #fff;
+  line-height: 1.5rem;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  transform: translateY(20px);
+  transform-origin: top center;
+}
+
+.fancy-nav__description p {
+  margin: 0;
+}
+
+.fancy-nav__item:hover .fancy-nav__item-details,
+.fancy-nav__item:focus-visible .fancy-nav__item-details {
+  transform: translateY(0);
+}
+
+.fancy-nav__item:nth-child(1):hover .fancy-nav__item-details,
+.fancy-nav__item:nth-child(1):focus-visible .fancy-nav__item-details {
+  background-color: #304949;
+}
+
+.fancy-nav__item:nth-child(2):hover .fancy-nav__item-details,
+.fancy-nav__item:nth-child(2):focus-visible .fancy-nav__item-details {
+  background-color: #954722;
+}
+
+.fancy-nav__item:nth-child(3):hover .fancy-nav__item-details,
+.fancy-nav__item:nth-child(3):focus-visible .fancy-nav__item-details {
+  background-color: #ca4985;
+}
+
+.fancy-nav__item:nth-child(4):hover .fancy-nav__item-details,
+.fancy-nav__item:nth-child(4):focus-visible .fancy-nav__item-details {
+  background-color: #5c7450;
+}
+
+.fancy-nav__item:hover .fancy-nav__description,
+.fancy-nav__item:focus-visible .fancy-nav__description {
+  transition: transform 0.2s linear 0.1s;
+  transform: translateY(0);
+}
+
+.fancy-nav__item:hover .fancy-nav__more-btn,
+.fancy-nav__item:focus-visible .fancy-nav__more-btn {
+  transition: transform 0.2s linear 0.1s;
+  transform: translateY(0);
+}
+
+.fancy-nav__tabs {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  z-index: 4;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.fancy-nav__tabs.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.fancy-nav__tab {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.fancy-nav__tab:nth-child(1) {
+  background-color: #304949;
+}
+
+.fancy-nav__tab:nth-child(2) {
+  background-color: #954722;
+}
+
+.fancy-nav__tab:nth-child(3) {
+  background-color: #ca4985;
+}
+
+.fancy-nav__tab:nth-child(4) {
+  background-color: #5c7450;
+}
+
+.fancy-nav__tab.is-visible {
+  transition: all 0.2s linear;
+  opacity: 1;
+  visibility: visible;
+}
+
+.fancy-nav__tab-container {
+  width: 100%;
+  max-width: 1220px;
+  margin: auto;
+}
+
+.fancy-nav__tab-img {
+  position: relative;
+  height: 250px;
+  margin-top: 72px;
+}
+
+.fancy-nav__tab-img::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: "";
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+.fancy-nav__tab-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fancy-nav__tab-description {
+  position: relative;
+  padding: 15px;
+  margin: auto;
+  background-color: #fff;
+  box-sizing: border-box;
+  z-index: 6;
+}
+
+.fancy-nav__tab-content {
+  line-height: 1.5rem;
+}
+
+.fancy-nav__close-btn {
+  position: fixed;
+  display: flex;
+  top: calc(env(safe-area-inset-top, 0px) + 84px);
+  right: 16px;
+  z-index: 50;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.fancy-nav__close-btn::before,
+.fancy-nav__close-btn::after {
+  position: absolute;
+  top: 0;
+  display: block;
+  width: 123%;
+  height: 3px;
+  content: "";
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.fancy-nav__close-btn::before {
+  left: 2px;
+  transform: rotate(45deg);
+  transform-origin: top left;
+}
+
+.fancy-nav__close-btn::after {
+  right: 3px;
+  transform: rotate(-45deg);
+  transform-origin: top right;
+}
+
+.fancy-nav__more-btn {
+  position: relative;
+  display: inline-flex;
+  padding: 10px 25px;
+  margin-top: 20px;
+  transform: translateY(30px);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+  border: 2px solid #fff;
+  background-color: transparent;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.fancy-nav__more-btn::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.2s linear;
+  display: block;
+  width: 100%;
+  height: 100%;
+  content: "";
+  transform: translateZ(0) scaleY(0);
+  transform-origin: bottom center;
+  background-color: #fff;
+  z-index: -1;
+}
+
+.fancy-nav__more-btn:hover {
+  color: #393838;
+}
+
+.fancy-nav__more-btn:hover::after {
+  transform: translateZ(0) scaleY(1);
+}
+
+@media (min-width: 750px) {
+  .fancy-nav__item {
+    width: 50%;
+    height: 50%;
   }
 
-  .projects-page .panel-container {
-    height: auto !important;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
+  .fancy-nav__item:not(:nth-child(2n)) {
+    border-right: 2px solid #fff;
   }
 
-  .projects-page .projects-panel {
-    position: relative !important;
-    inset: auto !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 100svh;
-    opacity: 1 !important;
-    clip-path: none !important;
-    transform: none !important;
-    filter: none !important;
-    padding: 5rem 1.25rem !important;
+  .fancy-nav__item:last-child,
+  .fancy-nav__item:nth-last-child(-n + 2) {
+    border-bottom: none;
   }
 
-  .projects-page .art-3 {
-    padding-inline: 1rem !important;
+  .fancy-nav__item-details {
+    transform: translateY(145px);
   }
 
-  .projects-page .sec-1 .bg-elem {
-    transform: none !important;
-    opacity: 1 !important;
-    border-radius: 0 !important;
+  .fancy-nav__title {
+    line-height: 2rem;
+    font-size: 1.17rem;
   }
 
-  .projects-page .content-wrap,
-  .projects-page .content,
-  .projects-page .text-wrap {
-    max-width: 100% !important;
-    width: 100% !important;
+  .fancy-nav__description {
+    min-height: 48px;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
-  .projects-page .mask-header {
-    clip-path: none !important;
-    mask: none !important;
+  .fancy-nav__tab-description {
+    width: 90%;
+    padding: 25px;
+    transform: translateY(-40px);
   }
 
-  .projects-page .text-blocks {
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  .fancy-nav__tab-description.is-visible {
+    transition: all 0.2s linear 0.4s;
+    transform: translateY(-80px);
+    opacity: 1;
+    visibility: visible;
   }
 
-  .projects-page h1,
-  .projects-page h2 {
-    font-size: clamp(2.1rem, 10vw, 3.8rem) !important;
-    line-height: 1.05 !important;
-    overflow-wrap: anywhere;
+  .fancy-nav__tab-img {
+    height: 400px;
+    margin-top: 88px;
+    transform: scale(0.7);
+    opacity: 0;
   }
 
-  .projects-page p {
-    font-size: clamp(1rem, 4.4vw, 1.35rem) !important;
-    max-width: 100% !important;
-    overflow-wrap: anywhere;
+  .fancy-nav__tab-img.is-visible {
+    transition: all 0.2s linear 0.2s;
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .fancy-nav__tab-title {
+    font-size: 1.5rem;
+  }
+
+  .fancy-nav__tab {
+    padding: 25px;
+  }
+
+  .fancy-nav__close-btn {
+    width: 30px;
+    height: 30px;
+    top: calc(env(safe-area-inset-top, 0px) + 92px);
+    right: 24px;
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+
+  .fancy-nav__close-btn::before,
+  .fancy-nav__close-btn::after {
+    width: 130%;
+    height: 5px;
+  }
+
+  .fancy-nav__close-btn::before {
+    left: 3px;
+  }
+
+  .fancy-nav__close-btn.is-visible {
+    transition: all 0.2s linear 0.2s;
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (min-width: 1400px) {
+  .fancy-nav__item {
+    width: 25%;
+    height: 100%;
+  }
+
+  .fancy-nav__item:not(:last-child) {
+    border-right: 2px solid #fff;
+  }
+
+  .fancy-nav__item:not(:nth-last-child(-n + 2)) {
+    border-bottom: none;
+  }
+
+  .fancy-nav__item-details {
+    padding: 40px;
+  }
+
+  .fancy-nav__tab-title {
+    font-size: 2rem;
+  }
+
+  .fancy-nav__tab {
+    padding: 40px;
+  }
+
+  .fancy-nav__close-btn {
+    top: calc(env(safe-area-inset-top, 0px) + 100px);
+    right: 40px;
+  }
+
+  .fancy-nav__tab-description {
+    padding: 40px;
   }
 }

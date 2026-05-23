@@ -197,7 +197,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
       className="relative z-[3] overflow-hidden"
       style={{ 
         background: `radial-gradient(circle at 50% 50%, #ffffff 0%, ${testimonialBg} 100%)`, 
-        paddingBlock: "clamp(6.5rem, 11vw, 11rem)" 
+        paddingBlock: "clamp(2.5rem, 6vw, 5rem)" 
       }}
     >
       {/* Subtle, ambient background radial aura matching the active branding accent */}
@@ -212,7 +212,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
       <div className="w-full max-w-6xl mx-auto px-6 relative z-10 flex flex-col items-center">
         
         {/* Subtle, Ultra-Elegant Muted Tagline */}
-        <div className="text-center mb-10 select-none">
+        <div className="text-center mb-4 select-none">
           <span 
             className="text-[10px] md:text-[11px] font-extrabold uppercase tracking-[0.25em] transition-colors duration-500"
             style={{ color: `${activeT.accent}cc` }}
@@ -223,7 +223,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
 
         {/* Minimalist Vector Logo Row (strictly aligned in a single line, same container heights) */}
         <div 
-          className="flex flex-row flex-nowrap justify-start md:justify-center items-center gap-x-6 md:gap-x-12 mb-14 w-full select-none overflow-x-auto scrollbar-none scroll-smooth pb-3"
+          className="flex flex-row flex-nowrap justify-start md:justify-center items-center gap-x-6 md:gap-x-12 mb-5 w-full select-none overflow-x-auto scrollbar-none scroll-smooth pb-3"
         >
           {testimonials.map((item, idx) => {
             const isActive = active === idx;
