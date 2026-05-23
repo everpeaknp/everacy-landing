@@ -223,7 +223,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
 
         {/* Minimalist Vector Logo Row (strictly aligned in a single line, same container heights) */}
         <div 
-          className="flex flex-row flex-nowrap justify-start md:justify-center items-center gap-x-6 md:gap-x-12 mb-5 w-full select-none overflow-x-auto scrollbar-none scroll-smooth pb-3"
+          className="flex flex-row flex-nowrap justify-start md:justify-center items-center gap-x-4 md:gap-x-7 mb-5 w-full select-none overflow-x-auto scrollbar-none scroll-smooth pb-3"
         >
           {testimonials.map((item, idx) => {
             const isActive = active === idx;
@@ -237,8 +237,8 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                     : "text-slate-400 opacity-40 hover:opacity-75"
                 }`}
                 style={{
-                  height: "36px", // Strict same-height boundary box for perfect alignment
-                  minWidth: "110px", // Standard min-width for balanced layout spacing
+                  height: "52px", // Strict same-height boundary box for perfect alignment
+                  minWidth: "144px", // Standard min-width for balanced layout spacing
                 }}
                 aria-label={`View testimonial from ${item.company}`}
               >
@@ -246,7 +246,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                   <img 
                     src={item.companyLogo} 
                     alt={item.company} 
-                    className="h-full w-auto object-contain max-h-[22px] transition-all"
+                    className="h-full w-auto object-contain max-h-[38px] transition-all"
                     style={{ filter: isActive ? "none" : "grayscale(100%) opacity(40%)" }}
                     loading="lazy"
                   />
