@@ -76,6 +76,7 @@ export interface ServiceCardData {
   link_label: string;
   link_href: string;
   accent_color: string;
+  background_color: string;
   image: string | null;
   image_alt: string;
   layout: "left" | "right";
@@ -195,6 +196,7 @@ export interface CTASectionData {
 export interface HomeData {
   hero: HeroData | null;
   process_section?: { title: string; subtitle: string } | null;
+  services_section?: { title: string } | null;
   cta: CTASectionData | null;
   navbar: NavbarData;
   services: ServiceCardData[];

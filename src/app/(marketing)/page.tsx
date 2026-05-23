@@ -25,7 +25,10 @@ export default async function HomePage() {
         <Hero data={homeData?.hero} />
       </div>
       <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
-        <ArchSection data={homeData?.services} />
+        <ArchSection
+          data={homeData?.services}
+          sectionTitle={homeData?.services_section?.title}
+        />
       </div>
       <TestimonialsSection data={homeData?.testimonials} />
       <ProcessSection

@@ -14,9 +14,10 @@ import type { ServiceCardData } from "@/lib/api";
 
 interface ArchSectionProps {
   data?: ServiceCardData[];
+  sectionTitle?: string;
 }
 
-export function ArchSection({ data }: ArchSectionProps) {
+export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   // Normalise API data to the shape the component needs
   const cards = data && data.length > 0
     ? data.map(s => ({
@@ -26,6 +27,7 @@ export function ArchSection({ data }: ArchSectionProps) {
         linkLabel: s.link_label,
         linkHref: s.link_href,
         accentColor: s.accent_color,
+        backgroundColor: s.background_color || "#f0f9ff",
         imageUrl: s.image ?? archSectionCards[s.order]?.imageUrl ?? null,
         imageAlt: s.image_alt || archSectionCards[s.order]?.imageAlt || s.title,
       }))
@@ -36,6 +38,7 @@ export function ArchSection({ data }: ArchSectionProps) {
         linkLabel: c.linkLabel,
         linkHref: c.linkHref,
         accentColor: c.accentColor,
+        backgroundColor: "#f0f9ff",
         imageUrl: c.imageUrl,
         imageAlt: c.imageAlt,
       }));
@@ -69,7 +72,7 @@ export function ArchSection({ data }: ArchSectionProps) {
     handleMobileLayout();
 
     // ── GSAP animations ──────────────────────────────
-    const bgColors = brandColors.archBgColors as readonly string[];
+    const bgColors = cards.map((card, index) => card.backgroundColor || brandColors.archBgColors[index] || "#f0f9ff");
     const mm = gsap.matchMedia();
 
     const gsapCtx = gsap.context(() => {
@@ -169,12 +172,35 @@ export function ArchSection({ data }: ArchSectionProps) {
     <section
       ref={sectionRef}
       className="arch-section section-clip-x"
-      style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2, backgroundColor: "#ffffff" }}
+      style={{ fontFamily: "'Montserrat', sans-serif", position: "relative", zIndex: 2, backgroundColor: "#ffffff", overflow: "visible" }}
     >
       {/* Container */}
       <div style={{ maxWidth: 1440, padding: "clamp(1rem, 4vw, 2rem)", boxSizing: "border-box" }} className="mx-auto safe-mobile-block">
-        {/* Top spacer */}
-        <div style={{ width: "100%", height: "8vh" }} />
+        {/* Keep only a tiny breathing space so hero wave blends into this section */}
+        <div style={{ width: "100%", height: "clamp(0px, 1.5vh, 12px)" }} />
+
+        {/* Section heading */}
+        <header
+          style={{
+            textAlign: "center",
+            margin: "0 auto clamp(1.25rem, 3.5vw, 2.25rem)",
+            maxWidth: 900,
+          }}
+        >
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "clamp(1.9rem, 4.2vw, 3.1rem)",
+              lineHeight: 1.08,
+              fontWeight: 900,
+              textTransform: "uppercase",
+              letterSpacing: "0.03em",
+              color: "#0d2a4a",
+            }}
+          >
+            {sectionTitle || "Our Services"}
+          </h2>
+        </header>
 
         {/*
           .arch: flex row on desktop, flex col on mobile.
@@ -202,7 +228,7 @@ export function ArchSection({ data }: ArchSectionProps) {
               <div
                 key={card.id}
                 className="arch__info"
-                style={{ maxWidth: 356, width: "100%", height: "100vh", display: "grid", placeItems: "center" }}
+                style={{ maxWidth: 356, width: "100%", height: "clamp(460px, 68vh, 760px)", display: "grid", placeItems: "center" }}
               >
                 <div className="safe-mobile-block">
                   <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 42px)", fontWeight: 800, letterSpacing: "-0.02em", color: "#0d1a26", lineHeight: 1.08 }}>
