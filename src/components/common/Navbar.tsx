@@ -32,9 +32,10 @@ export function Navbar({ data }: NavbarProps) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  const isAbout = pathname === "/about";
   const isProjects = pathname === "/projects";
   const isCareers = pathname === "/careers";
-  const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers);
+  const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers && !isAbout);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleScroll = useCallback(() => {
@@ -43,12 +44,12 @@ export function Navbar({ data }: NavbarProps) {
 
     // STRICT RULE: Only transparent/dark if on homepage, projects, OR careers AND not scrolled past hero/intro.
     // Otherwise, it's ALWAYS white ('pastHero' style).
-    if (isHome || isProjects || isCareers) {
+    if (isHome || isProjects || isCareers || isAbout) {
       setPastHero(y > window.innerHeight * 0.85);
     } else {
       setPastHero(true);
     }
-  }, [isHome, isProjects, isCareers]);
+  }, [isHome, isProjects, isCareers, isAbout]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -107,37 +108,32 @@ export function Navbar({ data }: NavbarProps) {
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             <div
-              className="flex-shrink-0 relative overflow-hidden rounded-lg"
-              style={{ width: 35, height: 35, minWidth: 35, minHeight: 35 }}
+              className={pastHero ? "relative overflow-hidden rounded-lg" : "relative"}
+              style={{
+                width: 34,
+                height: 34,
+                filter: pastHero ? "none" : "drop-shadow(0 0 8px rgba(39,68,110,0.5))",
+                transition: "filter 0.3s",
+              }}
             >
               <Image
                 src={logoOnDark}
                 alt={`${siteName} logo`}
-                width={32}
-                height={32}
-                className="absolute inset-0 transition-opacity duration-300"
-                style={{
-                  width: 32,
-                  height: 32,
-                  objectFit: "contain",
-                  opacity: pastHero ? 0 : 1,
-                }}
-                priority
+                fill
+                sizes="34px"
+                className="object-contain transition-opacity duration-300"
+                style={{ opacity: pastHero ? 0 : 1 }}
+                priority={!pastHero}
                 unoptimized={logoOnDark.startsWith("http")}
               />
               <Image
                 src={logoOnLight}
                 alt={`${siteName} logo`}
-                width={35}
-                height={35}
-                className="absolute inset-0 transition-opacity duration-300"
-                style={{
-                  width: 35,
-                  height: 35,
-                  objectFit: "cover",
-                  opacity: pastHero ? 1 : 0,
-                }}
-                priority
+                fill
+                sizes="34px"
+                className="object-contain transition-opacity duration-300"
+                style={{ opacity: pastHero ? 1 : 0 }}
+                priority={pastHero}
                 unoptimized={logoOnLight.startsWith("http")}
               />
             </div>

@@ -26,8 +26,8 @@ export function ArchSection({ data }: ArchSectionProps) {
         linkLabel: s.link_label,
         linkHref: s.link_href,
         accentColor: s.accent_color,
-        imageUrl: s.image ?? "",
-        imageAlt: s.image_alt,
+        imageUrl: s.image ?? archSectionCards[s.order]?.imageUrl ?? null,
+        imageAlt: s.image_alt || archSectionCards[s.order]?.imageAlt || s.title,
       }))
     : archSectionCards.map(c => ({
         id: c.id,
@@ -275,11 +275,22 @@ export function ArchSection({ data }: ArchSectionProps) {
                     }}
                   >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={card.imageUrl}
-                    alt={card.imageAlt}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
-                  />
+                  {card.imageUrl ? (
+                    <img
+                      src={card.imageUrl}
+                      alt={card.imageAlt}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
+                    />
+                  ) : (
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        background: `linear-gradient(135deg, ${card.accentColor} 0%, rgba(255,255,255,0.08) 100%)`,
+                      }}
+                    />
+                  )}
                 </div>
               );
             })}

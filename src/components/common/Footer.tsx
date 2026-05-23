@@ -90,10 +90,10 @@ export function Footer({ data }: FooterProps) {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "55%",
-          maxWidth: "650px",
+          width: "60%",
+          maxWidth: "800px",
           aspectRatio: "1/1",
-          opacity: 0.05,
+          opacity: 0.04,
           zIndex: -1,
           pointerEvents: "none",
         }}
@@ -114,7 +114,7 @@ export function Footer({ data }: FooterProps) {
           {/* Brand */}
           <div className="flex flex-col gap-6 md:gap-8">
             <div className="flex items-center gap-4">
-              <div className="relative w-8 h-8">
+              <div className="relative w-8 h-8 filter drop-shadow(0 0 12px rgba(17,142,198,0.5))">
                 <Image
                   src={logoSrc}
                   alt={companyName}
