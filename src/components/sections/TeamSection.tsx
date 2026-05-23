@@ -4,8 +4,8 @@
    ───────────────────────────────────────────────────────── */
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useState, useRef } from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import { teamConfig } from "@/lib/site-theme";
 import Image from "next/image";
 import type { TeamSectionData } from "@/lib/api";
@@ -17,10 +17,11 @@ interface TeamSectionProps {
 }
 
 export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionProps) {
-  // Flatten all members from all sections for the grid layout
-  const allMembers = data && data.length > 0
-    ? data.flatMap(section =>
-        section.members.map(m => ({
+  const sections = data && data.length > 0
+    ? data.map(section => ({
+        id: String(section.id),
+        title: section.title,
+        members: section.members.map(m => ({
           id: String(m.id),
           name: m.name,
           role: m.role,
@@ -30,19 +31,40 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
             linkedin: m.linkedin ?? undefined,
             github: m.website ?? undefined,
           },
-        }))
-      )
-    : teamConfig.members.map(m => ({
-        id: m.id,
-        name: m.name,
-        role: m.role,
-        bio: m.bio,
-        image: m.image,
-        links: {
-          linkedin: m.links.linkedin,
-          github: m.links.github,
+        })),
+      }))
+    : [
+        {
+          id: "leadership",
+          title: "Leadership",
+          members: teamConfig.members.slice(0, 3).map(m => ({
+            id: m.id,
+            name: m.name,
+            role: m.role,
+            bio: m.bio,
+            image: m.image,
+            links: {
+              linkedin: m.links.linkedin,
+              github: m.links.github,
+            },
+          })),
         },
-      }));
+        {
+          id: "engineering-team",
+          title: "Engineering Team",
+          members: teamConfig.members.slice(3).map(m => ({
+            id: m.id,
+            name: m.name,
+            role: m.role,
+            bio: m.bio,
+            image: m.image,
+            links: {
+              linkedin: m.links.linkedin,
+              github: m.links.github,
+            },
+          })),
+        },
+      ];
 
   const title = headerTitle ?? teamConfig.header.title;
   const subtitle = headerSubtitle ?? teamConfig.header.subtitle;
@@ -65,34 +87,40 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
           </p>
         </header>
 
-        {/* Leadership Section */}
-        <div className="mb-20">
-          <h3 className="text-2xl font-bold mb-10 text-center uppercase tracking-widest opacity-60" style={{ color: "#0d2a4a" }}>
-            Leadership
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-10">
-            {allMembers.slice(0, 3).map((member, index) => (
-              <PremiumTeamCard key={member.id} member={member} dark={index === 1} />
-            ))}
-          </div>
-        </div>
+        {sections.map((section, sectionIndex) => {
+          const isLeadership = section.title.toLowerCase().includes("leadership");
 
-        {/* Divider */}
-        <div className="flex items-center justify-center mb-24 opacity-20">
-          <div className="h-[1px] w-full max-w-4xl bg-[#0d2a4a]" />
-        </div>
+          return (
+            <div key={section.id} className={sectionIndex === sections.length - 1 ? "" : "mb-20"}>
+              {sectionIndex > 0 && (
+                <div className="flex items-center justify-center mb-24 opacity-20">
+                  <div className="h-[1px] w-full max-w-4xl bg-[#0d2a4a]" />
+                </div>
+              )}
 
-        {/* Engineering Team Section */}
-        <div>
-          <h3 className="text-2xl font-bold mb-16 text-center uppercase tracking-widest opacity-60" style={{ color: "#0d2a4a" }}>
-            Engineering Team
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-20 gap-x-10 pt-24">
-            {allMembers.slice(3).map((member) => (
-              <TeamMemberCard key={member.id} member={member} />
-            ))}
-          </div>
-        </div>
+              <h3
+                className={`text-2xl font-bold text-center uppercase tracking-widest opacity-60 ${isLeadership ? "mb-10" : "mb-10"}`}
+                style={{ color: "#0d2a4a" }}
+              >
+                {section.title}
+              </h3>
+
+              <div
+                className={
+                  isLeadership
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-10"
+                    : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-20 gap-x-10 pt-8"
+                }
+              >
+                {section.members.map((member, memberIndex) => (
+                  isLeadership
+                    ? <PremiumTeamCard key={member.id} member={member} dark={memberIndex === 1} />
+                    : <TeamMemberCard key={member.id} member={member} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <style jsx global>{`
@@ -132,7 +160,7 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
           z-index: 10;
         }
 
-        .morph-card > img {
+        .morph-card .morph-card-img {
           position: absolute;
           inset: 0;
           width: 100%;
@@ -262,8 +290,8 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
           opacity: 1;
         }
 
-        .morph-card:hover > img,
-        .morph-card:focus-within > img {
+        .morph-card:hover .morph-card-img,
+        .morph-card:focus-within .morph-card-img {
           transform: scale(1.06);
           object-position: 50% 15%;
         }
@@ -290,7 +318,13 @@ function PremiumTeamCard({ member, dark = false }: { member: any; dark?: boolean
 
   return (
     <div className={`morph-card ${dark ? "dark" : ""}`}>
-      <img src={member.image} alt={member.name} />
+      <Image
+        src={member.image}
+        alt={member.name}
+        fill
+        sizes="(max-width: 768px) 19rem, 20rem"
+        className="morph-card-img"
+      />
       <section>
         <h2>{member.name}</h2>
         <div className="card-expand">
@@ -364,10 +398,13 @@ function PremiumTeamCard({ member, dark = false }: { member: any; dark?: boolean
 function TeamMemberCard({ member }: { member: any }) {
   return (
     <div className="flex flex-col items-center">
-      <img
+      <Image
         src={member.image}
         alt={member.name}
-        className="eng-card-img object-cover rounded-2xl w-full h-72 mb-6"
+        width={560}
+        height={560}
+        sizes="(max-width: 360px) 228px, (max-width: 768px) 280px, 280px"
+        className="eng-card-img object-cover rounded-2xl mb-6"
       />
 
       <div className="text-center w-full px-4 mt-8">
