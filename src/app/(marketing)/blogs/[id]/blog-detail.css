@@ -1,0 +1,305 @@
+/* ── Blog Detail Page ─────────────────────────────────────── */
+
+.blog-detail-page {
+  background: #f0f3f8;
+  min-height: 100vh;
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+.blog-detail-hero {
+  position: relative;
+  min-height: 62vh;
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center;
+  padding-bottom: 56px;
+}
+
+.blog-detail-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 12, 28, 0.25) 0%,
+    rgba(6, 12, 28, 0.65) 45%,
+    rgba(6, 12, 28, 0.93) 100%
+  );
+  z-index: 1;
+}
+
+.blog-detail-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px;
+  width: 100%;
+}
+
+.blog-detail-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  transition: color 0.2s ease;
+}
+
+.blog-detail-back-btn:hover {
+  color: #9cc9e3;
+}
+
+.blog-detail-title {
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: clamp(2rem, 6vw, 3.8rem);
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  line-height: 1.08;
+  margin: 0 0 16px 0;
+}
+
+.blog-detail-intro {
+  font-family: "Georgia", serif;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgba(255, 255, 255, 0.78);
+  font-style: italic;
+  line-height: 1.65;
+  margin: 0 0 18px 0;
+  max-width: 680px;
+}
+
+.blog-detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9cc9e3;
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.blog-detail-meta-dot {
+  opacity: 0.45;
+}
+
+/* ── Two-column layout ───────────────────────────────────── */
+.blog-detail-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 28px 80px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ── Main Article ────────────────────────────────────────── */
+.blog-detail-article {
+  min-width: 0;
+}
+
+.blog-detail-content {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 28px rgba(18, 58, 104, 0.08);
+  padding: 40px 44px;
+  color: #24364f;
+  font-size: clamp(1rem, 1.3vw, 1.08rem);
+  line-height: 1.9;
+  font-family: "Georgia", serif;
+}
+
+.blog-detail-content p {
+  margin: 0 0 1.6em 0;
+}
+
+.blog-detail-content p:last-child {
+  margin-bottom: 0;
+}
+
+.blog-detail-footer-link {
+  margin-top: 28px;
+  display: flex;
+}
+
+.blog-detail-all-posts-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #123a68;
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1.5px solid #123a68;
+  border-radius: 999px;
+  padding: 10px 22px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.blog-detail-all-posts-btn:hover {
+  background: #123a68;
+  color: #fff;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.blog-detail-sidebar {
+  position: sticky;
+  top: 100px;
+}
+
+.blog-sidebar-heading {
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5b6b7d;
+  margin: 0 0 16px 2px;
+}
+
+.blog-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.blog-sidebar-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 14px rgba(18, 58, 104, 0.07);
+  text-decoration: none;
+  overflow: hidden;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.blog-sidebar-card:hover {
+  box-shadow: 0 6px 28px rgba(18, 58, 104, 0.15);
+  transform: translateY(-2px);
+}
+
+.blog-sidebar-card-img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.blog-sidebar-card-body {
+  padding: 12px 14px 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.blog-sidebar-card-title {
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #123a68;
+  text-transform: uppercase;
+  line-height: 1.25;
+  margin: 0;
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-sidebar-card-intro {
+  font-family: "Georgia", serif;
+  font-size: 12px;
+  font-style: italic;
+  color: #5b6b7d;
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-sidebar-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #9cc9e3;
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+/* ── Not found ───────────────────────────────────────────── */
+.blog-detail-not-found {
+  max-width: 600px;
+  margin: 180px auto 0;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.blog-detail-not-found h1 {
+  font-family: var(--font-mont), "Montserrat", sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #123a68;
+  margin-bottom: 24px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .blog-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 36px 20px 64px;
+  }
+
+  .blog-detail-sidebar {
+    position: static;
+  }
+
+  /* On small screens show sidebar posts in a row */
+  .blog-sidebar-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .blog-sidebar-card {
+    flex: 1 1 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  .blog-detail-hero {
+    min-height: 55vh;
+    padding-bottom: 40px;
+  }
+
+  .blog-detail-content {
+    padding: 24px 20px;
+  }
+
+  .blog-sidebar-card {
+    flex: 1 1 100%;
+  }
+}

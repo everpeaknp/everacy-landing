@@ -4,6 +4,7 @@ import { Hero } from "@/components/sections/Hero";
 import { ArchSection } from "@/components/sections/ArchSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
+import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
 import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
 import { fetchHomeData } from "@/lib/api";
 
@@ -39,6 +40,11 @@ export default async function HomePage() {
         data={homeData?.process}
         sectionTitle={homeData?.process_section?.title}
         sectionSubtitle={homeData?.process_section?.subtitle}
+      />
+      <FeaturedBlogs 
+        posts={homeData?.featured_blogs} 
+        sectionTitle={homeData?.featured_blogs_section?.title}
+        sectionSubtitle={homeData?.featured_blogs_section?.subtitle}
       />
       <CTASectionComponent data={homeData?.cta} />
     </main>

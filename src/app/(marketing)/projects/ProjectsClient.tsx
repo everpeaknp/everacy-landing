@@ -103,9 +103,6 @@ function toFancyItems(projects?: ProjectData[]): FancyItem[] {
   if (!projects || projects.length === 0) return FALLBACK_ITEMS;
 
   const source = projects.slice(0, 4);
-  while (source.length < 4) {
-    source.push(source[source.length - 1]);
-  }
 
   return source.map((p, idx) => {
     const detailsText =
@@ -117,7 +114,7 @@ function toFancyItems(projects?: ProjectData[]): FancyItem[] {
         : [p.description || FALLBACK_ITEMS[idx].readMore.description];
 
     return {
-      id: `p-${p.id}`,
+      id: `p-${p.id}-${idx}`,
       title: p.name || FALLBACK_ITEMS[idx].title,
       short: p.description || FALLBACK_ITEMS[idx].short,
       image:
@@ -271,39 +268,77 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
   const [openAllProject, setOpenAllProject] = useState<FancyItem | null>(null);
   const overlayOpen = openTab !== null || openAllProject !== null;
 
+  // Prevent scroll when overlay is open (Ultimate God-Mode: HTML/Body Viewport Lock + Lenis + Capturing Event Interceptor)
   useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    const scrollY = window.scrollY;
-    const prevHtmlOverflow = html.style.overflow;
-    const prevBodyOverflow = body.style.overflow;
-    const prevBodyPosition = body.style.position;
-    const prevBodyTop = body.style.top;
-    const prevBodyWidth = body.style.width;
+    // Dynamic getter for Lenis smooth scroll
+    const getLenis = () => (window as any).lenis;
+    
+    if (overlayOpen) {
+      // Force viewport lock
+      document.documentElement.style.overflow = "hidden";
+      document.documentElement.style.height = "100vh";
+      document.body.style.overflow = "hidden";
+      document.body.style.height = "100vh";
+      
+      const lenis = getLenis();
+      if (lenis) {
+        lenis.stop();
+      }
+    } else {
+      document.documentElement.style.overflow = "";
+      document.documentElement.style.height = "";
+      document.body.style.overflow = "";
+      document.body.style.height = "";
+      
+      const lenis = getLenis();
+      if (lenis) {
+        lenis.start();
+      }
+    }
+
+    // Event Interceptor in CAPTURING Phase to execute BEFORE Lenis or browser default listeners
+    const preventDefault = (e: Event) => {
+      const target = e.target as HTMLElement;
+      // Allow scroll inside elements marked with data-lenis-prevent
+      if (target.closest("[data-lenis-prevent]")) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const preventDefaultKeys = (e: KeyboardEvent) => {
+      const keys = ["Space", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "End", "Home"];
+      if (keys.includes(e.code)) {
+        const target = e.target as HTMLElement;
+        if (target.closest("[data-lenis-prevent]")) {
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
 
     if (overlayOpen) {
-      html.style.overflow = "hidden";
-      body.style.overflow = "hidden";
-      body.style.position = "fixed";
-      body.style.top = `-${scrollY}px`;
-      body.style.width = "100%";
-    } else {
-      html.style.overflow = prevHtmlOverflow;
-      body.style.overflow = prevBodyOverflow;
-      body.style.position = prevBodyPosition;
-      body.style.top = prevBodyTop;
-      body.style.width = prevBodyWidth;
+      window.addEventListener("wheel", preventDefault, { passive: false, capture: true });
+      window.addEventListener("touchmove", preventDefault, { passive: false, capture: true });
+      window.addEventListener("keydown", preventDefaultKeys, { passive: false, capture: true });
     }
 
     return () => {
-      html.style.overflow = prevHtmlOverflow;
-      body.style.overflow = prevBodyOverflow;
-      body.style.position = prevBodyPosition;
-      body.style.top = prevBodyTop;
-      body.style.width = prevBodyWidth;
-      if (overlayOpen) {
-        window.scrollTo(0, scrollY);
+      document.documentElement.style.overflow = "";
+      document.documentElement.style.height = "";
+      document.body.style.overflow = "";
+      document.body.style.height = "";
+      
+      const lenis = getLenis();
+      if (lenis) {
+        lenis.start();
       }
+      
+      window.removeEventListener("wheel", preventDefault, { capture: true });
+      window.removeEventListener("touchmove", preventDefault, { capture: true });
+      window.removeEventListener("keydown", preventDefaultKeys, { capture: true });
     };
   }, [overlayOpen]);
 
@@ -342,79 +377,87 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
                 <div className="fancy-nav__description">
                   <p>{item.short}</p>
                 </div>
+                <span className="fancy-nav__more-btn">Read More</span>
               </div>
             </button>
           ))}
         </div>
 
-        <div className={`fancy-nav__tabs ${openTab !== null ? "is-visible" : ""}`}>
-          {items.map((item, idx) => {
-            const isVisible = openTab === idx;
-            return (
-              <div
-                key={`tab-${item.id}`}
-                className={`fancy-nav__tab ${isVisible ? "is-visible" : ""}`}
-                style={{ backgroundColor: item.accentColor }}
-              >
-                <div className="fancy-nav__tab-container">
-                  <button
-                    type="button"
-                    className={`fancy-nav__close-btn ${isVisible ? "is-visible" : ""}`}
-                    title="Close"
-                    onClick={() => setOpenTab(null)}
-                  />
+      </section>
 
-                  <div className={`fancy-nav__tab-img ${isVisible ? "is-visible" : ""}`}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={item.image} alt={item.title} />
-                  </div>
+      <div className={`fancy-nav__tabs ${openTab !== null ? "is-visible" : ""}`}>
+        {items.map((item, idx) => {
+          const isVisible = openTab === idx;
+          if (!isVisible) return null;
+          return (
+            <div
+              key={`tab-${item.id}`}
+              className="fancy-nav__tab is-visible"
+              style={{ backgroundColor: item.accentColor }}
+              data-lenis-prevent
+            >
+              <div className="fancy-nav__tab-container">
+                <button
+                  type="button"
+                  className={`fancy-nav__close-btn ${isVisible ? "is-visible" : ""}`}
+                  title="Close"
+                  onClick={() => setOpenTab(null)}
+                />
 
-                  <div className={`fancy-nav__tab-description ${isVisible ? "is-visible" : ""}`}>
-                    <h3 className="fancy-nav__tab-title">{item.title}</h3>
+                <div className={`fancy-nav__tab-img ${isVisible ? "is-visible" : ""}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.image} alt={item.title} />
+                </div>
 
-                    <div className="fancy-nav__tab-content">
-                      <DetailSection label="Description"><p>{item.readMore.description}</p></DetailSection>
-                      <DetailSection label="Tech Stack Used"><PillList items={item.readMore.techStack} /></DetailSection>
-                      <DetailSection label="Platforms Availability"><PillList items={item.readMore.platforms} /></DetailSection>
-                      <DetailSection label="Challenges"><CheckList items={item.readMore.challenges} /></DetailSection>
-                      <DetailSection label="Features"><CheckList items={item.readMore.features} /></DetailSection>
-                      <DetailSection label="Team Members"><PillList items={item.readMore.teamMembers} /></DetailSection>
-                      <DetailSection label="Links">
-                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                          {item.readMore.downloadLinks.map((dl, i) => (
-                            <a
-                              key={`${item.id}-dl-${i}`}
-                              href={dl.href}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                borderRadius: 999,
-                                border: "1px solid #123a68",
-                                padding: "8px 14px",
-                                color: "#123a68",
-                                fontWeight: 700,
-                                textDecoration: "none",
-                              }}
-                            >
-                              Visit
-                            </a>
-                          ))}
-                        </div>
-                      </DetailSection>
-                    </div>
+                <div className={`fancy-nav__tab-description ${isVisible ? "is-visible" : ""}`}>
+                  <h3 className="fancy-nav__tab-title">{item.title}</h3>
+
+                  <div className="fancy-nav__tab-content">
+                    <DetailSection label="Description"><p>{item.readMore.description}</p></DetailSection>
+                    <DetailSection label="Tech Stack Used"><PillList items={item.readMore.techStack} /></DetailSection>
+                    <DetailSection label="Platforms Availability"><PillList items={item.readMore.platforms} /></DetailSection>
+                    <DetailSection label="Challenges"><CheckList items={item.readMore.challenges} /></DetailSection>
+                    <DetailSection label="Features"><CheckList items={item.readMore.features} /></DetailSection>
+                    <DetailSection label="Team Members"><PillList items={item.readMore.teamMembers} /></DetailSection>
+                    <DetailSection label="Links">
+                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                        {item.readMore.downloadLinks.map((dl, i) => (
+                          <a
+                            key={`${item.id}-dl-${i}`}
+                            href={dl.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              borderRadius: 999,
+                              border: "1px solid #123a68",
+                              padding: "8px 14px",
+                              color: "#123a68",
+                              fontWeight: 700,
+                              textDecoration: "none",
+                            }}
+                          >
+                            Visit
+                          </a>
+                        ))}
+                      </div>
+                    </DetailSection>
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </section>
+            </div>
+          );
+        })}
+      </div>
 
       {openAllProject && (
         <section className="fancy-nav__tabs is-visible" style={{ position: "fixed", inset: 0, zIndex: 120 }}>
-          <div className="fancy-nav__tab is-visible" style={{ backgroundColor: openAllProject.accentColor || "#304949" }}>
+          <div
+            className="fancy-nav__tab is-visible"
+            style={{ backgroundColor: openAllProject.accentColor || "#304949" }}
+            data-lenis-prevent
+          >
             <div className="fancy-nav__tab-container">
               <button
                 type="button"

@@ -321,9 +321,9 @@ canvas {
   /* Styling for the inner content so the dropdown visually matches the reference */
   /* Style the deterministic inner wrapper so rules reliably apply */
   .mega-menu .mega-inner {
-    background: #ffffff;
-    border-top: 4px solid rgba(0,0,0,0.04);
-    box-shadow: 0 12px 36px rgba(2,6,23,0.28);
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
     padding-top: 18px;
     padding-bottom: 18px;
   }
@@ -339,13 +339,7 @@ canvas {
     text-decoration: none !important;
   }
 
-  /* Thumbnail sizing inside menu rows */
-  .mega-menu img {
-    width: 68px !important;
-    height: 44px !important;
-    object-fit: cover !important;
-    border-radius: 6px !important;
-  }
+
 
   /* Toggleable (checkbox) helper classes */
   .toggleable > label::after {

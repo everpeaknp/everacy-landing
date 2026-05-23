@@ -360,6 +360,10 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
 
   const handleClose = () => {
     setIsOpen(false);
+    // Clear URL hash cleanly without scroll jumping
+    if (typeof window !== "undefined" && window.location.hash) {
+      window.history.pushState(null, "", window.location.pathname);
+    }
     setTimeout(() => {
       setActiveService(null);
     }, 450);
@@ -425,6 +429,51 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
     }
   ];
 
+  // Listen to URL hash (e.g. #cloud) to automatically open the corresponding service drawer
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let lastHash = window.location.hash;
+
+    const checkHash = () => {
+      const currentHash = window.location.hash;
+      if (currentHash !== lastHash) {
+        lastHash = currentHash;
+        handleHashChange();
+      }
+    };
+
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "").toLowerCase();
+      if (!hash) return;
+
+      const matchedService = services.find((s) => {
+        const title = s.title.toLowerCase();
+        if (hash === "cloud" || hash === "infra") return title.includes("cloud") || title.includes("infra");
+        if (hash === "mobile" || hash === "app") return title.includes("mobile") || title.includes("app");
+        if (hash === "web" || hash === "engineering") return title.includes("web") || title.includes("engineering");
+        if (hash === "saas" || hash === "product" || hash === "software") return title.includes("saas") || title.includes("product") || title.includes("software");
+        return s.link_href?.endsWith(`#${hash}`);
+      });
+
+      if (matchedService) {
+        handleOpen(matchedService);
+      }
+    };
+
+    // Delay checking to allow layout and smooth scroll transitions to settle cleanly
+    const timeoutId = setTimeout(handleHashChange, 350);
+
+    window.addEventListener("hashchange", handleHashChange);
+    const intervalId = setInterval(checkHash, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [services]);
+
   let detail = getFallbackDetails("", "");
   if (activeService) {
     detail = getServiceDetails(activeService).detail;
@@ -473,8 +522,17 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                         color: "#ffffff",
                       }}
                       onClick={(e) => {
-                        // allow the drawer open on card click; clicking CTA should navigate instead
+                        e.preventDefault();
                         e.stopPropagation();
+                        handleOpen(service);
+                        const title = service.title.toLowerCase();
+                        let slug = "services";
+                        if (title.includes("cloud") || title.includes("infra")) slug = "cloud";
+                        else if (title.includes("mobile") || title.includes("app")) slug = "mobile";
+                        else if (title.includes("web") || title.includes("engineering")) slug = "web";
+                        else if (title.includes("saas") || title.includes("product")) slug = "saas";
+                        else slug = title.split(" ")[0];
+                        window.history.pushState(null, "", `#${slug}`);
                       }}
                     >
                       {service.cta_label || service.link_label || "Learn More"}

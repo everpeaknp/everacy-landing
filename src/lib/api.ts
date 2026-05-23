@@ -238,6 +238,8 @@ export interface HomeData {
   team: TeamSectionData[];
   contact: ContactPageData | null;
   footer: FooterData;
+  featured_blogs?: BlogPostData[];
+  featured_blogs_section?: { title: string; subtitle: string } | null;
 }
 
 export interface AboutData {
@@ -341,6 +343,30 @@ export interface CareersData {
   positions_section?: { title: string; subtitle: string } | null;
 }
 
+export interface BlogHeroData {
+  id: number;
+  title: string;
+  subtitle: string;
+  scroll_text: string | null;
+}
+
+export interface BlogPostData {
+  id: number;
+  title: string;
+  intro: string | null;
+  content: string;
+  cover_image: string | null;
+  comments_count: number;
+  publish_date: string | null;
+  order: number;
+  is_featured?: boolean;
+}
+
+export interface BlogsData {
+  hero: BlogHeroData | null;
+  posts: BlogPostData[];
+}
+
 // ── API Fetchers ───────────────────────────────────────────
 
 export async function fetchHero(): Promise<HeroData | null> {
@@ -393,6 +419,14 @@ export async function fetchProject(slug: string): Promise<ProjectData | null> {
 
 export async function fetchCareers(): Promise<CareersData | null> {
   return apiFetchFresh<CareersData>("/careers/");
+}
+
+export async function fetchBlogs(): Promise<BlogsData | null> {
+  return apiFetchFresh<BlogsData>("/blogs/");
+}
+
+export async function fetchBlogPost(id: number | string): Promise<BlogPostData | null> {
+  return apiFetchFresh<BlogPostData>(`/blogs/${id}/`);
 }
 
 export async function fetchHomeData(): Promise<HomeData | null> {

@@ -7,20 +7,42 @@ import { useState, useEffect, useCallback } from "react";
 import { NAV_LINKS } from "@/lib/constants";
 import { archSectionCards } from "@/lib/site-theme";
 import { Layers } from "lucide-react";
-import type { NavbarData } from "@/lib/api";
+import type { NavbarData, ServiceCardData } from "@/lib/api";
 
 const BRAND_COLOR = "#27446e";
 
 interface NavbarProps {
   data?: NavbarData | null;
+  services?: ServiceCardData[];
 }
 
-export function Navbar({ data }: NavbarProps) {
+export function Navbar({ data, services }: NavbarProps) {
   // Resolve nav links: API → static fallback
   const navLinks =
     data?.items && data.items.length > 0
       ? data.items.map((item) => ({ label: item.title, href: item.link }))
       : NAV_LINKS.map((l) => ({ label: l.label, href: l.href }));
+
+  // Resolve services: fetched dynamic services → static fallback
+  const servicesList =
+    services && services.length > 0
+      ? services.map((s) => ({
+          id: String(s.id),
+          title: s.title,
+          linkHref:
+            s.link_href && s.link_href.includes("#")
+              ? s.link_href
+              : `/services#${s.title.toLowerCase().split(" ")[0]}`,
+          imageUrl: s.image,
+          imageAlt: s.image_alt || s.title,
+        }))
+      : archSectionCards.map((c) => ({
+          id: c.id,
+          title: c.title,
+          linkHref: c.linkHref,
+          imageUrl: c.imageUrl,
+          imageAlt: c.imageAlt,
+        }));
 
   const siteName = data?.settings?.site_name ?? "Everacy";
   const ctaText = data?.settings?.button_text ?? "Get In Touch";
@@ -35,12 +57,14 @@ export function Navbar({ data }: NavbarProps) {
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const isAbout = pathname === "/about";
+  const isBlogs = pathname === "/blogs";
   const isServices = pathname === "/services";
   const isProjects = pathname === "/projects";
   const isCareers = pathname === "/careers";
-  const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers && !isAbout && !isServices);
+  const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers && !isAbout && !isBlogs && !isServices);
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const navIsLight = pastHero || servicesMenuOpen;
 
@@ -50,18 +74,22 @@ export function Navbar({ data }: NavbarProps) {
 
     // STRICT RULE: Only transparent/dark if on homepage, projects, careers, about, OR services AND not scrolled past hero/intro.
     // Otherwise, it's ALWAYS white ('pastHero' style).
-    if (isHome || isProjects || isCareers || isAbout || isServices) {
+    if (isHome || isProjects || isCareers || isAbout || isBlogs || isServices) {
       setPastHero(y > window.innerHeight * 0.85);
     } else {
       setPastHero(true);
     }
-  }, [isHome, isProjects, isCareers, isAbout, isServices]);
+  }, [isHome, isProjects, isCareers, isAbout, isBlogs, isServices]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close menu on resize to desktop
   useEffect(() => {
@@ -84,7 +112,7 @@ export function Navbar({ data }: NavbarProps) {
           navIsLight
             ? {
                 // Keep navbar and services mega menu as a single connected layer
-                background: servicesMenuOpen ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.88)",
+                background: servicesMenuOpen ? "#ffffff" : "rgba(255,255,255,0.88)",
                 backdropFilter: "blur(24px) saturate(180%)",
                 WebkitBackdropFilter: "blur(24px) saturate(180%)",
                 borderBottom: servicesMenuOpen ? "1px solid rgba(0,0,0,0)" : "1px solid rgba(0,0,0,0.06)",
@@ -157,14 +185,14 @@ export function Navbar({ data }: NavbarProps) {
           </Link>
 
           {/* ── Desktop nav links ── */}
-          <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+          <nav className="hidden md:flex items-center gap-1 h-full" aria-label="Main navigation">
             {navLinks.map(({ label, href }) => {
               // Render a Services nav item with a mega menu
               if (href === "/services" || label.toLowerCase() === "services") {
                 return (
                   <div
                     key={href}
-                    className="hoverable hidden md:block group"
+                    className="hoverable hidden md:flex items-center h-full group"
                     onMouseEnter={() => setServicesMenuOpen(true)}
                     onMouseLeave={() => setServicesMenuOpen(false)}
                   >
@@ -180,40 +208,41 @@ export function Navbar({ data }: NavbarProps) {
                     </Link>
 
                     {/* Reset mega menu to Tailwind-style: full-width dropdown showing small image + title only */}
-                    <div className="mega-menu absolute left-0 right-0 top-[calc(100%-1px)] z-[1000] mt-0 w-full border-t border-[#e8edf2] bg-[rgba(255,255,255,0.88)] bg-clip-padding origin-top transition-all duration-200 opacity-0 scale-y-95 pointer-events-none group-hover:opacity-100 group-hover:scale-y-100 group-hover:pointer-events-auto"
+                    <div className="mega-menu absolute left-0 right-0 top-[calc(100%-1px)] z-[1000] mt-0 w-full bg-clip-padding origin-top transition-all duration-200 opacity-0 scale-y-95 pointer-events-none group-hover:opacity-100 group-hover:scale-y-100 group-hover:pointer-events-auto"
                       style={{
+                        background: "#ffffff",
                         transitionTimingFunction: "cubic-bezier(0.2, 0.7, 0.2, 1)",
                         backdropFilter: "blur(24px) saturate(180%)",
                         WebkitBackdropFilter: "blur(24px) saturate(180%)",
                         boxShadow: "0 16px 26px rgba(6,14,36,0.06)",
                       }}
                     >
-                      <div className="mega-inner px-6 py-5 lg:px-8">
-                        <div className="grid gap-x-10 gap-y-4 md:grid-cols-2 xl:grid-cols-4">
-                          {archSectionCards.map((c) => (
+                      <div className="mega-inner px-8 py-6 lg:px-12">
+                        <div className="grid gap-x-8 gap-y-3.5 md:grid-cols-2 xl:grid-cols-4 max-w-[1280px] mx-auto">
+                          {(mounted ? servicesList : []).map((c) => (
                             <Link
                               key={c.id}
                               href={c.linkHref}
-                              className="flex w-full items-center gap-3 border-b border-neutral-200/70 py-2 text-neutral-700 hover:text-neutral-950 transition-colors min-h-[72px]"
+                              className="flex w-full items-center gap-3.5 py-3 px-3.5 rounded-xl hover:bg-[#f4f7fa] text-neutral-700 hover:text-[#27446e] transition-all duration-200 group"
                             >
-                              <div className="shrink-0 mt-0.5">
+                              <div className="shrink-0">
                                 {c.imageUrl ? (
                                   <Image
                                     src={c.imageUrl}
                                     alt={c.imageAlt ?? c.title}
                                     width={36}
                                     height={36}
-                                    className="w-9 h-9 rounded-md object-cover border border-[#d8e3ed]"
+                                    className="w-9 h-9 rounded-lg object-cover border border-[#d8e3ed] transition-transform duration-300 group-hover:scale-105"
                                     unoptimized={c.imageUrl.startsWith("http")}
                                   />
                                 ) : (
-                                  <div className="w-9 h-9 rounded-md bg-[#e9eff7] text-[#27446e] flex items-center justify-center border border-[#d8e3ed]">
+                                  <div className="w-9 h-9 rounded-lg bg-[#e9eff7] text-[#27446e] flex items-center justify-center border border-[#d8e3ed] transition-transform duration-300 group-hover:scale-105">
                                     <Layers className="w-4 h-4" />
                                   </div>
                                 )}
                               </div>
                               <div className="grow min-w-0">
-                                <p className="mb-0 font-semibold text-[#1f2937] leading-tight">{c.title}</p>
+                                <p className="mb-0 font-bold text-[#1f2937] text-[14.5px] tracking-tight group-hover:text-[#27446e] transition-colors leading-tight">{c.title}</p>
                               </div>
                             </Link>
                           ))}
