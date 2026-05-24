@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import "./projects.css";
 import type { ProjectData, ProjectsPageHeroData } from "@/lib/api";
 
@@ -179,10 +180,16 @@ function toFancyItemFromProject(project: ProjectData, idx: number): FancyItem {
 
 function DetailSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <section style={{ marginTop: 16 }}>
+    <motion.section 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-10px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      style={{ marginTop: 16 }}
+    >
       <h4 style={{ margin: "0 0 8px 0", fontSize: 14, letterSpacing: "0.08em", textTransform: "uppercase", color: "#4b5563" }}>{label}</h4>
       {children}
-    </section>
+    </motion.section>
   );
 }
 
@@ -537,7 +544,14 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
               const cardDetail = toFancyItemFromProject(project, idx);
 
               return (
-                <div key={`all-${project.id}`} className="block group">
+                <motion.div 
+                  key={`all-${project.id}`} 
+                  className="block group"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     alt={project.name}
@@ -558,7 +572,7 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
                       Read More
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

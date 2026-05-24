@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { 
   Cloud, 
   Smartphone, 
@@ -485,11 +486,15 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
       <section className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {services.map((service) => {
+            {services.map((service, index) => {
               const { detail: sDetail } = getServiceDetails(service);
               return (
-                <div
+                <motion.div
                   key={service.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
                   onClick={() => handleOpen(service)}
                   className="group relative cursor-pointer bg-white rounded-2xl p-8 border border-slate-100/90 shadow-[0_4px_25px_rgba(0,0,0,0.01)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.035)] hover:-translate-y-1 transition-all duration-500 flex flex-col justify-between min-h-[320px] select-none"
                 >
@@ -498,12 +503,12 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                     {/* Tiny Slate Pill Badge */}
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-100 mb-4 transition-colors duration-300 group-hover:bg-slate-100/70">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-400 group-hover:bg-slate-600 transition-colors duration-300" />
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                         {sDetail.capabilities[0]?.title || "Premium"}
                       </span>
                     </div>
 
-                    <h2 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight uppercase transition-colors duration-300 group-hover:text-slate-950">
+                    <h2 className="text-2xl font-black text-slate-900 mb-3 tracking-tight transition-colors duration-300 group-hover:text-slate-950">
                       {service.title}
                     </h2>
 
@@ -543,7 +548,7 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                       {String(service.id).padStart(2, '0')}
                     </span>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -578,7 +583,7 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                     className="w-2 h-2 rounded-full"
                     style={{ backgroundColor: activeService.accent_color }}
                   />
-                  <h3 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 font-mono">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Service overview
                   </h3>
                 </div>
@@ -596,19 +601,31 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
               <div className="flex-1 overflow-y-auto px-6 md:px-8 py-8 space-y-10 custom-scrollbar bg-slate-50/30">
                 
                 {/* Hero / Intro Title Section */}
-                <section className="relative p-6 md:p-8 rounded-2xl border border-slate-100 bg-white shadow-sm">
-                  <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 uppercase mb-3">
+                <motion.section 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="relative p-6 md:p-8 rounded-2xl border border-slate-100 bg-white shadow-sm"
+                >
+                  <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-3">
                     {activeService.title}
                   </h1>
                   
                   <p className="text-sm md:text-base text-slate-500 font-medium leading-relaxed">
                     {detail.tagline}
                   </p>
-                </section>
+                </motion.section>
 
                 {/* Key Capabilities Section */}
-                <section className="space-y-4">
-                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 font-mono">
+                <motion.section 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-10px" }}
+                  transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+                  className="space-y-4"
+                >
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Capabilities & Competencies
                   </h4>
 
@@ -626,10 +643,10 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                             <Icon className="w-4 h-4" />
                           </div>
                           <div>
-                            <h5 className="font-extrabold text-slate-900 text-sm tracking-tight mb-1">
+                            <h5 className="font-bold text-slate-900 text-[15px] mb-1">
                               {cap.title}
                             </h5>
-                            <p className="text-slate-500 text-xs leading-relaxed font-medium">
+                            <p className="text-slate-600 text-sm leading-relaxed">
                               {cap.description}
                             </p>
                           </div>
@@ -637,11 +654,17 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                       );
                     })}
                   </div>
-                </section>
+                </motion.section>
 
                 {/* Tech Stack Badges */}
-                <section className="space-y-4">
-                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 font-mono">
+                <motion.section 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-10px" }}
+                  transition={{ duration: 0.4, delay: 0.15, ease: "easeOut" }}
+                  className="space-y-4"
+                >
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Technology Stack
                   </h4>
 
@@ -655,11 +678,17 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                       </span>
                     ))}
                   </div>
-                </section>
+                </motion.section>
 
                 {/* Delivery Pipeline Timeline */}
-                <section className="space-y-6">
-                  <h4 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 font-mono">
+                <motion.section 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-10px" }}
+                  transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                  className="space-y-6"
+                >
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Delivery Roadmap
                   </h4>
 
@@ -668,23 +697,23 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
                       <div key={i} className="relative group">
                         {/* Elegant minimalist number indicator */}
                         <span 
-                          className="absolute -left-[35px] top-0.5 w-6 h-6 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center font-mono"
+                          className="absolute -left-[35px] top-0.5 w-6 h-6 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center font-mont"
                         >
                           {pipe.step}
                         </span>
 
                         <div className="space-y-1">
-                          <h5 className="font-extrabold text-slate-900 text-sm tracking-tight leading-tight">
+                          <h5 className="font-bold text-slate-900 text-[15px] mb-1">
                             {pipe.title}
                           </h5>
-                          <p className="text-slate-500 text-xs md:text-sm leading-relaxed font-medium">
+                          <p className="text-slate-600 text-sm leading-relaxed">
                             {pipe.detail}
                           </p>
                         </div>
                       </div>
                     ))}
                   </div>
-                </section>
+                </motion.section>
                 
                 <div className="h-6" />
 
@@ -693,10 +722,10 @@ export default function ServicesClient({ initialServices }: ServicesClientProps)
               {/* Minimalist Action Footer */}
               <footer className="px-6 py-5 md:px-8 bg-white border-t border-slate-100 flex items-center justify-between gap-4 z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.015)]">
                 <div className="hidden sm:block">
-                  <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest font-mono">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     Next phase
                   </p>
-                  <p className="text-sm font-extrabold text-slate-900">
+                  <p className="text-[15px] font-bold text-slate-900 mt-1">
                     Arrange a brief inquiry call
                   </p>
                 </div>

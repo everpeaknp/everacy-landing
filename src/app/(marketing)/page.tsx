@@ -25,27 +25,32 @@ export default async function HomePage() {
       <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
         <Hero data={homeData?.hero} />
       </div>
+      
       <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
         <ArchSection
           data={homeData?.services}
           sectionTitle={homeData?.services_section?.title}
         />
       </div>
+
       <TestimonialsSection 
         data={homeData?.testimonials} 
         sectionTitle={homeData?.testimonials_section?.title}
         sectionSubtitle={homeData?.testimonials_section?.subtitle}
       />
+
       <ProcessSection
         data={homeData?.process}
         sectionTitle={homeData?.process_section?.title}
         sectionSubtitle={homeData?.process_section?.subtitle}
       />
+
       <FeaturedBlogs 
         posts={homeData?.featured_blogs} 
         sectionTitle={homeData?.featured_blogs_section?.title}
         sectionSubtitle={homeData?.featured_blogs_section?.subtitle}
       />
+
       <CTASectionComponent data={homeData?.cta} />
     </main>
   );

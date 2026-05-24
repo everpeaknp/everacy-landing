@@ -15,9 +15,11 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T | nul
       next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
       ...options,
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return null;
+    }
     return res.json() as Promise<T>;
-  } catch {
+  } catch (err) {
     return null;
   }
 }
@@ -28,9 +30,11 @@ async function apiFetchFresh<T>(path: string): Promise<T | null> {
     const res = await fetch(`${API_BASE}/api/v1${path}`, {
       cache: "no-store",
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return null;
+    }
     return res.json() as Promise<T>;
-  } catch {
+  } catch (err) {
     return null;
   }
 }
@@ -57,6 +61,7 @@ export interface NavbarItemData {
 export interface NavbarData {
   settings: NavbarSettingsData | null;
   items: NavbarItemData[];
+  active_jobs_count?: number;
 }
 
 export interface HeroData {
@@ -328,6 +333,12 @@ export interface JobPositionData {
   category: string;
   category_icon: string;
   order: number;
+  about_company?: string;
+  about_role?: string;
+  responsibilities?: string[];
+  requirements?: string[];
+  nice_to_have?: string[];
+  soft_skills?: string[];
 }
 
 export interface CareerFooterData {
@@ -336,11 +347,66 @@ export interface CareerFooterData {
   email: string;
 }
 
+export interface CareerValueData {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  order: number;
+}
+
+export interface CareerPerkData {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  order: number;
+}
+
+export interface CareerTestimonialData {
+  id: number;
+  name: string;
+  role: string | null;
+  quote: string;
+  image: string | null;
+  order: number;
+}
+
+export interface CareerProcessStepData {
+  id: number;
+  step_number: number;
+  title: string;
+  description: string | null;
+  icon: string;
+  order: number;
+}
+
+export interface CareerPageSettingsData {
+  id: number;
+  title: string;
+  values_title: string;
+  values_subtitle: string | null;
+  middle_image_strip: string | null;
+  middle_image_text: string | null;
+  perks_title: string;
+  perks_subtitle: string | null;
+  positions_title: string;
+  positions_subtitle: string | null;
+  testimonials_title: string;
+  testimonials_subtitle: string | null;
+  process_title: string;
+  process_subtitle: string | null;
+}
+
 export interface CareersData {
   hero: CareerHeroData | null;
   jobs: JobPositionData[];
+  values: CareerValueData[];
+  perks: CareerPerkData[];
+  testimonials: CareerTestimonialData[];
+  process_steps: CareerProcessStepData[];
   footer: CareerFooterData | null;
-  positions_section?: { title: string; subtitle: string } | null;
+  page_settings: CareerPageSettingsData | null;
 }
 
 export interface BlogHeroData {
@@ -352,6 +418,7 @@ export interface BlogHeroData {
 
 export interface BlogPostData {
   id: number;
+  slug?: string;
   title: string;
   intro: string | null;
   content: string;
@@ -360,6 +427,8 @@ export interface BlogPostData {
   publish_date: string | null;
   order: number;
   is_featured?: boolean;
+  comments?: any[];
+  recommended_blogs?: any[];
 }
 
 export interface BlogsData {
@@ -421,6 +490,10 @@ export async function fetchCareers(): Promise<CareersData | null> {
   return apiFetchFresh<CareersData>("/careers/");
 }
 
+export async function fetchJobPosition(slug: string): Promise<JobPositionData | null> {
+  return apiFetchFresh<JobPositionData>(`/careers/${slug}/`);
+}
+
 export async function fetchBlogs(): Promise<BlogsData | null> {
   return apiFetchFresh<BlogsData>("/blogs/");
 }
@@ -461,7 +534,32 @@ export async function submitContactForm(
 
     const errors = await res.json();
     return { success: false, errors };
-  } catch {
-    return { success: false, message: "Network error. Please try again." };
+   } catch (err) {
+    console.error("Error submitting contact form:", err);
+    return { success: false, message: "Network error occurred" };
+  }
+}
+
+export async function submitJobApplication(
+  formData: FormData
+): Promise<{ success: boolean; message?: string; errors?: Record<string, string[]> }> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/job-application-submit/`, {
+      method: "POST",
+      body: formData,
+      // Note: When using FormData, do NOT set Content-Type header. 
+      // The browser will set it to multipart/form-data with the correct boundary automatically.
+    });
+
+    if (res.status === 201) {
+      const data = await res.json();
+      return { success: true, message: data.message };
+    }
+
+    const errors = await res.json();
+    return { success: false, errors };
+  } catch (err) {
+    console.error("Error submitting job application:", err);
+    return { success: false, message: "Network error occurred" };
   }
 }

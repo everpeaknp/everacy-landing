@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import type { BlogPostData } from "@/lib/api";
 
 interface FeaturedBlogsProps {
@@ -136,14 +137,18 @@ export function FeaturedBlogs({ posts = [], sectionTitle, sectionSubtitle }: Fea
             const coverImage = post.cover_image || fallbackImages[idx % fallbackImages.length];
 
             return (
-              <div
+              <motion.div
                 key={post.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
                 className={`group relative flex flex-col h-full rounded-lg overflow-hidden border border-slate-100 bg-white transition-all duration-350 hover:-translate-y-1 hover:border-[#8cd4dd] hover:shadow-[0_12px_28px_-6px_rgba(18,58,104,0.12)] ${
                   isFirst ? "min-[960px]:col-span-2" : ""
                 }`}
               >
                 <Link
-                  href={`/blogs/${post.id}`}
+                  href={`/blogs/${post.slug || post.id}`}
                   className="flex flex-col h-full no-underline"
                 >
                   {/* Thumb / Image Container */}
@@ -182,7 +187,7 @@ export function FeaturedBlogs({ posts = [], sectionTitle, sectionSubtitle }: Fea
                     </div>
                   </article>
                 </Link>
-              </div>
+              </motion.div>
             );
           })}
         </div>

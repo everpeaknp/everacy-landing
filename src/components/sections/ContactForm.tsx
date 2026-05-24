@@ -1,16 +1,15 @@
-/* ─────────────────────────────────────────────────────────
-   ContactForm — Full contact page UI with real API submission
-   ───────────────────────────────────────────────────────── */
 "use client";
 
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { submitContactForm } from "@/lib/api";
 import type { ContactPageData } from "@/lib/api";
+import { ArrowRight, Phone, ChevronDown } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 
-const BRAND_COLOR = "#27446e";
-
-// Returns an SVG icon for known platforms, falls back to first 2 letters
+// Returns an SVG icon for known platforms
 function getPlatformIcon(platform: string) {
   const p = platform.toLowerCase();
   if (p.includes("linkedin"))
@@ -43,247 +42,357 @@ function getPlatformIcon(platform: string) {
         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
       </svg>
     );
-  // Generic fallback — first 2 chars of platform name
   return <span className="text-[10px] font-black uppercase">{platform.slice(0, 2)}</span>;
 }
+
+const WORK_TYPES = [
+  { id: "project", title: "A project / product team", desc: "A product squad to accelerate your time-to-market" },
+  { id: "staff", title: "Staff augmentation", desc: "Talent to temporarily fill out gaps in your existing team" },
+  { id: "dedicated", title: "Dedicated team", desc: "A cross-functional team for long-term product development" },
+];
+
+const SERVICES = [
+  "Data / AI / ML", "Software Development", "UI / UX Design", "DevOps", 
+  "Cloud Infrastructure", "Mobile App Development", "Quality Assurance", "Other"
+];
 
 interface ContactFormProps {
   data?: ContactPageData | null;
 }
 
 export function ContactForm({ data }: ContactFormProps) {
-  const title = data?.title ?? "Let's build something extraordinary.";
-  const subtitle =
-    data?.subtitle ??
-    "Whether you need to scale your cloud infrastructure, build a robust web application, or engineer a complex SaaS product—we are ready to execute.";
-  const buttonText = data?.button_text ?? "Send Initialization Request";
-  const directConnectTitle = data?.direct_connect_title ?? "Direct Connect";
-  const inquiriesLabel = data?.inquiries_label ?? "Inquiries";
-  const email = data?.email ?? "everacy.np@gmail.com";
-  const addressLabel = data?.address_label ?? "Address";
-  const address = data?.address ?? "Chhorepatan, Pokhara, Nepal";
+  const title = data?.title ?? "Let's build together.";
+  const subtitle = data?.subtitle ?? "Whether you have a team playing to launch a business or an enterprise looking to scale up, there's definitely something we can do for you.";
+  const heroImage = data?.hero_image ?? "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200";
+  
+  const letsTalkTitle = data?.lets_talk_title ?? "Let's talk";
+  const letsTalkSubtitle = data?.lets_talk_subtitle ?? "Call us for a quick chat at";
+  const phone = data?.phone ?? "+1 (555) 123-4567";
+  const phoneScheduleText = data?.phone_schedule_text ?? "We're available on weekdays during working hours.";
+
+  const jobsTitle = data?.jobs_title ?? "Looking for a job?";
+  const jobsDescription = data?.jobs_description ?? "There's a lot going on here. We're looking for folks that share our passion for tech and are down to innovate. See what roles are currently available at Everacy.";
+  const jobsLinkText = data?.jobs_link_text ?? "Apply Now";
+
   const followUsLabel = data?.follow_us_label ?? "Follow Us";
   const followUsText = data?.follow_us_text ?? "Digital Footprint";
-  // Dynamic social links from API
+  const buttonText = data?.button_text ?? "Send A Message";
   const socialLinks = data?.social_links ?? [];
 
-  const [formState, setFormState] = useState({ name: "", email: "", message: "" });
+  const [formState, setFormState] = useState({ 
+    name: "", email: "", phone: "", workType: "project", services: [] as string[], message: "" 
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const toggleService = (service: string) => {
+    setFormState(prev => ({
+      ...prev,
+      services: prev.services.includes(service)
+        ? prev.services.filter(s => s !== service)
+        : [...prev.services, service]
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMsg(null);
 
-    const result = await submitContactForm(formState);
+    const payload = {
+      name: formState.name,
+      email: formState.email,
+      phone: formState.phone,
+      work_type: WORK_TYPES.find(w => w.id === formState.workType)?.title || formState.workType,
+      services: formState.services.join(", "),
+      message: formState.message,
+    };
+
+    const result = await submitContactForm(payload);
 
     setIsSubmitting(false);
 
     if (result.success) {
       setIsSuccess(true);
-      setFormState({ name: "", email: "", message: "" });
+      setFormState({ name: "", email: "", phone: "", workType: "project", services: [], message: "" });
       setTimeout(() => setIsSuccess(false), 5000);
     } else {
       setErrorMsg(result.message ?? "Something went wrong. Please try again.");
     }
   };
 
-  // Split title at "extraordinary" for the brand-colored word
-  const titleParts = title.split("extraordinary");
-
   return (
-    <main className="relative min-h-screen bg-[#fafcff] overflow-hidden pt-28 sm:pt-32 pb-24 font-mont selection:bg-[#27446e] selection:text-white section-clip-x">
+    <main className="relative z-[1] bg-white font-mont text-slate-900">
+      
+      {/* Dark Liquid Hero Section - Matching /about */}
+      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 overflow-hidden flex items-center justify-center min-h-[50vh] sm:min-h-[60vh] section-clip-x">
+        <div className="absolute inset-0 w-full h-full bg-black -z-10">
+          <LiquidEffectAnimation fill="absolute" zIndex={0} />
+          {/* Dark vignette */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none z-10"
+            style={{
+              background: "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
+            }}
+          />
+        </div>
 
-      {/* Abstract Background Elements */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-b from-[#e3f0fa] to-transparent opacity-60 blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-t from-[#e8f6fc] to-transparent opacity-70 blur-[100px]" />
-      </div>
-
-      <section className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-12">
-
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-16 lg:mb-24 text-center lg:text-left"
-        >
-          <h1 className="text-[clamp(2.1rem,10vw,4.7rem)] font-black text-[#0d1a26] tracking-tight leading-[1.1] mb-6">
-            {titleParts.length > 1 ? (
-              <>
-                {titleParts[0]}
-                <span style={{ color: BRAND_COLOR }}>extraordinary.</span>
-                {titleParts[1]}
-              </>
-            ) : (
-              title
-            )}
+        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
+            {title}
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl font-light leading-relaxed">
+          <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-xl font-medium max-w-3xl mx-auto leading-relaxed">
             {subtitle}
           </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-
-          {/* Left: Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7"
-          >
-            <div className="bg-white/80 backdrop-blur-3xl rounded-[2rem] p-8 md:p-12 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] border border-white/60 relative overflow-hidden">
-
-              {/* Subtle inner glow */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#27446e] to-transparent opacity-20" />
-
-              <form onSubmit={handleSubmit} className="flex flex-col gap-8 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="flex flex-col gap-2 relative group">
-                    <label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-[#0d1a26]/50 ml-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      required
-                      value={formState.name}
-                      onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                      className="w-full bg-white/50 border-2 border-slate-200 shadow-sm px-4 py-4 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#27446e] focus:ring-4 focus:ring-[#27446e]/10 focus:bg-white transition-all duration-300"
-                      placeholder="Everacy tech"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 relative group">
-                    <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-[#0d1a26]/50 ml-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      required
-                      value={formState.email}
-                      onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                      className="w-full bg-white/50 border-2 border-slate-200 shadow-sm px-4 py-4 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#27446e] focus:ring-4 focus:ring-[#27446e]/10 focus:bg-white transition-all duration-300"
-                      placeholder="everacy@company.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2 relative group">
-                  <label htmlFor="message" className="text-xs font-bold uppercase tracking-widest text-[#0d1a26]/50 ml-1">
-                    Project Details
-                  </label>
-                  <textarea
-                    id="message"
-                    required
-                    rows={5}
-                    value={formState.message}
-                    onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                    className="w-full bg-white/50 border-2 border-slate-200 shadow-sm px-4 py-4 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#27446e] focus:ring-4 focus:ring-[#27446e]/10 focus:bg-white transition-all duration-300 resize-none"
-                    placeholder="Tell us about your objectives, timeline, and tech stack..."
-                  />
-                </div>
-
-                {errorMsg && (
-                  <p className="text-red-500 text-sm font-medium">{errorMsg}</p>
-                )}
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="relative w-full md:w-auto self-start mt-4 px-10 py-5 rounded-2xl text-[15px] font-bold text-white overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  <span
-                    className="absolute inset-0 transition-opacity duration-300 pointer-events-none"
-                    style={{ background: BRAND_COLOR }}
-                  />
-                  <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                  <span className="relative z-10 flex items-center justify-center gap-3">
-                    {isSubmitting ? "Sending..." : isSuccess ? "Message Received ✓" : buttonText}
-                    {!isSubmitting && !isSuccess && (
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    )}
-                  </span>
-                </motion.button>
-              </form>
-            </div>
-          </motion.div>
-
-          {/* Right: Info Panel */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 flex flex-col gap-6"
-          >
-            {/* Direct Contact Card */}
-            <div
-              className="rounded-[2rem] p-8 md:p-10 relative overflow-hidden text-white"
-              style={{ background: BRAND_COLOR }}
-            >
-              <div className="absolute top-0 right-0 w-[150%] h-[150%] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1)_0%,transparent_50%)] pointer-events-none" />
-
-              <h3 className="text-2xl font-bold mb-8 relative z-10">{directConnectTitle}</h3>
-
-              <div className="flex flex-col gap-8 relative z-10">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/50 mb-2 font-bold">
-                    {inquiriesLabel}
-                  </p>
-                  <a
-                    href={`mailto:${email}`}
-                    className="text-lg md:text-2xl font-medium hover:text-white/80 transition-colors break-all"
-                  >
-                    {email}
-                  </a>
-                </div>
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/50 mb-2 font-bold">
-                    {addressLabel}
-                  </p>
-                  <p className="text-lg text-white/90 leading-relaxed font-light">{address}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Socials Card */}
-            <div className="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/60 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-[#0d1a26]/50 font-bold mb-1">
-                  {followUsLabel}
-                </p>
-                <p className="text-[#0d1a26] font-medium">{followUsText}</p>
-              </div>
-              {socialLinks.length > 0 && (
-                <div className="flex gap-4 flex-wrap">
-                  {socialLinks.map((link) => (
-                    <a
-                      key={`${link.id}-${link.platform}`}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={link.platform}
-                      className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center text-[#0d1a26] hover:bg-[#27446e] hover:text-white hover:border-transparent transition-all duration-300 capitalize text-xs font-bold"
-                    >
-                      {getPlatformIcon(link.platform)}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
         </div>
       </section>
+
+      {/* Main Content Section */}
+      <section className="py-20 px-4 max-w-7xl mx-auto -mt-10 relative z-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+          
+          {/* Left Column: Premium Visual & Info */}
+          <div className="flex flex-col gap-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+              className="relative w-full aspect-[4/5] rounded-br-[120px] overflow-hidden bg-slate-100 shadow-xl"
+            >
+              <Image 
+                src={heroImage}
+                alt={title}
+                fill
+                className="object-cover transition-transform duration-700 hover:scale-105"
+                unoptimized={true}
+              />
+              <div className="absolute inset-0 bg-black/10 pointer-events-none" />
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-10"
+            >
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">{letsTalkTitle}</h3>
+                <div className="flex flex-col gap-1">
+                  <span className="text-slate-500 text-sm">{letsTalkSubtitle}</span>
+                  <a href={`tel:${phone}`} className="text-2xl font-bold text-[#27446e] hover:text-[#00a6cb] transition-colors">
+                    {phone}
+                  </a>
+                  <span className="text-slate-400 text-xs italic mt-2">{phoneScheduleText}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <h3 className="text-xl font-black text-slate-900 tracking-tight">{jobsTitle}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                  {jobsDescription}
+                </p>
+                <Link href="/careers" className="inline-flex items-center gap-2 text-[#00a6cb] font-bold text-sm uppercase tracking-widest hover:text-[#27446e] transition-colors mt-1">
+                  {jobsLinkText} <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </motion.div>
+            
+            {/* Socials - Minimalist */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              className="pt-8 border-t border-slate-200"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-1">
+                    {followUsLabel}
+                  </p>
+                  <p className="text-slate-900 font-bold">{followUsText}</p>
+                </div>
+                {socialLinks.length > 0 && (
+                  <div className="flex gap-3 flex-wrap">
+                    {socialLinks.map((link) => (
+                      <a
+                        key={`${link.id}-${link.platform}`}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={link.platform}
+                        className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-[#27446e] hover:text-white hover:border-transparent transition-all duration-300"
+                      >
+                        {getPlatformIcon(link.platform)}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Form */}
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="bg-white border border-slate-200 rounded-[2.5rem] p-8 sm:p-12 shadow-xl shadow-slate-200/50"
+          >
+            <div className="mb-10">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+                Simply fill out <span className="text-[#00a6cb]">this form</span>
+              </h2>
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                We will promptly respond to your inquiry to discuss potential collaboration opportunities. You can expect to hear from us within two business days.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+              {/* Name & Email */}
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Your full name</label>
+                  <input
+                    type="text"
+                    required
+                    value={formState.name}
+                    onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                    className="w-full bg-transparent border-b-2 border-slate-300 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00a6cb] transition-colors"
+                    placeholder="e.g. John Doe"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Your email address</label>
+                  <input
+                    type="email"
+                    required
+                    value={formState.email}
+                    onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                    className="w-full bg-transparent border-b-2 border-slate-300 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00a6cb] transition-colors"
+                    placeholder="e.g. john@example.com"
+                  />
+                </div>
+              </div>
+
+              {/* Work Type */}
+              <div className="flex flex-col gap-4 mt-4">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  How do you want to work with us?
+                  <span className="block text-slate-400 font-normal normal-case tracking-normal mt-1 text-[11px]">Select the model that works best for your needs</span>
+                </label>
+                <div className="flex flex-col gap-3">
+                  {WORK_TYPES.map((type) => (
+                    <div 
+                      key={type.id}
+                      onClick={() => setFormState({ ...formState, workType: type.id })}
+                      className={`relative flex items-start gap-4 p-5 rounded-2xl cursor-pointer border-2 transition-all duration-300 ${
+                        formState.workType === type.id 
+                          ? "border-[#00a6cb] bg-white shadow-md" 
+                          : "border-slate-200 bg-slate-50 hover:border-[#00a6cb]/30"
+                      }`}
+                    >
+                      <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        formState.workType === type.id ? "border-[#00a6cb]" : "border-slate-300"
+                      }`}>
+                        {formState.workType === type.id && <div className="w-2.5 h-2.5 bg-[#00a6cb] rounded-full" />}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900">{type.title}</span>
+                        <span className="text-sm text-slate-500 leading-relaxed mt-1">{type.desc}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Services */}
+              <div className="flex flex-col gap-4 mt-4">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  What services do you require?
+                  <span className="block text-slate-400 font-normal normal-case tracking-normal mt-1 text-[11px]">Select all services that apply to your project</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {SERVICES.map((service) => {
+                    const isSelected = formState.services.includes(service);
+                    return (
+                      <button
+                        key={service}
+                        type="button"
+                        onClick={() => toggleService(service)}
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${
+                          isSelected 
+                            ? "bg-[#00a6cb] text-white border-[#00a6cb] shadow-md shadow-[#00a6cb]/20" 
+                            : "bg-white text-slate-600 border-slate-200 hover:border-[#00a6cb]/50 hover:bg-slate-50"
+                        }`}
+                      >
+                        {service}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex flex-col gap-2 mt-4">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">What is your phone number?</label>
+                <div className="flex gap-4 items-end">
+                  <div className="relative border-b-2 border-slate-300 pb-3 text-slate-900 focus-within:border-[#00a6cb] transition-colors">
+                    <select className="appearance-none bg-transparent pr-8 focus:outline-none cursor-pointer font-medium text-slate-900">
+                      <option value="US">United States (+1)</option>
+                      <option value="NP">Nepal (+977)</option>
+                      <option value="GB">United Kingdom (+44)</option>
+                      <option value="AU">Australia (+61)</option>
+                      <option value="CH">Switzerland (+41)</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <ChevronDown className="absolute right-0 top-1/2 -translate-y-[80%] w-4 h-4 text-slate-400 pointer-events-none" />
+                  </div>
+                  <input
+                    type="tel"
+                    value={formState.phone}
+                    onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
+                    className="flex-1 bg-transparent border-b-2 border-slate-300 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00a6cb] transition-colors"
+                    placeholder="Phone number"
+                  />
+                </div>
+              </div>
+
+              {/* Message */}
+              <div className="flex flex-col gap-2 mt-4">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Tell us something about your project</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={formState.message}
+                  onChange={(e) => setFormState({ ...formState, message: e.target.value })}
+                  className="w-full bg-transparent border-b-2 border-slate-300 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#00a6cb] transition-colors resize-none"
+                  placeholder="e.g. I am looking to build a..."
+                />
+              </div>
+
+              {errorMsg && (
+                <p className="text-red-500 text-sm font-medium">{errorMsg}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="self-start mt-6 bg-[#27446e] hover:bg-[#1a2d4c] text-white px-10 py-4 rounded-full font-bold uppercase tracking-widest transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_4px_14px_rgba(39,68,110,0.25)] hover:shadow-[0_6px_20px_rgba(39,68,110,0.4)] hover:scale-105 w-full sm:w-auto text-[13px]"
+              >
+                {isSubmitting ? "Sending..." : isSuccess ? "Message Received ✓" : buttonText}
+              </button>
+            </form>
+          </motion.div>
+
+        </div>
+      </section>
+
     </main>
   );
 }

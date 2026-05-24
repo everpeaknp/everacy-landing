@@ -79,7 +79,6 @@
     -webkit-text-size-adjust: 100%;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
   }
 
   body {
@@ -89,7 +88,6 @@
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
   }
 
   /* Accessible focus ring */
@@ -107,13 +105,6 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
-  }
-}
-
-@supports (overflow: clip) {
-  html,
-  body {
-    overflow-x: clip;
   }
 }
 
@@ -256,6 +247,30 @@ canvas {
 }
 .services-scroll-track .services-scroll-thumb.hidden {
   opacity: 0;
+}
+
+/* CKEditor Specific Styles for Blog Posts */
+.image-style-align-left {
+  float: left;
+  margin-right: 1.5rem !important;
+}
+.image-style-align-right {
+  float: right;
+  margin-left: 1.5rem !important;
+}
+.image-style-align-center {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block;
+}
+.prose figure.image {
+  max-width: 100%;
+}
+.prose figure.image img {
+  width: 100%;
+  max-width: 100%;
+  height: auto !important;
+  margin: 0 !important;
 }
 
 @media (min-width: 1024px) {

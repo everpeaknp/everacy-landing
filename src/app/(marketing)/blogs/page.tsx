@@ -58,6 +58,7 @@ export default async function BlogsPage() {
       return {
         key: `${blog.id}-${blog.publish_date ?? idx}`,
         id: blog.id,
+        slug: blog.slug,
         title: blog.title,
         intro: blog.intro || "",
         content: blog.content,

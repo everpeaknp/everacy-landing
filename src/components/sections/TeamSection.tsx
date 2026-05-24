@@ -73,7 +73,13 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
     <section className="py-24 bg-white font-mont relative z-[2] section-clip-x">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <header className="text-center mb-20 px-4">
+        <motion.header 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-center mb-20 px-4"
+        >
           <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase tracking-tight" style={{ color: "#0d2a4a" }}>
             {title}
           </h2>
@@ -85,7 +91,7 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
           <p className="max-w-2xl mx-auto text-lg font-medium" style={{ color: "#0d2a4a" }}>
             {subtitle}
           </p>
-        </header>
+        </motion.header>
 
         {sections.map((section, sectionIndex) => {
           const isLeadership = section.title.toLowerCase().includes("leadership");
@@ -98,12 +104,16 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
                 </div>
               )}
 
-              <h3
-                className={`text-2xl font-bold text-center uppercase tracking-widest opacity-60 ${isLeadership ? "mb-10" : "mb-10"}`}
+              <motion.h3
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 0.6, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className={`text-2xl font-bold text-center uppercase tracking-widest ${isLeadership ? "mb-10" : "mb-10"}`}
                 style={{ color: "#0d2a4a" }}
               >
                 {section.title}
-              </h3>
+              </motion.h3>
 
               <div
                 className={
@@ -113,9 +123,18 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
                 }
               >
                 {section.members.map((member, memberIndex) => (
-                  isLeadership
-                    ? <PremiumTeamCard key={member.id} member={member} dark={memberIndex === 1} />
-                    : <TeamMemberCard key={member.id} member={member} />
+                  <motion.div
+                    key={member.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.5, delay: memberIndex * 0.1, ease: "easeOut" }}
+                  >
+                    {isLeadership
+                      ? <PremiumTeamCard member={member} dark={memberIndex === 1} />
+                      : <TeamMemberCard member={member} />
+                    }
+                  </motion.div>
                 ))}
               </div>
             </div>

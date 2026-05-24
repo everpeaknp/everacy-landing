@@ -58,10 +58,12 @@ export function Navbar({ data, services }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const isAbout = pathname === "/about";
   const isBlogs = pathname === "/blogs";
+  const isBlogDetail = pathname.startsWith("/blogs/") && pathname !== "/blogs";
   const isServices = pathname === "/services";
   const isProjects = pathname === "/projects";
-  const isCareers = pathname === "/careers";
-  const [pastHero, setPastHero] = useState(!isHome && !isProjects && !isCareers && !isAbout && !isBlogs && !isServices);
+  const isCareers = pathname === "/careers" || pathname.startsWith("/careers/");
+  const isContact = pathname === "/contact";
+  const [pastHero, setPastHero] = useState(!isHome && !isCareers && !isAbout && !isBlogs && !isBlogDetail && !isServices && !isContact);
   const [menuOpen, setMenuOpen] = useState(false);
   const [servicesMenuOpen, setServicesMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -72,14 +74,14 @@ export function Navbar({ data, services }: NavbarProps) {
     const y = window.scrollY;
     setScrolled(y > 20);
 
-    // STRICT RULE: Only transparent/dark if on homepage, projects, careers, about, OR services AND not scrolled past hero/intro.
+    // STRICT RULE: Only transparent/dark if on homepage, careers, about, contact, OR services AND not scrolled past hero/intro.
     // Otherwise, it's ALWAYS white ('pastHero' style).
-    if (isHome || isProjects || isCareers || isAbout || isBlogs || isServices) {
+    if (isHome || isCareers || isAbout || isBlogs || isBlogDetail || isServices || isContact) {
       setPastHero(y > window.innerHeight * 0.85);
     } else {
       setPastHero(true);
     }
-  }, [isHome, isProjects, isCareers, isAbout, isBlogs, isServices]);
+  }, [isHome, isProjects, isCareers, isAbout, isBlogs, isBlogDetail, isServices, isContact]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -188,6 +190,8 @@ export function Navbar({ data, services }: NavbarProps) {
           <nav className="hidden md:flex items-center gap-1 h-full" aria-label="Main navigation">
             {navLinks.map(({ label, href }) => {
               // Render a Services nav item with a mega menu
+              const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+              
               if (href === "/services" || label.toLowerCase() === "services") {
                 return (
                   <div
@@ -198,13 +202,17 @@ export function Navbar({ data, services }: NavbarProps) {
                   >
                     <Link
                       href={href}
-                      className="relative px-4 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200 block"
+                      className="relative px-4 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200 block group"
                       style={{
                         fontFamily: "'Montserrat', sans-serif",
-                        color: navIsLight ? "rgba(13,26,38,0.72)" : "rgba(255,255,255,0.7)",
+                        color: navIsLight ? (isActive ? "rgba(13,26,38,1)" : "rgba(13,26,38,0.72)") : (isActive ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.7)"),
                       }}
                     >
                       {label}
+                      <span
+                        className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full transition-opacity duration-200 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                        style={{ background: BRAND_COLOR }}
+                      />
                     </Link>
 
                     {/* Reset mega menu to Tailwind-style: full-width dropdown showing small image + title only */}
@@ -260,12 +268,12 @@ export function Navbar({ data, services }: NavbarProps) {
                   className="relative px-4 py-2 text-[13px] font-medium tracking-wide transition-colors duration-200 group"
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    color: navIsLight ? "rgba(13,26,38,0.72)" : "rgba(255,255,255,0.7)",
+                    color: navIsLight ? (isActive ? "rgba(13,26,38,1)" : "rgba(13,26,38,0.72)") : (isActive ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.7)"),
                   }}
                 >
                   {label}
                   <span
-                    className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full transition-opacity duration-200 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                     style={{ background: BRAND_COLOR }}
                   />
                 </Link>

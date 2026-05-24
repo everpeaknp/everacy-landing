@@ -1,0 +1,61 @@
+/* ── Careers Redesign Specific Styles ───────────────────── */
+
+/* Values / Perks Cards */
+.career-feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.career-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(18, 58, 104, 0.08);
+}
+
+/* Image Strip Parallax */
+.career-image-strip {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+.career-image-strip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3); /* Slight darkening for text/logo overlay */
+}
+
+/* Open Positions List Format */
+.job-list-item {
+  transition: all 0.2s ease;
+}
+.job-list-item:hover {
+  background-color: #121c33;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: #1f2b47;
+  transform: scale(1.01);
+}
+
+/* Timeline Process Steps */
+.process-timeline {
+  position: relative;
+}
+.process-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 38px;
+  width: 2px;
+  background: #e2e8f0; /* slate-200 */
+}
+@media (min-width: 768px) {
+  .process-timeline::before {
+    left: 54px;
+  }
+}
+
+.process-step-marker {
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 0 4px #f8fafc; /* slate-50 */
+}

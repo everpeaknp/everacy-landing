@@ -22,7 +22,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "ik.imagekit.io" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "i.pinimg.com" },
-        { protocol: "https", hostname: "everacylanding.everacy.com" },
+      { protocol: "https", hostname: "assets.codepen.io" },
+      { protocol: "https", hostname: "everacylanding.everacy.com" },
       // Django backend media files (local dev)
       { protocol: "http", hostname: "127.0.0.1", port: "8000" },
       { protocol: "http", hostname: "localhost", port: "8000" },
@@ -109,6 +110,16 @@ const nextConfig: NextConfig = {
             value: "public, max-age=31536000, immutable",
           },
         ],
+      },
+    ];
+  },
+
+  // Proxy media requests to Django
+  async rewrites() {
+    return [
+      {
+        source: "/media/:path*",
+        destination: "http://127.0.0.1:8000/media/:path*", // Proxy to Backend
       },
     ];
   },

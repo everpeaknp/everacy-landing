@@ -8,6 +8,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
 import { testimonials as staticTestimonials, testimonialBg } from "@/lib/site-theme";
 import type { TestimonialData } from "@/lib/api";
 
@@ -209,8 +210,13 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
         }}
       />
 
-      <div className="w-full max-w-6xl mx-auto px-6 relative z-10 flex flex-col items-center">
-        
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-6xl mx-auto px-6 relative z-10 flex flex-col items-center"
+      >
         {/* Subtle, Ultra-Elegant Muted Tagline */}
         <div className="text-center mb-4 select-none">
           <span 
@@ -237,8 +243,8 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                     : "text-slate-400 opacity-40 hover:opacity-75"
                 }`}
                 style={{
-                  height: "52px", // Strict same-height boundary box for perfect alignment
-                  minWidth: "144px", // Standard min-width for balanced layout spacing
+                  height: "64px", // Strict same-height boundary box for perfect alignment
+                  minWidth: "160px", // Standard min-width for balanced layout spacing
                 }}
                 aria-label={`View testimonial from ${item.company}`}
               >
@@ -246,7 +252,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                   <img 
                     src={item.companyLogo} 
                     alt={item.company} 
-                    className="h-full w-auto object-contain max-h-[38px] transition-all"
+                    className="h-full w-auto object-contain max-h-[52px] transition-all"
                     style={{ filter: isActive ? "none" : "grayscale(100%) opacity(40%)" }}
                     loading="lazy"
                   />
@@ -363,7 +369,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
           ))}
         </div>
 
-      </div>
+      </motion.div>
 
       <style>{`
         .scrollbar-none::-webkit-scrollbar {
