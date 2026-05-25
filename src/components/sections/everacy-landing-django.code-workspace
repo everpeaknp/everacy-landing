@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../../../../everacy-landing-django"
+		},
+		{
+			"path": "../../.."
+		}
+	],
+	"settings": {}
+}

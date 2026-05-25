@@ -152,7 +152,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                 {/* Minimal Comment Form */}
                 <div className="pt-8 border-t border-gray-100">
                   <h4 className="text-lg font-bold font-mont text-brand-dark mb-6">Leave a Reply</h4>
-                  <form action={`/api/v1/blogs/${params.slug}/comment/`} method="POST" className="space-y-5">
+                  <form action={`/api/v1/blogs/${resolvedParams.slug}/comment/`} method="POST" className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Name</label>
