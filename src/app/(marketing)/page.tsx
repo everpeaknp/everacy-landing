@@ -6,16 +6,24 @@ import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
 import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
-import { fetchHomeData } from "@/lib/api";
+import { fetchHomeData, fetchGlobalSEO } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = genMeta({
-  title: "Home",
-  description:
-    "Everacy — an elite IT engineering firm delivering cloud, AI, and web solutions that scale beautifully and reliably.",
-  canonicalPath: "/",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const [homeData, globalSeo] = await Promise.all([
+    fetchHomeData(),
+    fetchGlobalSEO(),
+  ]);
+
+  return genMeta({
+    title: "Home",
+    description: "Everacy — an elite IT engineering firm delivering cloud, AI, and web solutions that scale beautifully and reliably.",
+    canonicalPath: "/",
+    seoData: homeData?.seo,
+    globalSeo,
+  });
+}
 
 export default async function HomePage() {
   const homeData = await fetchHomeData();

@@ -49,19 +49,29 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
         <div className="relative z-20 max-w-5xl mx-auto px-4 text-center mt-12">
           {publish_date && (
-            <div className="inline-flex items-center gap-2 text-[#00a6cb] font-semibold text-sm tracking-widest uppercase mb-6 bg-brand-dark/50 px-4 py-1.5 rounded-full border border-brand-mid/20 backdrop-blur-md">
-              <Calendar className="w-4 h-4" />
-              {publish_date}
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+              <div className="inline-flex items-center gap-2 text-[#00a6cb] font-semibold text-sm tracking-widest uppercase bg-brand-dark/50 px-4 py-1.5 rounded-full border border-brand-mid/20 backdrop-blur-md">
+                <Calendar className="w-4 h-4" />
+                {publish_date}
+              </div>
+              
+              {post.category && (
+                <div className="inline-flex items-center text-white font-semibold text-sm tracking-widest uppercase bg-[#00a6cb]/80 px-4 py-1.5 rounded-full border border-white/20 backdrop-blur-md">
+                  {post.category.name}
+                </div>
+              )}
             </div>
           )}
           <h1 className="text-[clamp(2.5rem,6vw,4rem)] font-black text-white drop-shadow-lg mb-6 tracking-tight leading-[1.1]">
             {title}
           </h1>
           {intro && (
-            <p className="text-white/80 drop-shadow-md text-lg sm:text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
+            <p className="text-white/80 drop-shadow-md text-lg sm:text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed mb-8">
               {intro}
             </p>
           )}
+
+
         </div>
       </section>
 
@@ -100,6 +110,18 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                            prose-ol:list-decimal prose-ol:pl-6"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
+
+              {/* Tags Section at the bottom of the article */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-3 mt-12 pt-8 border-t border-gray-100">
+                  <span className="text-sm font-semibold text-gray-500 uppercase tracking-widest">Topics:</span>
+                  {post.tags.map((tag) => (
+                    <span key={tag.id} className="text-sm font-medium text-brand-mid bg-brand-mid/10 px-4 py-1.5 rounded-full">
+                      #{tag.name}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               {/* Comments Section */}
               <div className="mt-20 pt-16 border-t border-gray-100">

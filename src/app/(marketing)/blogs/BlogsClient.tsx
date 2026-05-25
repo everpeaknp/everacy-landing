@@ -13,6 +13,7 @@ export type BlogCard = {
   image: string;
   comments: string;
   date: string;
+  category?: string;
 };
 
 export function BlogsClient({ posts }: { posts: BlogCard[] }) {
@@ -30,6 +31,11 @@ export function BlogsClient({ posts }: { posts: BlogCard[] }) {
             style={{ backgroundImage: `url(${blog.image})` }}
           >
             <div className="title-content">
+              {blog.category && (
+                <div className="inline-block px-3 py-1 mb-3 text-xs font-bold uppercase tracking-wider text-white bg-[#00a6cb]/80 backdrop-blur-md rounded-full border border-white/20">
+                  {blog.category}
+                </div>
+              )}
               <h3>{blog.title}</h3>
               <hr />
               <div className="intro">{blog.intro}</div>

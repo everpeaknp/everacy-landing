@@ -41,6 +41,28 @@ async function apiFetchFresh<T>(path: string): Promise<T | null> {
 
 // ── Types matching Django serializers ─────────────────────
 
+export interface GlobalSEOData {
+  id: number;
+  site_name: string;
+  site_url: string;
+  default_meta_title: string;
+  default_meta_description: string;
+  default_og_image: string | null;
+  favicon: string | null;
+  twitter_handle: string | null;
+  google_analytics_id: string | null;
+  robots_txt_content: string;
+}
+
+export interface SEOFieldData {
+  meta_title: string | null;
+  meta_description: string | null;
+  meta_keywords: string | null;
+  og_image: string | null;
+  canonical_url: string | null;
+  is_indexed: boolean;
+}
+
 export interface NavbarSettingsData {
   id: number;
   site_name: string;
@@ -245,6 +267,7 @@ export interface HomeData {
   footer: FooterData;
   featured_blogs?: BlogPostData[];
   featured_blogs_section?: { title: string; subtitle: string } | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface AboutData {
@@ -254,6 +277,7 @@ export interface AboutData {
   team_subtitle: string;
   scroll_text: string;
   sections: TeamSectionData[];
+  seo?: SEOFieldData | null;
 }
 
 export interface ProjectDetailData {
@@ -429,6 +453,9 @@ export interface BlogPostData {
   is_featured?: boolean;
   comments?: any[];
   recommended_blogs?: any[];
+  seo?: SEOFieldData | null;
+  category?: { id: number; name: string; slug: string } | null;
+  tags?: { id: number; name: string; slug: string }[];
 }
 
 export interface BlogsData {
@@ -492,6 +519,23 @@ export async function fetchCareers(): Promise<CareersData | null> {
 
 export async function fetchJobPosition(slug: string): Promise<JobPositionData | null> {
   return apiFetchFresh<JobPositionData>(`/careers/${slug}/`);
+}
+
+export async function fetchBlogsPageData(): Promise<BlogsPageData | null> {
+  return apiFetch<BlogsPageData>("/blogs/");
+}
+
+export async function fetchGlobalSEO(): Promise<GlobalSEOData | null> {
+  return apiFetch<GlobalSEOData>("/global-seo/");
+}
+
+export interface SitemapData {
+  projects: string[];
+  blogs: string[];
+}
+
+export async function fetchSitemapData(): Promise<SitemapData | null> {
+  return apiFetch<SitemapData>("/sitemap/");
 }
 
 export async function fetchBlogs(): Promise<BlogsData | null> {

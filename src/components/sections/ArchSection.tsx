@@ -138,16 +138,16 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
               className="absolute inset-0 rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"
               style={{ backgroundColor: active?.accentColor || "#123a68" }}
             />
-            <div className="relative aspect-[16/10] md:aspect-[4/3] rounded-[2rem] overflow-hidden shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] border-[6px] border-white/80 bg-slate-100 transition-transform duration-700 ease-out group-hover:scale-[1.02]">
+            <div className="relative aspect-[16/10] md:aspect-[4/3] transition-transform duration-700 ease-out group-hover:scale-[1.02] flex items-center justify-center">
               {active?.imageUrl ? (
                 <img
                   src={active.imageUrl}
                   alt={active.imageAlt}
-                  className="h-full w-full object-cover"
+                  className="w-full h-full object-contain drop-shadow-2xl"
                   loading="lazy"
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center bg-slate-100 rounded-2xl border border-slate-200">
+                <div className="h-full w-full flex items-center justify-center bg-slate-100/50 rounded-2xl border border-slate-200/50">
                   <span className="text-slate-400 font-semibold uppercase tracking-widest text-sm px-6 text-center">
                     {active?.title}
                   </span>

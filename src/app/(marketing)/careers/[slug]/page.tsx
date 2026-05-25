@@ -211,10 +211,21 @@ export default async function CareerDetailPage({ params }: Props) {
                 </div>
               </div>
 
-              <JobApplicationForm jobId={job.id} />
+              <a href="#apply" className="mt-8 w-full block text-center bg-[#00a6cb] hover:bg-[#008db0] text-white px-6 py-4 rounded-xl font-bold uppercase tracking-wider transition-colors shadow-lg">
+                Apply Now
+              </a>
             </div>
           </div>
 
+        </div>
+
+        {/* 3. Job Application Form Section (Full Width / Centered) */}
+        <div id="apply" className="mt-24 max-w-3xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-slate-900 mb-4">Ready to Apply?</h2>
+            <p className="text-slate-600 font-georgia text-lg">Join us and help build the future of elite engineering.</p>
+          </div>
+          <JobApplicationForm jobId={job.id} />
         </div>
       </section>
     </main>

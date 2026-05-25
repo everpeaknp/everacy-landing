@@ -38,58 +38,64 @@ export const viewport: Viewport = {
   ],
 };
 
-/* ── Root metadata ── */
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  keywords: [...siteConfig.keywords],
-  authors: [{ name: siteConfig.author, url: siteConfig.url }],
-  creator: siteConfig.author,
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteConfig.url,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-    images: [
-      {
-        url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: siteConfig.name,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [siteConfig.ogImage],
-    creator: siteConfig.twitterHandle,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+import { fetchGlobalSEO } from "@/lib/api";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await fetchGlobalSEO();
+
+  const siteUrl = seo?.site_url || siteConfig.url;
+  const siteName = seo?.site_name || siteConfig.name;
+  const metaTitle = seo?.default_meta_title || siteConfig.name;
+  const metaDesc = seo?.default_meta_description || siteConfig.description;
+  const ogImage = seo?.default_og_image || siteConfig.ogImage;
+  const twitterHandle = seo?.twitter_handle || siteConfig.twitterHandle;
+  const favicon = seo?.favicon || "/logo/everacy_wo_bg.png";
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: metaTitle,
+      template: `%s | ${siteName}`,
+    },
+    description: metaDesc,
+    keywords: [...siteConfig.keywords],
+    authors: [{ name: siteConfig.author, url: siteUrl }],
+    creator: siteConfig.author,
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: siteUrl,
+      title: metaTitle,
+      description: metaDesc,
+      siteName: siteName,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: siteName }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: metaTitle,
+      description: metaDesc,
+      images: [ogImage],
+      creator: twitterHandle,
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  icons: {
-    icon: "/logo/everacy_wo_bg.png",
-    shortcut: "/logo/everacy_wo_bg.png",
-    apple: "/logo/everacy_wo_bg.png",
-  },
-  manifest: "/site.webmanifest",
-};
+    icons: {
+      icon: favicon,
+      shortcut: favicon,
+      apple: favicon,
+    },
+    manifest: "/site.webmanifest",
+  };
+}
 
 /* ── Root layout ── */
 export default function RootLayout({

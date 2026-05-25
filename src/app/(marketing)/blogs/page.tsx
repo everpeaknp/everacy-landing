@@ -67,6 +67,7 @@ export default async function BlogsPage() {
           "https://s3-us-west-2.amazonaws.com/s.cdpn.io/1765/bg-blog-card.jpg",
         comments: String(blog.comments_count ?? 0),
         date: blog.publish_date || "N/A",
+        category: blog.category?.name,
       };
     }
     return {
