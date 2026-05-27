@@ -208,6 +208,11 @@ export interface ContactPageData {
   hero_image?: string | null;
   lets_talk_title?: string | null;
   lets_talk_subtitle?: string | null;
+  phone?: string | null;
+  phone_schedule_text?: string | null;
+  jobs_title?: string | null;
+  jobs_description?: string | null;
+  jobs_link_text?: string | null;
 }
 
 export interface FooterSettingsData {
