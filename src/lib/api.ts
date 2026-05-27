@@ -205,6 +205,9 @@ export interface ContactPageData {
   follow_us_label: string;
   follow_us_text: string;
   social_links?: ContactSocialLinkData[];
+  hero_image?: string | null;
+  lets_talk_title?: string | null;
+  lets_talk_subtitle?: string | null;
 }
 
 export interface FooterSettingsData {
