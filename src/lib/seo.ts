@@ -55,7 +55,7 @@ export function generateMetadata({
   const canonical = seoData?.canonical_url || `${baseUrl}${canonicalPath}`;
   const keywords = seoData?.meta_keywords 
     ? seoData.meta_keywords.split(',').map(k => k.trim()) 
-    : siteConfig.keywords;
+    : [...siteConfig.keywords];
 
   return {
     title: resolvedTitle,

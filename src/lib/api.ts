@@ -529,8 +529,8 @@ export async function fetchJobPosition(slug: string): Promise<JobPositionData | 
   return apiFetchFresh<JobPositionData>(`/careers/${slug}/`);
 }
 
-export async function fetchBlogsPageData(): Promise<BlogsPageData | null> {
-  return apiFetch<BlogsPageData>("/blogs/");
+export async function fetchBlogsPageData(): Promise<BlogsData | null> {
+  return apiFetchFresh<BlogsData>("/blogs/");
 }
 
 export async function fetchGlobalSEO(): Promise<GlobalSEOData | null> {
