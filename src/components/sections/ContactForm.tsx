@@ -74,6 +74,9 @@ export function ContactForm({ data }: ContactFormProps) {
   const jobsDescription = data?.jobs_description ?? "There's a lot going on here. We're looking for folks that share our passion for tech and are down to innovate. See what roles are currently available at Everacy.";
   const jobsLinkText = data?.jobs_link_text ?? "Apply Now";
 
+  const formTitle = data?.form_title ?? "Simply fill out this form";
+  const formSubtitle = data?.form_subtitle ?? "We will promptly respond to your inquiry to discuss potential collaboration opportunities. You can expect to hear from us within two business days.";
+
   const followUsLabel = data?.follow_us_label ?? "Follow Us";
   const followUsText = data?.follow_us_text ?? "Digital Footprint";
   const buttonText = data?.button_text ?? "Send A Message";
@@ -246,10 +249,16 @@ export function ContactForm({ data }: ContactFormProps) {
           >
             <div className="mb-10">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-                Simply fill out <span className="text-[#00a6cb]">this form</span>
+                {formTitle.includes("this form") ? (
+                  <>
+                    {formTitle.replace("this form", "")} <span className="text-[#00a6cb]">this form</span>
+                  </>
+                ) : (
+                  formTitle
+                )}
               </h2>
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                We will promptly respond to your inquiry to discuss potential collaboration opportunities. You can expect to hear from us within two business days.
+                {formSubtitle}
               </p>
             </div>
 

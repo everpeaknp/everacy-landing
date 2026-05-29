@@ -196,6 +196,8 @@ export interface ContactPageData {
   id: number;
   title: string;
   subtitle: string;
+  form_title?: string;
+  form_subtitle?: string;
   button_text: string;
   direct_connect_title: string;
   inquiries_label: string;
