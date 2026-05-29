@@ -5,6 +5,31 @@ import { motion } from "framer-motion";
 import "./projects.css";
 import type { ProjectData, ProjectsPageHeroData } from "@/lib/api";
 
+function getContrastColor(hexColor: string | undefined): string {
+  if (!hexColor) return "#ffffff";
+  const color = hexColor.replace("#", "");
+  if (color.length !== 6 && color.length !== 3) return "#ffffff";
+  
+  let r = 0, g = 0, b = 0;
+  if (color.length === 6) {
+    r = parseInt(color.substring(0, 2), 16);
+    g = parseInt(color.substring(2, 4), 16);
+    b = parseInt(color.substring(4, 6), 16);
+  } else {
+    r = parseInt(color.charAt(0) + color.charAt(0), 16);
+    g = parseInt(color.charAt(1) + color.charAt(1), 16);
+    b = parseInt(color.charAt(2) + color.charAt(2), 16);
+  }
+  
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 150 ? "#123a68" : "#ffffff";
+}
+
+function getHoverContrastColor(hexColor: string | undefined): string {
+  const contrast = getContrastColor(hexColor);
+  return contrast === "#ffffff" ? "#393838" : "#ffffff";
+}
+
 interface ProjectsClientProps {
   pageHero?: ProjectsPageHeroData | null;
   projects?: ProjectData[];
@@ -379,7 +404,14 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
               onFocus={() => setActiveImage(idx)}
               onClick={() => setOpenTab(idx)}
             >
-              <div className="fancy-nav__item-details" style={{ backgroundColor: item.accentColor }}>
+              <div 
+                className="fancy-nav__item-details" 
+                style={{ 
+                  backgroundColor: item.accentColor,
+                  '--text-color': getContrastColor(item.accentColor),
+                  '--hover-text-color': getHoverContrastColor(item.accentColor)
+                } as any}
+              >
                 <h3 className="fancy-nav__title">{item.title}</h3>
                 <div className="fancy-nav__description">
                   <p>{item.short}</p>
@@ -400,7 +432,10 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
             <div
               key={`tab-${item.id}`}
               className="fancy-nav__tab is-visible"
-              style={{ backgroundColor: item.accentColor }}
+              style={{ 
+                backgroundColor: item.accentColor,
+                '--text-color': getContrastColor(item.accentColor)
+              } as any}
               data-lenis-prevent
             >
               <div className="fancy-nav__tab-container">

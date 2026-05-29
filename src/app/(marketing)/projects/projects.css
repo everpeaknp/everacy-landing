@@ -94,11 +94,11 @@
 }
 
 .fancy-nav__title {
-  color: #fff;
+  color: var(--text-color, #fff);
 }
 
 .fancy-nav__description {
-  color: #fff;
+  color: var(--text-color, #fff);
   line-height: 1.5rem;
   display: -webkit-box;
   overflow: hidden;
@@ -293,7 +293,7 @@
   width: 123%;
   height: 3px;
   content: "";
-  background-color: #fff;
+  background-color: var(--text-color, #fff);
   border-radius: 5px;
 }
 
@@ -317,8 +317,8 @@
   transform: translateY(30px);
   font-weight: 700;
   font-size: 1.1rem;
-  color: #fff;
-  border: 2px solid #fff;
+  color: var(--text-color, #fff);
+  border: 2px solid var(--text-color, #fff);
   background-color: transparent;
   box-sizing: border-box;
   cursor: pointer;
@@ -336,12 +336,12 @@
   content: "";
   transform: translateZ(0) scaleY(0);
   transform-origin: bottom center;
-  background-color: #fff;
+  background-color: var(--text-color, #fff);
   z-index: -1;
 }
 
 .fancy-nav__more-btn:hover {
-  color: #393838;
+  color: var(--hover-text-color, #393838);
 }
 
 .fancy-nav__more-btn:hover::after {
