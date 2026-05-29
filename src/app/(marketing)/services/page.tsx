@@ -42,14 +42,7 @@ export default async function ServicesPage() {
 
         <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
-            {heroTitle.includes("Future") ? (
-              <>
-                Solutions for <br className="hidden sm:block" /> the{" "}
-                <span className="text-[#00a6cb]">Future.</span>
-              </>
-            ) : (
-              heroTitle
-            )}
+            {heroTitle}
           </h1>
           <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
             {heroSubtitle}
