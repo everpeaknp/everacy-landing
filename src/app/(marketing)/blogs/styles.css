@@ -133,6 +133,11 @@
   font-size: 13px;
   font-style: italic;
   line-height: 18px;
+  transition: opacity 0.3s ease;
+}
+
+.blog-card:hover .title-content .intro {
+  opacity: 0;
 }
 
 .card-info {
