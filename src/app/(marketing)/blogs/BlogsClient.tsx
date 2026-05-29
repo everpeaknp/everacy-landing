@@ -41,8 +41,6 @@ export function BlogsClient({ posts }: { posts: BlogCard[] }) {
               <div className="intro">{blog.intro}</div>
             </div>
 
-            <div className="card-info">{blog.content.replace(/<[^>]*>?/gm, '').substring(0, 150)}...</div>
-
             <div className="utility-info">
               <ul className="utility-list">
                 <li className="comments">{blog.comments}</li>

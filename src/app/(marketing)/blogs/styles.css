@@ -133,11 +133,10 @@
   font-size: 13px;
   font-style: italic;
   line-height: 18px;
-  transition: opacity 0.3s ease;
-}
-
-.blog-card:hover .title-content .intro {
-  opacity: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card-info {
