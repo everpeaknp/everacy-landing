@@ -201,6 +201,9 @@ export interface ContactPageData {
   button_text: string;
   direct_connect_title: string;
   inquiries_label: string;
+  phones?: string[];
+  work_types?: { id: string; title: string; desc: string }[];
+  services_list?: string[];
   email: string;
   address_label: string;
   address: string;

@@ -67,7 +67,12 @@ export function ContactForm({ data }: ContactFormProps) {
   
   const letsTalkTitle = data?.lets_talk_title ?? "Let's talk";
   const letsTalkSubtitle = data?.lets_talk_subtitle ?? "Call us for a quick chat at";
-  const phone = data?.phone ?? "+1 (555) 123-4567";
+  
+  // Use data?.phones if provided, otherwise fallback to data?.phone, else default
+  const phonesList = (data?.phones && data.phones.length > 0) 
+    ? data.phones 
+    : [data?.phone ?? "+1 (555) 123-4567"];
+  
   const phoneScheduleText = data?.phone_schedule_text ?? "We're available on weekdays during working hours.";
 
   const jobsTitle = data?.jobs_title ?? "Looking for a job?";
@@ -81,6 +86,9 @@ export function ContactForm({ data }: ContactFormProps) {
   const followUsText = data?.follow_us_text ?? "Digital Footprint";
   const buttonText = data?.button_text ?? "Send A Message";
   const socialLinks = data?.social_links ?? [];
+
+  const dynamicWorkTypes = (data?.work_types && data.work_types.length > 0) ? data.work_types : WORK_TYPES;
+  const dynamicServices = (data?.services_list && data.services_list.length > 0) ? data.services_list : SERVICES;
 
   const [formState, setFormState] = useState({ 
     name: "", email: "", phone: "", workType: "project", services: [] as string[], message: "" 
@@ -107,7 +115,7 @@ export function ContactForm({ data }: ContactFormProps) {
       name: formState.name,
       email: formState.email,
       phone: formState.phone,
-      work_type: WORK_TYPES.find(w => w.id === formState.workType)?.title || formState.workType,
+      work_type: dynamicWorkTypes.find(w => w.id === formState.workType)?.title || formState.workType,
       services: formState.services.join(", "),
       message: formState.message,
     };
@@ -186,9 +194,11 @@ export function ContactForm({ data }: ContactFormProps) {
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">{letsTalkTitle}</h3>
                 <div className="flex flex-col gap-1">
                   <span className="text-slate-500 text-sm">{letsTalkSubtitle}</span>
-                  <a href={`tel:${phone}`} className="text-2xl font-bold text-[#27446e] hover:text-[#00a6cb] transition-colors">
-                    {phone}
-                  </a>
+                  {phonesList.map((p, idx) => (
+                    <a key={`phone-${idx}`} href={`tel:${p}`} className="text-2xl font-bold text-[#27446e] hover:text-[#00a6cb] transition-colors">
+                      {p}
+                    </a>
+                  ))}
                   <span className="text-slate-400 text-xs italic mt-2">{phoneScheduleText}</span>
                 </div>
               </div>
@@ -296,7 +306,7 @@ export function ContactForm({ data }: ContactFormProps) {
                   <span className="block text-slate-400 font-normal normal-case tracking-normal mt-1 text-[11px]">Select the model that works best for your needs</span>
                 </label>
                 <div className="flex flex-col gap-3">
-                  {WORK_TYPES.map((type) => (
+                  {dynamicWorkTypes.map((type) => (
                     <div 
                       key={type.id}
                       onClick={() => setFormState({ ...formState, workType: type.id })}
@@ -327,7 +337,7 @@ export function ContactForm({ data }: ContactFormProps) {
                   <span className="block text-slate-400 font-normal normal-case tracking-normal mt-1 text-[11px]">Select all services that apply to your project</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {SERVICES.map((service) => {
+                  {dynamicServices.map((service) => {
                     const isSelected = formState.services.includes(service);
                     return (
                       <button
