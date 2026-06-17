@@ -190,13 +190,13 @@ export function Footer({ data }: FooterProps) {
         <div className="mt-16 md:mt-24 pt-6 md:pt-8 border-t border-white/5 flex flex-col gap-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-4 md:gap-6 text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-white/30">
-              <Link href={privacyUrl} className="hover:text-white transition-colors">
+              <Link href={privacyUrl} prefetch={false} className="hover:text-white transition-colors">
                 {privacyText}
               </Link>
-              <Link href={termsUrl} className="hover:text-white transition-colors">
+              <Link href={termsUrl} prefetch={false} className="hover:text-white transition-colors">
                 {termsText}
               </Link>
-              <Link href={cookiesUrl} className="hover:text-white transition-colors">
+              <Link href={cookiesUrl} prefetch={false} className="hover:text-white transition-colors">
                 {cookiesText}
               </Link>
             </div>
