@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MessageCircle, Calendar } from "lucide-react";
 import { ScrollAnimationWrapper } from "@/components/ui/scroll-animation-wrapper";
+import { BlogCommentForm } from "@/components/sections/BlogCommentForm";
 
 export const dynamic = "force-dynamic";
 
@@ -150,28 +151,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                 </div>
 
                 {/* Minimal Comment Form */}
-                <div className="pt-8 border-t border-gray-100">
-                  <h4 className="text-lg font-bold font-mont text-brand-dark mb-6">Leave a Reply</h4>
-                  <form action={`/api/v1/blogs/${resolvedParams.slug}/comment/`} method="POST" className="space-y-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Name</label>
-                        <input type="text" name="name" required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-mid focus:border-transparent transition-all outline-none text-sm" placeholder="John Doe" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Email</label>
-                        <input type="email" name="email" required className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-mid focus:border-transparent transition-all outline-none text-sm" placeholder="john@example.com" />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Comment</label>
-                      <textarea name="content" required rows={4} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-mid focus:border-transparent transition-all outline-none resize-none text-sm" placeholder="Share your thoughts..."></textarea>
-                    </div>
-                    <button type="submit" className="bg-brand-dark text-white font-bold text-sm tracking-wide uppercase px-8 py-3 rounded-lg hover:bg-brand-mid transition-colors active:scale-[0.98]">
-                      Post Comment
-                    </button>
-                  </form>
-                </div>
+                <BlogCommentForm slug={resolvedParams.slug} />
               </div>
             </article>
           </ScrollAnimationWrapper>

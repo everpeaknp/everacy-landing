@@ -620,3 +620,33 @@ export async function submitJobApplication(
     return { success: false, message: "Network error occurred" };
   }
 }
+
+export interface BlogCommentPayload {
+  name: string;
+  email: string;
+  content: string;
+}
+
+export async function submitBlogComment(
+  slug: string,
+  payload: BlogCommentPayload
+): Promise<{ success: boolean; message?: string; errors?: Record<string, string[]> }> {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/blogs/${slug}/comment/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 201) {
+      const data = await res.json();
+      return { success: true, message: data.message || "Comment posted successfully!" };
+    }
+
+    const errors = await res.json();
+    return { success: false, errors };
+  } catch (err) {
+    console.error("Error submitting blog comment:", err);
+    return { success: false, message: "Network error occurred" };
+  }
+}
