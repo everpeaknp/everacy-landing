@@ -83,18 +83,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           {/* Main Article Area */}
           <ScrollAnimationWrapper yOffset={40}>
             <article className="min-w-0">
-              {cover_image && (
-                <div className="w-full h-auto aspect-video mb-12 rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                  <Image
-                    src={cover_image}
-                    alt={title}
-                    width={1200}
-                    height={675}
-                    className="w-full h-full object-cover"
-                    unoptimized={true}
-                  />
-                </div>
-              )}
+              {/* Cover image intentionally removed from detail view per user request */}
               
               {/* CKEditor Rich Text Content rendered securely */}
               <div 
