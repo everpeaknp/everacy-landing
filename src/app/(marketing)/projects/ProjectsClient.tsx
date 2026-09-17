@@ -288,13 +288,8 @@ export function ProjectsClient({ pageHero, projects }: ProjectsClientProps) {
 
   const allProjects = useMemo(() => {
     if (!projects || projects.length === 0) return [] as ProjectData[];
-    const featuredIds = new Set(featuredProjects.map((p) => p.id));
-    const nonFeatured = projects
-      .filter((p) => !featuredIds.has(p.id))
-      .sort((a, b) => a.order - b.order);
-    if (nonFeatured.length > 0) return nonFeatured;
-    return [] as ProjectData[];
-  }, [projects, featuredProjects]);
+    return [...projects].sort((a, b) => a.order - b.order);
+  }, [projects]);
   const [activeImage, setActiveImage] = useState(0);
   const [openTab, setOpenTab] = useState<number | null>(null);
   const [openAllProject, setOpenAllProject] = useState<FancyItem | null>(null);
