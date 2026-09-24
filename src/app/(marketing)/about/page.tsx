@@ -2,15 +2,22 @@ import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { TeamSection } from "@/components/sections/TeamSection";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchAboutData } from "@/lib/api";
+import { fetchAboutData, fetchGlobalSEO } from "@/lib/api";
 
-export const dynamic = "force-dynamic";
+export async function generateMetadata(): Promise<Metadata> {
+  const [aboutData, globalSeo] = await Promise.all([
+    fetchAboutData(),
+    fetchGlobalSEO(),
+  ]);
 
-export const metadata: Metadata = genMeta({
-  title: "About",
-  description: "Learn about our team, mission, and values.",
-  canonicalPath: "/about",
-});
+  return genMeta({
+    title: "About",
+    description: "Learn about our team, mission, and values.",
+    canonicalPath: "/about",
+    seoData: aboutData?.seo,
+    globalSeo,
+  });
+}
 
 export default async function AboutPage() {
   const aboutData = await fetchAboutData();

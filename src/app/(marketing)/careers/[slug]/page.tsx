@@ -3,7 +3,7 @@ import { generateMetadata as genMeta } from "@/lib/seo";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchJobPosition } from "@/lib/api";
+import { fetchJobPosition, fetchGlobalSEO } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { JobApplicationForm } from "@/components/sections/JobApplicationForm";
 
@@ -16,16 +16,21 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const job = await fetchJobPosition(slug);
+  const [job, globalSeo] = await Promise.all([
+    fetchJobPosition(slug),
+    fetchGlobalSEO(),
+  ]);
   
   if (!job) {
-    return genMeta({ title: "Job Not Found | Careers" });
+    return genMeta({ title: "Job Not Found | Careers", globalSeo });
   }
 
   return genMeta({
     title: `${job.title} | Careers`,
     description: `Apply for the ${job.title} role at Everacy.`,
     canonicalPath: `/careers/${slug}`,
+    seoData: job.seo,
+    globalSeo,
   });
 }
 

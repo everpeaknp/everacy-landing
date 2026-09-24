@@ -1,17 +1,26 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchBlogs } from "@/lib/api";
+import { fetchBlogs, fetchGlobalSEO } from "@/lib/api";
 import { BlogsClient } from "./BlogsClient";
 import "./styles.css";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = genMeta({
-  title: "Blogs",
-  description: "Insights, engineering stories, and product learnings from Everacy.",
-  canonicalPath: "/blogs",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const [blogsData, globalSeo] = await Promise.all([
+    fetchBlogs(),
+    fetchGlobalSEO(),
+  ]);
+
+  return genMeta({
+    title: "Blogs",
+    description: "Insights, engineering stories, and product learnings from Everacy.",
+    canonicalPath: "/blogs",
+    seoData: blogsData?.seo,
+    globalSeo,
+  });
+}
 
 const BLOGS = [
   {

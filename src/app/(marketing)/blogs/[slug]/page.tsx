@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
-import { fetchBlogPost } from "@/lib/api";
+import { fetchBlogPost, fetchGlobalSEO } from "@/lib/api";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,13 +13,19 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const data = await fetchBlogPost(resolvedParams.slug);
-  if (!data) return genMeta({ title: "Post Not Found" });
+  const [data, globalSeo] = await Promise.all([
+    fetchBlogPost(resolvedParams.slug),
+    fetchGlobalSEO(),
+  ]);
+  
+  if (!data) return genMeta({ title: "Post Not Found", globalSeo });
 
   return genMeta({
     title: data.title,
     description: data.intro || "Read our latest blog post.",
     canonicalPath: `/blogs/${resolvedParams.slug}`,
+    seoData: data.seo,
+    globalSeo,
   });
 }
 

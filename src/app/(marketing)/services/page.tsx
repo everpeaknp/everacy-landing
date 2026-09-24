@@ -1,17 +1,25 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
-import { fetchServicesPage } from "@/lib/api";
+import { fetchServicesPage, fetchGlobalSEO } from "@/lib/api";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import ServicesClient from "./ServicesClient";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = genMeta({
-  title: "Services",
-  description:
-    "Everacy provides cutting-edge digital infrastructure and engineering services tailored to your needs.",
-  canonicalPath: "/services",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const [pageData, globalSeo] = await Promise.all([
+    fetchServicesPage(),
+    fetchGlobalSEO(),
+  ]);
+
+  return genMeta({
+    title: "Services",
+    description: "Everacy provides cutting-edge digital infrastructure and engineering services tailored to your needs.",
+    canonicalPath: "/services",
+    seoData: pageData?.page_hero?.seo,
+    globalSeo,
+  });
+}
 
 export default async function ServicesPage() {
   const pageData = await fetchServicesPage();

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchCareers } from "@/lib/api";
+import { fetchCareers, fetchGlobalSEO } from "@/lib/api";
 import type { 
   JobPositionData, 
   CareerValueData, 
@@ -17,11 +17,20 @@ import "./careers.css";
 // Force dynamic rendering — always fetch fresh data from the backend
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = genMeta({
-  title: "Careers",
-  description: "Join Everacy. We are building the future of digital infrastructure.",
-  canonicalPath: "/careers",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const [careersData, globalSeo] = await Promise.all([
+    fetchCareers(),
+    fetchGlobalSEO(),
+  ]);
+
+  return genMeta({
+    title: "Careers",
+    description: "Join Everacy. We are building the future of digital infrastructure.",
+    canonicalPath: "/careers",
+    seoData: careersData?.seo,
+    globalSeo,
+  });
+}
 
 // Helper for dynamic Lucide icons
 function getIcon(iconName: string, className: string = "w-6 h-6") {
