@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { generateMetadata as genMeta } from "@/lib/seo";
+import { generateMetadata as genMeta, buildJobPostingSchema, siteConfig } from "@/lib/seo";
 import * as Icons from "lucide-react";
 import Link from "next/link";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
@@ -55,6 +55,21 @@ export default async function CareerDetailPage({ params }: Props) {
 
   return (
     <main className="relative z-[1] bg-slate-50 min-h-screen font-mont text-slate-900 pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildJobPostingSchema({
+              title: job.title,
+              description: `Join us as a ${job.title} at Everacy. Located in ${job.location} (${job.job_type}).`,
+              employmentType: job.job_type?.toUpperCase().replace('-', '_'),
+              jobLocationType: job.location,
+              location: job.location,
+              url: `${siteConfig.url}/careers/${slug}`
+            })
+          )
+        }}
+      />
       {/* 1. Job Hero - Matches /about aesthetics */}
       <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">

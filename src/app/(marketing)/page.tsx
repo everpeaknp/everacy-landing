@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { generateMetadata as genMeta } from "@/lib/seo";
+import { generateMetadata as genMeta, buildOrganizationSchema } from "@/lib/seo";
 import { Hero } from "@/components/sections/Hero";
 import { ArchSection } from "@/components/sections/ArchSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
@@ -30,6 +30,12 @@ export default async function HomePage() {
 
   return (
     <main className="section-clip-x" style={{ position: "relative", zIndex: 1, background: "transparent" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildOrganizationSchema())
+        }}
+      />
       <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
         <Hero data={homeData?.hero} />
       </div>

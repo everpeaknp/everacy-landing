@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { generateMetadata as genMeta } from "@/lib/seo";
+import { generateMetadata as genMeta, buildArticleSchema, siteConfig } from "@/lib/seo";
 import { fetchBlogPost, fetchGlobalSEO } from "@/lib/api";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import Link from "next/link";
@@ -41,6 +41,20 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <main className="relative z-[1] bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildArticleSchema({
+              title: title,
+              description: intro || "",
+              image: cover_image ? (cover_image.startsWith('http') ? cover_image : `${siteConfig.url}${cover_image}`) : undefined,
+              datePublished: publish_date,
+              url: `${siteConfig.url}/blogs/${resolvedParams.slug}`
+            })
+          )
+        }}
+      />
       {/* Dark Liquid Hero matching About page */}
       <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex flex-col items-center justify-center min-h-[60vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">

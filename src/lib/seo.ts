@@ -117,3 +117,92 @@ export function buildPersonSchema({
     },
   };
 }
+
+export function buildArticleSchema({
+  title,
+  description,
+  image,
+  datePublished,
+  dateModified,
+  authorName,
+  url,
+}: {
+  title: string;
+  description: string;
+  image?: string;
+  datePublished?: string;
+  dateModified?: string;
+  authorName?: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description: description,
+    image: image ? [image] : [],
+    datePublished: datePublished,
+    dateModified: dateModified || datePublished,
+    author: authorName ? {
+      "@type": "Person",
+      name: authorName,
+    } : {
+      "@type": "Organization",
+      name: siteConfig.name,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteConfig.url}/logo/everacy_wo_bg.png`,
+      }
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url
+    }
+  };
+}
+
+export function buildJobPostingSchema({
+  title,
+  description,
+  datePosted,
+  employmentType,
+  jobLocationType,
+  location,
+  url,
+}: {
+  title: string;
+  description: string;
+  datePosted?: string;
+  employmentType?: string; // e.g. FULL_TIME, PART_TIME, CONTRACTOR, INTERN
+  jobLocationType?: string; // e.g. TELECOMMUTE
+  location?: string;
+  url: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: title,
+    description: description,
+    datePosted: datePosted,
+    employmentType: employmentType,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      sameAs: siteConfig.url,
+      logo: `${siteConfig.url}/logo/everacy_wo_bg.png`
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: location || "Remote",
+        addressCountry: "NP"
+      }
+    },
+    ...(jobLocationType === "Remote" ? { applicantLocationRequirements: { "@type": "Country", name: "NP" }, jobLocationType: "TELECOMMUTE" } : {})
+  };
+}
