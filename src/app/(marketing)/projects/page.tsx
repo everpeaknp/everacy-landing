@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
-import { fetchProjects, fetchGlobalSEO } from "@/lib/api";
+import { fetchProjects, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 import { ProjectsClient } from "./ProjectsClient";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [projectsData, globalSeo] = await Promise.all([
+  const [projectsData, globalSeo, pageSeo] = await Promise.all([
     fetchProjects(),
     fetchGlobalSEO(),
+    fetchPageSEO("projects"),
   ]);
 
   return genMeta({
@@ -17,16 +18,30 @@ export async function generateMetadata(): Promise<Metadata> {
     canonicalPath: "/projects",
     seoData: projectsData?.page_hero?.seo,
     globalSeo,
+    pageSeo,
   });
 }
 
 export default async function ProjectsPage() {
-  const projectsData = await fetchProjects();
+  const [projectsData, pageSeo] = await Promise.all([
+    fetchProjects(),
+    fetchPageSEO("projects"),
+  ]);
 
   return (
-    <ProjectsClient
-      pageHero={projectsData?.page_hero}
-      projects={projectsData?.projects}
-    />
+    <>
+      {(pageSeo?.jsonLd || pageSeo?.json_ld) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageSeo.jsonLd || pageSeo.json_ld),
+          }}
+        />
+      )}
+      <ProjectsClient
+        pageHero={projectsData?.page_hero}
+        projects={projectsData?.projects}
+      />
+    </>
   );
 }

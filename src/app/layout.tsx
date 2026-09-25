@@ -43,24 +43,27 @@ import { fetchGlobalSEO } from "@/lib/api";
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchGlobalSEO();
 
-  const siteUrl = seo?.site_url || siteConfig.url;
-  const siteName = seo?.site_name || siteConfig.name;
-  const metaTitle = seo?.default_meta_title || siteConfig.name;
-  const metaDesc = seo?.default_meta_description || siteConfig.description;
-  const ogImage = seo?.default_og_image || siteConfig.ogImage;
-  const twitterHandle = seo?.twitter_handle || siteConfig.twitterHandle;
+  const siteUrl = seo?.canonical_domain || seo?.canonicalDomain || seo?.site_url || siteConfig.url;
+  const siteName = seo?.organization_name || seo?.organizationName || seo?.site_name || siteConfig.name;
+  const metaTitle = seo?.default_meta_title || siteName;
+  const metaDesc = seo?.default_description || seo?.default_meta_description || siteConfig.description;
+  const ogImage = seo?.default_og_image || seo?.defaultOgImage || siteConfig.ogImage;
+  const twitterHandle = seo?.twitter_handle || seo?.twitterHandle || siteConfig.twitterHandle;
   const favicon = seo?.favicon || "/logo/everacy_wo_bg.png";
+  const titleTemplate = seo?.default_title_template || seo?.titleTemplate || `%s | ${siteName}`;
 
   return {
     metadataBase: new URL(siteUrl),
     title: {
       default: metaTitle,
-      template: `%s | ${siteName}`,
+      template: titleTemplate,
     },
     description: metaDesc,
-    keywords: [...siteConfig.keywords],
-    authors: [{ name: siteConfig.author, url: siteUrl }],
-    creator: siteConfig.author,
+    keywords: seo?.default_keywords 
+      ? seo.default_keywords.split(',').map((k: string) => k.trim()).filter(Boolean)
+      : [...siteConfig.keywords],
+    authors: [{ name: seo?.organization_name || siteConfig.author, url: siteUrl }],
+    creator: seo?.organization_name || siteConfig.author,
     openGraph: {
       type: "website",
       locale: "en_US",

@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { TeamSection } from "@/components/sections/TeamSection";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchAboutData, fetchGlobalSEO } from "@/lib/api";
+import { fetchAboutData, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [aboutData, globalSeo] = await Promise.all([
+  const [aboutData, globalSeo, pageSeo] = await Promise.all([
     fetchAboutData(),
     fetchGlobalSEO(),
+    fetchPageSEO("about"),
   ]);
 
   return genMeta({
@@ -16,11 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
     canonicalPath: "/about",
     seoData: aboutData?.seo,
     globalSeo,
+    pageSeo,
   });
 }
 
 export default async function AboutPage() {
-  const aboutData = await fetchAboutData();
+  const [aboutData, pageSeo] = await Promise.all([
+    fetchAboutData(),
+    fetchPageSEO("about"),
+  ]);
 
   const heroTitle = aboutData?.title ?? "Everything Starts with Elite Minds.";
   const heroSubtitle =
@@ -31,6 +36,14 @@ export default async function AboutPage() {
 
   return (
     <main className="relative z-[1] bg-white">
+      {(pageSeo?.jsonLd || pageSeo?.json_ld) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageSeo.jsonLd || pageSeo.json_ld),
+          }}
+        />
+      )}
       {/* Dark Liquid About Hero */}
       <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">

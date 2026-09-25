@@ -6,14 +6,15 @@ import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
 import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
-import { fetchHomeData, fetchGlobalSEO } from "@/lib/api";
+import { fetchHomeData, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [homeData, globalSeo] = await Promise.all([
+  const [homeData, globalSeo, pageSeo] = await Promise.all([
     fetchHomeData(),
     fetchGlobalSEO(),
+    fetchPageSEO("home"),
   ]);
 
   return genMeta({
@@ -22,18 +23,24 @@ export async function generateMetadata(): Promise<Metadata> {
     canonicalPath: "/",
     seoData: homeData?.seo,
     globalSeo,
+    pageSeo,
   });
 }
 
 export default async function HomePage() {
-  const homeData = await fetchHomeData();
+  const [homeData, pageSeo] = await Promise.all([
+    fetchHomeData(),
+    fetchPageSEO("home"),
+  ]);
+
+  const schemaData = pageSeo?.jsonLd || pageSeo?.json_ld || buildOrganizationSchema();
 
   return (
     <main className="section-clip-x" style={{ position: "relative", zIndex: 1, background: "transparent" }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(buildOrganizationSchema())
+          __html: JSON.stringify(schemaData)
         }}
       />
       <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>

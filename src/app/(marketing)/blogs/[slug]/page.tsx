@@ -49,7 +49,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
               title: title,
               description: intro || "",
               image: cover_image ? (cover_image.startsWith('http') ? cover_image : `${siteConfig.url}${cover_image}`) : undefined,
-              datePublished: publish_date,
+              datePublished: publish_date || undefined,
               url: `${siteConfig.url}/blogs/${resolvedParams.slug}`
             })
           )

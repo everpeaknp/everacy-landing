@@ -1,28 +1,33 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
-import { fetchServicesPage, fetchGlobalSEO } from "@/lib/api";
+import { fetchServicesPage, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import ServicesClient from "./ServicesClient";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [pageData, globalSeo] = await Promise.all([
+  const [pageData, globalSeo, pageSeo] = await Promise.all([
     fetchServicesPage(),
     fetchGlobalSEO(),
+    fetchPageSEO("services"),
   ]);
 
   return genMeta({
     title: "Services",
     description: "Everacy provides cutting-edge digital infrastructure and engineering services tailored to your needs.",
     canonicalPath: "/services",
-    seoData: pageData?.page_hero?.seo,
+    seoData: pageData?.hero?.seo,
     globalSeo,
+    pageSeo,
   });
 }
 
 export default async function ServicesPage() {
-  const pageData = await fetchServicesPage();
+  const [pageData, pageSeo] = await Promise.all([
+    fetchServicesPage(),
+    fetchPageSEO("services"),
+  ]);
 
   const heroTitle =
     pageData?.hero?.title ?? "Solutions for the Future.";
@@ -33,6 +38,14 @@ export default async function ServicesPage() {
 
   return (
     <main className="relative z-[1] bg-white">
+      {(pageSeo?.jsonLd || pageSeo?.json_ld) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageSeo.jsonLd || pageSeo.json_ld),
+          }}
+        />
+      )}
       {/* Dark Liquid Services Hero — matches /about aesthetics */}
       <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">

@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchBlogs, fetchGlobalSEO } from "@/lib/api";
+import { fetchBlogs, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 import { BlogsClient } from "./BlogsClient";
 import "./styles.css";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [blogsData, globalSeo] = await Promise.all([
+  const [blogsData, globalSeo, pageSeo] = await Promise.all([
     fetchBlogs(),
     fetchGlobalSEO(),
+    fetchPageSEO("blogs"),
   ]);
 
   return genMeta({
@@ -19,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     canonicalPath: "/blogs",
     seoData: blogsData?.seo,
     globalSeo,
+    pageSeo,
   });
 }
 
@@ -56,7 +58,10 @@ const BLOGS = [
 ];
 
 export default async function BlogsPage() {
-  const blogsData = await fetchBlogs();
+  const [blogsData, pageSeo] = await Promise.all([
+    fetchBlogs(),
+    fetchPageSEO("blogs"),
+  ]);
   const heroTitle = blogsData?.hero?.title || "Blogs & Insights";
   const heroSubtitle =
     blogsData?.hero?.subtitle ||
@@ -93,6 +98,14 @@ export default async function BlogsPage() {
 
   return (
     <main className="relative z-[1] bg-white">
+      {(pageSeo?.jsonLd || pageSeo?.json_ld) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageSeo.jsonLd || pageSeo.json_ld),
+          }}
+        />
+      )}
       <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
         <div className="absolute inset-0 w-full h-full bg-black -z-10">
           <LiquidEffectAnimation fill="absolute" zIndex={0} />

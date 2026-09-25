@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import { fetchCareers, fetchGlobalSEO } from "@/lib/api";
+import { fetchCareers, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 import type { 
   JobPositionData, 
   CareerValueData, 
@@ -18,9 +18,10 @@ import "./careers.css";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [careersData, globalSeo] = await Promise.all([
+  const [careersData, globalSeo, pageSeo] = await Promise.all([
     fetchCareers(),
     fetchGlobalSEO(),
+    fetchPageSEO("careers"),
   ]);
 
   return genMeta({
@@ -29,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
     canonicalPath: "/careers",
     seoData: careersData?.seo,
     globalSeo,
+    pageSeo,
   });
 }
 
@@ -113,7 +115,10 @@ const STATIC_PROCESS: CareerProcessStepData[] = [
 
 
 export default async function CareersPage() {
-  const careersData = await fetchCareers();
+  const [careersData, pageSeo] = await Promise.all([
+    fetchCareers(),
+    fetchPageSEO("careers"),
+  ]);
 
   // --- Hero Data ---
   const heroTitle = careersData?.hero?.title ?? "Build the Future.";
@@ -147,6 +152,14 @@ export default async function CareersPage() {
 
   return (
     <main className="relative z-[1] bg-white min-h-screen font-mont text-slate-900">
+      {(pageSeo?.jsonLd || pageSeo?.json_ld) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(pageSeo.jsonLd || pageSeo.json_ld),
+          }}
+        />
+      )}
       
       {/* 1. Dark Liquid Careers Hero */}
       <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">

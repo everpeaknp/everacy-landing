@@ -42,16 +42,86 @@ async function apiFetchFresh<T>(path: string): Promise<T | null> {
 // ── Types matching Django serializers ─────────────────────
 
 export interface GlobalSEOData {
-  id: number;
-  site_name: string;
-  site_url: string;
-  default_meta_title: string;
-  default_meta_description: string;
-  default_og_image: string | null;
-  favicon: string | null;
-  twitter_handle: string | null;
-  google_analytics_id: string | null;
-  robots_txt_content: string;
+  id?: number;
+  site_name?: string;
+  site_url?: string;
+  default_title_template?: string;
+  default_meta_title?: string;
+  default_meta_description?: string;
+  default_description?: string;
+  default_keywords?: string;
+  default_og_image?: string | null;
+  favicon?: string | null;
+  twitter_handle?: string | null;
+  facebook_page_id?: string;
+  linkedin_company_url?: string;
+  google_analytics_id?: string | null;
+  google_tag_manager_id?: string;
+  facebook_pixel_id?: string;
+  canonical_domain?: string;
+  robots_txt_content?: string;
+  sitemap_enabled?: boolean;
+  sitemap_change_frequency?: string;
+  sitemap_priority?: number;
+  organization_name?: string;
+  organization_logo?: string | null;
+  organization_address?: string;
+  organization_phone?: string;
+  organization_email?: string;
+
+  // camelCase aliases for yummy parity
+  titleTemplate?: string;
+  defaultDescription?: string;
+  defaultKeywords?: string;
+  defaultOgImage?: string | null;
+  twitterHandle?: string | null;
+  canonicalDomain?: string;
+  robotsTxtContent?: string;
+  googleAnalyticsId?: string | null;
+  googleTagManagerId?: string;
+  facebookPixelId?: string;
+  facebookPageId?: string;
+  linkedinCompanyUrl?: string;
+  organizationName?: string;
+  organizationLogo?: string | null;
+  organizationAddress?: string;
+  organizationPhone?: string;
+  organizationEmail?: string;
+  sitemapEnabled?: boolean;
+}
+
+export interface PageSEOData {
+  id?: number;
+  page_id?: string;
+  pageId?: string;
+  meta_title?: string;
+  metaTitle?: string;
+  meta_description?: string;
+  metaDescription?: string;
+  meta_keywords?: string;
+  metaKeywords?: string;
+  canonical_url?: string | null;
+  canonicalUrl?: string | null;
+  og_title?: string;
+  ogTitle?: string;
+  og_description?: string;
+  ogDescription?: string;
+  og_type?: string;
+  ogType?: string;
+  og_image?: string | null;
+  ogImage?: string | null;
+  twitter_card_type?: string;
+  twitterCardType?: string;
+  robots_meta?: string;
+  robotsMeta?: string;
+  include_in_sitemap?: boolean;
+  includeInSitemap?: boolean;
+  sitemap_priority?: number;
+  sitemapPriority?: number;
+  sitemap_change_frequency?: string;
+  sitemapChangeFrequency?: string;
+  json_ld?: Record<string, unknown> | null;
+  jsonLd?: Record<string, unknown> | null;
 }
 
 export interface SEOFieldData {
@@ -134,11 +204,13 @@ export interface ServicesPageHeroData {
   subtitle: string;
   background_image: string | null;
   scroll_text: string | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface ServicesPageData {
   hero: ServicesPageHeroData | null;
   services: ServiceCardData[];
+  seo?: SEOFieldData | null;
 }
 
 export interface TestimonialData {
@@ -218,6 +290,7 @@ export interface ContactPageData {
   jobs_title?: string | null;
   jobs_description?: string | null;
   jobs_link_text?: string | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface FooterSettingsData {
@@ -332,6 +405,7 @@ export interface ProjectData {
   hero: ProjectHeroData | null;
   details: ProjectDetailData[];
   tagline: ProjectTaglineData | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface ProjectsPageHeroData {
@@ -342,11 +416,13 @@ export interface ProjectsPageHeroData {
   logo_alt: string;
   background_image: string | null;
   scroll_text: string | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface ProjectsData {
   page_hero: ProjectsPageHeroData | null;
   projects: ProjectData[];
+  seo?: SEOFieldData | null;
 }
 
 export interface CareerHeroData {
@@ -376,6 +452,7 @@ export interface JobPositionData {
   requirements?: string[];
   nice_to_have?: string[];
   soft_skills?: string[];
+  seo?: SEOFieldData | null;
 }
 
 export interface CareerFooterData {
@@ -433,6 +510,7 @@ export interface CareerPageSettingsData {
   testimonials_subtitle: string | null;
   process_title: string;
   process_subtitle: string | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface CareersData {
@@ -444,6 +522,7 @@ export interface CareersData {
   process_steps: CareerProcessStepData[];
   footer: CareerFooterData | null;
   page_settings: CareerPageSettingsData | null;
+  seo?: SEOFieldData | null;
 }
 
 export interface BlogHeroData {
@@ -474,6 +553,7 @@ export interface BlogPostData {
 export interface BlogsData {
   hero: BlogHeroData | null;
   posts: BlogPostData[];
+  seo?: SEOFieldData | null;
 }
 
 // ── API Fetchers ───────────────────────────────────────────
@@ -540,6 +620,14 @@ export async function fetchBlogsPageData(): Promise<BlogsData | null> {
 
 export async function fetchGlobalSEO(): Promise<GlobalSEOData | null> {
   return apiFetch<GlobalSEOData>("/global-seo/");
+}
+
+export async function fetchPageSEO(pageId: string): Promise<PageSEOData | null> {
+  return apiFetch<PageSEOData>(`/seo/page/${pageId}/`);
+}
+
+export async function fetchAllPageSEO(): Promise<Record<string, PageSEOData> | null> {
+  return apiFetch<Record<string, PageSEOData>>("/seo/pages/");
 }
 
 export interface SitemapData {

@@ -19,7 +19,7 @@ export const siteConfig = {
 } as const;
 
 /** ── Metadata helper ── */
-import { SEOFieldData, GlobalSEOData } from "@/lib/api";
+import { SEOFieldData, GlobalSEOData, PageSEOData } from "@/lib/api";
 
 interface MetaOptions {
   title?: string;
@@ -29,6 +29,7 @@ interface MetaOptions {
   noIndex?: boolean;
   seoData?: SEOFieldData | null;
   globalSeo?: GlobalSEOData | null;
+  pageSeo?: PageSEOData | null;
 }
 
 export function generateMetadata({
@@ -39,23 +40,44 @@ export function generateMetadata({
   noIndex = false,
   seoData = null,
   globalSeo = null,
+  pageSeo = null,
 }: MetaOptions = {}): Metadata {
-  const finalTitle = seoData?.meta_title || title;
-  const finalDescription = seoData?.meta_description || description;
-  const finalImage = seoData?.og_image || image;
-  const isIndexed = seoData ? seoData.is_indexed : !noIndex;
-  
-  const siteName = globalSeo?.site_name || siteConfig.name;
-  const baseUrl = globalSeo?.site_url || siteConfig.url;
+  const finalTitle = pageSeo?.meta_title || pageSeo?.metaTitle || seoData?.meta_title || title;
+  const finalDescription = pageSeo?.meta_description || pageSeo?.metaDescription || seoData?.meta_description || description;
+  const finalOgTitle = pageSeo?.og_title || pageSeo?.ogTitle || finalTitle;
+  const finalOgDescription = pageSeo?.og_description || pageSeo?.ogDescription || finalDescription;
+  const finalImage = pageSeo?.og_image || pageSeo?.ogImage || seoData?.og_image || image;
+  const ogType = (pageSeo?.og_type || pageSeo?.ogType || 'website') as any;
+  const twitterCard = (pageSeo?.twitter_card_type || pageSeo?.twitterCardType || 'summary_large_image') as any;
 
-  // Let Next.js handle the template string `%s | SiteName` via layout.tsx.
-  // We just return the exact page title, or fallback to siteName.
+  // Robots meta evaluation
+  let isIndexed = seoData ? seoData.is_indexed : !noIndex;
+  const robotsMeta = pageSeo?.robots_meta || pageSeo?.robotsMeta;
+  if (robotsMeta) {
+    if (robotsMeta.includes('noindex')) {
+      isIndexed = false;
+    } else if (robotsMeta.includes('index')) {
+      isIndexed = true;
+    }
+  }
+  
+  const siteName = globalSeo?.organization_name || globalSeo?.organizationName || globalSeo?.site_name || siteConfig.name;
+  const baseUrl = globalSeo?.canonical_domain || globalSeo?.canonicalDomain || globalSeo?.site_url || siteConfig.url;
+
   const resolvedTitle = finalTitle || siteName;
-    
-  const canonical = seoData?.canonical_url || `${baseUrl}${canonicalPath}`;
-  const keywords = seoData?.meta_keywords 
-    ? seoData.meta_keywords.split(',').map(k => k.trim()) 
+  const canonical = pageSeo?.canonical_url || pageSeo?.canonicalUrl || seoData?.canonical_url || `${baseUrl}${canonicalPath}`;
+  
+  const rawKeywords = pageSeo?.meta_keywords || pageSeo?.metaKeywords || seoData?.meta_keywords || globalSeo?.default_keywords || globalSeo?.defaultKeywords;
+  const keywords = rawKeywords 
+    ? rawKeywords.split(',').map((k: string) => k.trim()).filter(Boolean)
     : [...siteConfig.keywords];
+
+  const fallbackDefaultOg = globalSeo?.default_og_image || globalSeo?.defaultOgImage;
+  const resolvedImageUrl = finalImage 
+    ? (finalImage.startsWith('http') ? finalImage : `${baseUrl}${finalImage}`)
+    : (fallbackDefaultOg 
+        ? (fallbackDefaultOg.startsWith('http') ? fallbackDefaultOg : `${baseUrl}${fallbackDefaultOg}`) 
+        : undefined);
 
   return {
     title: resolvedTitle,
@@ -65,18 +87,19 @@ export function generateMetadata({
       canonical,
     },
     openGraph: {
-      title: resolvedTitle,
-      description: finalDescription,
+      title: finalOgTitle || resolvedTitle,
+      description: finalOgDescription || finalDescription,
       url: canonical,
       siteName,
-      images: finalImage ? [{ url: finalImage.startsWith('http') ? finalImage : `${baseUrl}${finalImage}`, width: 1200, height: 630 }] : [],
+      type: ogType,
+      images: resolvedImageUrl ? [{ url: resolvedImageUrl, width: 1200, height: 630 }] : [],
     },
     twitter: {
-      card: "summary_large_image",
-      title: resolvedTitle,
-      description: finalDescription,
-      images: finalImage ? [finalImage.startsWith('http') ? finalImage : `${baseUrl}${finalImage}`] : [],
-      creator: globalSeo?.twitter_handle || siteConfig.twitterHandle,
+      card: twitterCard,
+      title: finalOgTitle || resolvedTitle,
+      description: finalOgDescription || finalDescription,
+      images: resolvedImageUrl ? [resolvedImageUrl] : [],
+      creator: globalSeo?.twitter_handle || globalSeo?.twitterHandle || siteConfig.twitterHandle,
     },
     robots: isIndexed
       ? { index: true, follow: true }
