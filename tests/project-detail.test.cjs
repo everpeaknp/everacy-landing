@@ -10,6 +10,16 @@ test('project detail route renders CMS fields and uses not-found for missing pro
   assert.ok(fs.existsSync('src/app/(marketing)/projects/[slug]/loading.tsx'));
 });
 
+test('project details present CMS features as a visual case-study section', () => {
+  const route = fs.readFileSync('src/app/(marketing)/projects/[slug]/page.tsx', 'utf8');
+  assert.ok(route.includes('Product capabilities'));
+  assert.ok(route.includes('features.map'));
+  assert.ok(route.includes('Project snapshot'));
+  assert.ok(route.includes('project.platforms'));
+  assert.ok(route.includes('project.team_composition'));
+  assert.ok(route.includes('project.tech_stack'));
+});
+
 test('project list cards link to their resolvable slug routes', () => {
   const list = fs.readFileSync('src/app/(marketing)/projects/ProjectsClient.tsx', 'utf8');
   assert.ok(list.includes('href={`/projects/${project.slug}`}'));
