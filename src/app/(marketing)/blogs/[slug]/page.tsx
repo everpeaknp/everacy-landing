@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateMetadata as genMeta, buildArticleSchema, siteConfig } from "@/lib/seo";
 import { fetchBlogPost, fetchGlobalSEO } from "@/lib/api";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MessageCircle, Calendar } from "lucide-react";
@@ -22,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return genMeta({
     title: data.title,
-    description: data.intro || "Read our latest blog post.",
+    description: data.intro || "",
     canonicalPath: `/blogs/${resolvedParams.slug}`,
     seoData: data.seo,
     globalSeo,
@@ -55,39 +54,31 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           )
         }}
       />
-      {/* Dark Liquid Hero matching About page */}
-      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex flex-col items-center justify-center min-h-[60vh] section-clip-x">
-        <div className="absolute inset-0 w-full h-full bg-black -z-10">
-          <LiquidEffectAnimation fill="absolute" zIndex={0} />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background: "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
-            }}
-          />
-        </div>
-
-        <div className="relative z-20 max-w-5xl mx-auto px-4 text-center mt-12">
+      <section className="relative isolate overflow-hidden border-b border-[#dce8ec] bg-[#f4f9fa] px-5 py-16 font-mont text-[#0d2a4a] sm:px-8 sm:py-20">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,166,203,0.09),transparent_62%)]" />
+        <div className="relative mx-auto max-w-5xl text-center">
+          <Link href="/blogs" className="mb-7 inline-flex items-center gap-2 text-sm font-bold text-[#008b9b] transition-colors hover:text-[#0d2a4a]">
+            <span aria-hidden="true">←</span> All insights
+          </Link>
           {publish_date && (
             <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-              <div className="inline-flex items-center gap-2 text-[#00a6cb] font-semibold text-sm tracking-widest uppercase bg-brand-dark/50 px-4 py-1.5 rounded-full border border-brand-mid/20 backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 text-[#008b9b] font-bold text-xs tracking-widest uppercase bg-white px-4 py-1.5 border border-[#dce8ec]">
                 <Calendar className="w-4 h-4" />
                 {publish_date}
               </div>
               
               {post.category && (
-                <div className="inline-flex items-center text-white font-semibold text-sm tracking-widest uppercase bg-[#00a6cb]/80 px-4 py-1.5 rounded-full border border-white/20 backdrop-blur-md">
+                <div className="inline-flex items-center text-[#0d2a4a] font-bold text-xs tracking-widest uppercase bg-white px-4 py-1.5 border border-[#dce8ec]">
                   {post.category.name}
                 </div>
               )}
             </div>
           )}
-          <h1 className="text-[clamp(2.5rem,6vw,4rem)] font-black text-white drop-shadow-lg mb-6 tracking-tight leading-[1.1]">
+          <h1 className="text-[clamp(2.2rem,6vw,3.75rem)] font-black text-[#0d2a4a] mb-5 tracking-tight leading-[1.1]">
             {title}
           </h1>
           {intro && (
-            <p className="text-white/80 drop-shadow-md text-lg sm:text-xl md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed mb-8">
+            <p className="mx-auto mb-5 max-w-3xl text-base font-medium leading-7 text-slate-600 sm:text-lg sm:leading-8">
               {intro}
             </p>
           )}
@@ -167,7 +158,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
           {/* Sidebar */}
           <ScrollAnimationWrapper delay={0.2} yOffset={40} className="sticky top-32 space-y-8">
-            <aside>
+          {recommended_blogs && recommended_blogs.length > 0 && <aside>
               <div className="bg-gray-50 border border-gray-100 rounded-3xl p-8">
                 <h3 className="text-xl font-black font-mont text-brand-dark tracking-tight mb-6 flex items-center gap-2">
                   <div className="w-2 h-6 bg-brand-mid rounded-full"></div>
@@ -201,12 +192,10 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                         </div>
                       </Link>
                     ))
-                  ) : (
-                    <p className="text-sm text-gray-500">More blogs coming soon!</p>
-                  )}
+                  ) : null}
                 </div>
               </div>
-            </aside>
+          </aside>}
           </ScrollAnimationWrapper>
         </div>
       </section>

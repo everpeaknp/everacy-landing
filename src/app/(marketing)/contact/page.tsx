@@ -13,8 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
 
   return genMeta({
-    title: "Contact",
-    description: "Get in touch with Everacy. Let's build what matters.",
+    title: contactData?.title || undefined,
+    description: contactData?.subtitle || undefined,
     canonicalPath: "/contact",
     seoData: contactData?.seo,
     globalSeo,

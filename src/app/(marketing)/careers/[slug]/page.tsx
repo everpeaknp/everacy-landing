@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { generateMetadata as genMeta, buildJobPostingSchema, siteConfig } from "@/lib/seo";
 import * as Icons from "lucide-react";
 import Link from "next/link";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { fetchJobPosition, fetchGlobalSEO } from "@/lib/api";
 import { notFound } from "next/navigation";
 import { JobApplicationForm } from "@/components/sections/JobApplicationForm";
@@ -27,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return genMeta({
     title: `${job.title} | Careers`,
-    description: `Apply for the ${job.title} role at Everacy.`,
+    description: job.about_role || job.about_company || undefined,
     canonicalPath: `/careers/${slug}`,
     seoData: job.seo,
     globalSeo,
@@ -47,7 +46,7 @@ export default async function CareerDetailPage({ params }: Props) {
     notFound();
   }
 
-  // Fallbacks for data just in case the arrays are missing
+  // Missing CMS collections are valid empty values and are omitted below.
   const responsibilities = Array.isArray(job.responsibilities) ? job.responsibilities : [];
   const requirements = Array.isArray(job.requirements) ? job.requirements : [];
   const niceToHave = Array.isArray(job.nice_to_have) ? job.nice_to_have : [];
@@ -61,7 +60,7 @@ export default async function CareerDetailPage({ params }: Props) {
           __html: JSON.stringify(
             buildJobPostingSchema({
               title: job.title,
-              description: `Join us as a ${job.title} at Everacy. Located in ${job.location} (${job.job_type}).`,
+              description: job.about_role || job.about_company || job.title,
               employmentType: job.job_type?.toUpperCase().replace('-', '_'),
               jobLocationType: job.location,
               location: job.location,
@@ -70,33 +69,19 @@ export default async function CareerDetailPage({ params }: Props) {
           )
         }}
       />
-      {/* 1. Job Hero - Matches /about aesthetics */}
-      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
-        <div className="absolute inset-0 w-full h-full bg-black -z-10">
-          <LiquidEffectAnimation fill="absolute" zIndex={0} />
-          {/* Dark vignette matching home page */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background: "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
-            }}
-          />
-        </div>
-        
-        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center flex flex-col items-center">
-          <Link href="/careers" className="inline-flex items-center gap-2 text-[#00a6cb] hover:text-white transition-colors text-sm font-bold uppercase tracking-widest mb-10 bg-[#121c33]/50 px-5 py-2.5 rounded-full border border-[#1f2b47] shadow-lg">
+      <section className="relative isolate overflow-hidden border-b border-[#dce8ec] bg-[#f4f9fa] px-5 py-16 text-center font-mont sm:px-8 sm:py-20">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,166,203,0.09),transparent_62%)]" />
+        <div className="relative mx-auto flex max-w-5xl flex-col items-center">
+          <Link href="/careers" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[#008b9b] transition-colors hover:text-[#0d2a4a]">
             <Icons.ArrowLeft className="w-4 h-4" />
             All Open Roles
           </Link>
           
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-[clamp(2.1rem,8vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
+          <div className="mx-auto max-w-4xl">
+            <h1 className="mt-4 text-[clamp(2.1rem,7vw,4.25rem)] font-black leading-[1.08] tracking-tight text-[#0d2a4a]">
               {job.title}
             </h1>
-            <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-xl font-medium max-w-3xl mx-auto leading-relaxed">
-              {job.about_role}
-            </p>
+            {job.about_role && <p className="mx-auto mt-5 max-w-3xl text-base font-medium leading-7 text-slate-600 sm:text-lg sm:leading-8">{job.about_role}</p>}
           </div>
         </div>
       </section>
@@ -109,7 +94,7 @@ export default async function CareerDetailPage({ params }: Props) {
           <div className="lg:col-span-8 space-y-16">
             
             {/* Responsibilities */}
-            <div>
+            {responsibilities.length > 0 && <div>
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#00a6cb] flex items-center justify-center">
                   <Icons.Target className="w-5 h-5" />
@@ -124,10 +109,10 @@ export default async function CareerDetailPage({ params }: Props) {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div>}
 
             {/* Requirements */}
-            <div>
+            {requirements.length > 0 && <div>
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Icons.Briefcase className="w-5 h-5" />
@@ -142,11 +127,11 @@ export default async function CareerDetailPage({ params }: Props) {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div>}
 
             {/* Nice to Have & Soft Skills */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div>
+            {(niceToHave.length > 0 || softSkills.length > 0) && <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {niceToHave.length > 0 && <div>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                     <Icons.Plus className="w-4 h-4" />
@@ -161,9 +146,9 @@ export default async function CareerDetailPage({ params }: Props) {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div>}
               
-              <div>
+              {softSkills.length > 0 && <div>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
                     <Icons.Users className="w-4 h-4" />
@@ -178,11 +163,11 @@ export default async function CareerDetailPage({ params }: Props) {
                     </li>
                   ))}
                 </ul>
-              </div>
-            </div>
+              </div>}
+            </div>}
 
             {/* About Company */}
-            <div className="bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
+            {job.about_company && <div className="bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#00a6cb]/5 rounded-full blur-3xl -mr-20 -mt-20 transition-transform group-hover:scale-110 duration-700" />
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold uppercase tracking-tight text-slate-900 mb-4">About Everacy</h3>
@@ -190,7 +175,7 @@ export default async function CareerDetailPage({ params }: Props) {
                   {job.about_company}
                 </p>
               </div>
-            </div>
+            </div>}
             
           </div>
 
@@ -243,7 +228,6 @@ export default async function CareerDetailPage({ params }: Props) {
         <div id="apply" className="mt-24 max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-slate-900 mb-4">Ready to Apply?</h2>
-            <p className="text-slate-600 font-georgia text-lg">Join us and help build the future of elite engineering.</p>
           </div>
           <JobApplicationForm jobId={job.id} />
         </div>

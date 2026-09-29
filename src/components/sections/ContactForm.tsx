@@ -7,7 +7,7 @@ import type { ContactPageData } from "@/lib/api";
 import { ArrowRight, Phone, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 // Returns an SVG icon for known platforms
 function getPlatformIcon(platform: string) {
@@ -45,53 +45,41 @@ function getPlatformIcon(platform: string) {
   return <span className="text-[10px] font-black uppercase">{platform.slice(0, 2)}</span>;
 }
 
-const WORK_TYPES = [
-  { id: "project", title: "A project / product team", desc: "A product squad to accelerate your time-to-market" },
-  { id: "staff", title: "Staff augmentation", desc: "Talent to temporarily fill out gaps in your existing team" },
-  { id: "dedicated", title: "Dedicated team", desc: "A cross-functional team for long-term product development" },
-];
-
-const SERVICES = [
-  "Data / AI / ML", "Software Development", "UI / UX Design", "DevOps", 
-  "Cloud Infrastructure", "Mobile App Development", "Quality Assurance", "Other"
-];
-
 interface ContactFormProps {
   data?: ContactPageData | null;
 }
 
 export function ContactForm({ data }: ContactFormProps) {
-  const title = data?.title ?? "Let's build together.";
-  const subtitle = data?.subtitle ?? "Whether you have a team playing to launch a business or an enterprise looking to scale up, there's definitely something we can do for you.";
-  const heroImage = data?.hero_image ?? "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200";
-  
-  const letsTalkTitle = data?.lets_talk_title ?? "Let's talk";
-  const letsTalkSubtitle = data?.lets_talk_subtitle ?? "Call us for a quick chat at";
-  
-  // Use data?.phones if provided, otherwise fallback to data?.phone, else default
-  const phonesList = (data?.phones && data.phones.length > 0) 
-    ? data.phones 
-    : [data?.phone ?? "+1 (555) 123-4567"];
-  
-  const phoneScheduleText = data?.phone_schedule_text ?? "We're available on weekdays during working hours.";
+  if (!data) return <EmptyState title="Contact information isn't published yet" />;
+  const title = data.title;
+  const subtitle = data.subtitle;
+  const heroImage = data.hero_image;
 
-  const jobsTitle = data?.jobs_title ?? "Looking for a job?";
-  const jobsDescription = data?.jobs_description ?? "There's a lot going on here. We're looking for folks that share our passion for tech and are down to innovate. See what roles are currently available at Everacy.";
-  const jobsLinkText = data?.jobs_link_text ?? "Apply Now";
+  const letsTalkTitle = data.lets_talk_title;
+  const letsTalkSubtitle = data.lets_talk_subtitle;
 
-  const formTitle = data?.form_title ?? "Simply fill out this form";
-  const formSubtitle = data?.form_subtitle ?? "We will promptly respond to your inquiry to discuss potential collaboration opportunities. You can expect to hear from us within two business days.";
+  // Prefer the CMS phone list; retain the legacy single CMS phone field when present.
+  const phonesList = data.phones ?? (data.phone ? [data.phone] : []);
 
-  const followUsLabel = data?.follow_us_label ?? "Follow Us";
-  const followUsText = data?.follow_us_text ?? "Digital Footprint";
-  const buttonText = data?.button_text ?? "Send A Message";
-  const socialLinks = data?.social_links ?? [];
+  const phoneScheduleText = data.phone_schedule_text;
 
-  const dynamicWorkTypes = (data?.work_types && data.work_types.length > 0) ? data.work_types : WORK_TYPES;
-  const dynamicServices = (data?.services_list && data.services_list.length > 0) ? data.services_list : SERVICES;
+  const jobsTitle = data.jobs_title;
+  const jobsDescription = data.jobs_description;
+  const jobsLinkText = data.jobs_link_text;
 
-  const [formState, setFormState] = useState({ 
-    name: "", email: "", phone: "", workType: "project", services: [] as string[], message: "" 
+  const formTitle = data.form_title;
+  const formSubtitle = data.form_subtitle;
+
+  const followUsLabel = data.follow_us_label;
+  const followUsText = data.follow_us_text;
+  const buttonText = data.button_text;
+  const socialLinks = data.social_links ?? [];
+
+  const dynamicWorkTypes = data.work_types ?? [];
+  const dynamicServices = data.services_list ?? [];
+
+  const [formState, setFormState] = useState({
+    name: "", email: "", phone: "", workType: dynamicWorkTypes[0]?.id ?? "", services: [] as string[], message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -135,45 +123,32 @@ export function ContactForm({ data }: ContactFormProps) {
 
   return (
     <main className="relative z-[1] bg-white font-mont text-slate-900">
-      
-      {/* Dark Liquid Hero Section - Matching /about */}
-      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 overflow-hidden flex items-center justify-center min-h-[50vh] sm:min-h-[60vh] section-clip-x">
-        <div className="absolute inset-0 w-full h-full bg-black -z-10">
-          <LiquidEffectAnimation fill="absolute" zIndex={0} />
-          {/* Dark vignette */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background: "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
-            }}
-          />
-        </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
+      <section className="relative isolate overflow-hidden border-b border-[#dce8ec] bg-[#f4f9fa] px-5 py-16 text-center sm:px-8 sm:py-20">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,166,203,0.09),transparent_62%)]" />
+        <div className="relative mx-auto max-w-5xl">
+          {data.eyebrow && <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#008b9b] sm:text-sm">{data.eyebrow}</p>}
+          <h1 className="mt-4 text-[clamp(2.2rem,7vw,4rem)] font-black leading-[1.08] tracking-tight text-[#0d2a4a]">
             {title}
           </h1>
-          <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-xl font-medium max-w-3xl mx-auto leading-relaxed">
-            {subtitle}
-          </p>
+          {subtitle && <p className="mx-auto mt-5 max-w-3xl text-base font-medium leading-7 text-slate-600 sm:text-lg sm:leading-8">{subtitle}</p>}
         </div>
       </section>
 
       {/* Main Content Section */}
-      <section className="py-20 px-4 max-w-7xl mx-auto -mt-10 relative z-20">
+      <section className="py-16 px-4 max-w-7xl mx-auto relative z-20 sm:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-          
+
           {/* Left Column: Premium Visual & Info */}
           <div className="flex flex-col gap-12">
-            <motion.div 
+            {heroImage && <motion.div
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
               className="relative w-full aspect-[4/5] rounded-br-[120px] overflow-hidden bg-slate-100 shadow-xl"
             >
-              <Image 
+              <Image
                 src={heroImage}
                 alt={title}
                 fill
@@ -181,41 +156,39 @@ export function ContactForm({ data }: ContactFormProps) {
                 unoptimized={true}
               />
               <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-            </motion.div>
+            </motion.div>}
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
               className="grid grid-cols-1 sm:grid-cols-2 gap-10"
             >
-              <div className="flex flex-col gap-4">
+              {(letsTalkTitle || phonesList.length > 0) && <div className="flex flex-col gap-4">
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">{letsTalkTitle}</h3>
                 <div className="flex flex-col gap-1">
-                  <span className="text-slate-500 text-sm">{letsTalkSubtitle}</span>
+                  {letsTalkSubtitle && <span className="text-slate-500 text-sm">{letsTalkSubtitle}</span>}
                   {phonesList.map((p, idx) => (
                     <a key={`phone-${idx}`} href={`tel:${p}`} className="text-2xl font-bold text-[#27446e] hover:text-[#00a6cb] transition-colors">
                       {p}
                     </a>
                   ))}
-                  <span className="text-slate-400 text-xs italic mt-2">{phoneScheduleText}</span>
+                  {phoneScheduleText && <span className="text-slate-400 text-xs italic mt-2">{phoneScheduleText}</span>}
                 </div>
-              </div>
+              </div>}
 
-              <div className="flex flex-col gap-4">
+              {(jobsTitle || jobsDescription) && <div className="flex flex-col gap-4">
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">{jobsTitle}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">
                   {jobsDescription}
                 </p>
-                <Link href="/careers" className="inline-flex items-center gap-2 text-[#00a6cb] font-bold text-sm uppercase tracking-widest hover:text-[#27446e] transition-colors mt-1">
-                  {jobsLinkText} <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+                {jobsLinkText && <Link href="/careers" className="inline-flex items-center gap-2 text-[#00a6cb] font-bold text-sm uppercase tracking-widest hover:text-[#27446e] transition-colors mt-1">{jobsLinkText} <ArrowRight className="w-4 h-4" /></Link>}
+              </div>}
             </motion.div>
-            
+
             {/* Socials - Minimalist */}
-            <motion.div 
+            {socialLinks.length > 0 && <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
@@ -224,10 +197,8 @@ export function ContactForm({ data }: ContactFormProps) {
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-1">
-                    {followUsLabel}
-                  </p>
-                  <p className="text-slate-900 font-bold">{followUsText}</p>
+                  {followUsLabel && <p className="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-1">{followUsLabel}</p>}
+                  {followUsText && <p className="text-slate-900 font-bold">{followUsText}</p>}
                 </div>
                 {socialLinks.length > 0 && (
                   <div className="flex gap-3 flex-wrap">
@@ -246,11 +217,11 @@ export function ContactForm({ data }: ContactFormProps) {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </motion.div>}
           </div>
 
           {/* Right Column: Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -258,7 +229,7 @@ export function ContactForm({ data }: ContactFormProps) {
             className="bg-white border border-slate-200 rounded-[2.5rem] p-8 sm:p-12 shadow-xl shadow-slate-200/50"
           >
             <div className="mb-10">
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+              {formTitle && <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
                 {formTitle.includes("this form") ? (
                   <>
                     {formTitle.replace("this form", "")} <span className="text-[#00a6cb]">this form</span>
@@ -266,7 +237,7 @@ export function ContactForm({ data }: ContactFormProps) {
                 ) : (
                   formTitle
                 )}
-              </h2>
+              </h2>}
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
                 {formSubtitle}
               </p>
@@ -307,12 +278,12 @@ export function ContactForm({ data }: ContactFormProps) {
                 </label>
                 <div className="flex flex-col gap-3">
                   {dynamicWorkTypes.map((type) => (
-                    <div 
+                    <div
                       key={type.id}
                       onClick={() => setFormState({ ...formState, workType: type.id })}
                       className={`relative flex items-start gap-4 p-5 rounded-2xl cursor-pointer border-2 transition-all duration-300 ${
-                        formState.workType === type.id 
-                          ? "border-[#00a6cb] bg-white shadow-md" 
+                        formState.workType === type.id
+                          ? "border-[#00a6cb] bg-white shadow-md"
                           : "border-slate-200 bg-slate-50 hover:border-[#00a6cb]/30"
                       }`}
                     >
@@ -345,8 +316,8 @@ export function ContactForm({ data }: ContactFormProps) {
                         type="button"
                         onClick={() => toggleService(service)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 border ${
-                          isSelected 
-                            ? "bg-[#00a6cb] text-white border-[#00a6cb] shadow-md shadow-[#00a6cb]/20" 
+                          isSelected
+                            ? "bg-[#00a6cb] text-white border-[#00a6cb] shadow-md shadow-[#00a6cb]/20"
                             : "bg-white text-slate-600 border-slate-200 hover:border-[#00a6cb]/50 hover:bg-slate-50"
                         }`}
                       >

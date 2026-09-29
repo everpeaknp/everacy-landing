@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { TeamSection } from "@/components/sections/TeamSection";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import { fetchAboutData, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [aboutData, globalSeo, pageSeo] = await Promise.all([
@@ -12,8 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
 
   return genMeta({
-    title: "About",
-    description: "Learn about our team, mission, and values.",
+    title: aboutData?.title || undefined,
+    description: aboutData?.subtitle || undefined,
     canonicalPath: "/about",
     seoData: aboutData?.seo,
     globalSeo,
@@ -27,10 +27,10 @@ export default async function AboutPage() {
     fetchPageSEO("about"),
   ]);
 
-  const heroTitle = aboutData?.title ?? "Everything Starts with Elite Minds.";
-  const heroSubtitle =
-    aboutData?.subtitle ??
-    "Everacy is more than a firm — it's a collective of engineers, architects, and designers dedicated to building the future of digital infrastructure.";
+  if (!aboutData) return <EmptyState title="About content isn't published yet" />;
+
+  const heroTitle = aboutData.title;
+  const heroSubtitle = aboutData.subtitle;
   const teamTitle = aboutData?.team_title;
   const teamSubtitle = aboutData?.team_subtitle;
 
@@ -44,36 +44,17 @@ export default async function AboutPage() {
           }}
         />
       )}
-      {/* Dark Liquid About Hero */}
-      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
-        <div className="absolute inset-0 w-full h-full bg-black -z-10">
-          <LiquidEffectAnimation fill="absolute" zIndex={0} />
-          {/* Dark vignette matching home page */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background: "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
-            }}
-          />
+      {(heroTitle || heroSubtitle) && <section className="relative isolate overflow-hidden border-b border-[#dce8ec] bg-[#f4f9fa] px-5 py-20 text-center font-mont text-[#0d2a4a] sm:px-8 sm:py-24">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_0%,rgba(0,166,203,0.09),transparent_62%)]" />
+        <div className="mx-auto max-w-5xl">
+          {heroTitle && <h1 className="text-[clamp(2.1rem,7vw,4.25rem)] font-black leading-[1.08] tracking-tight text-[#0d2a4a]">{heroTitle}</h1>}
+          {heroSubtitle?.trim() && (
+            <p className="mx-auto mt-5 max-w-3xl text-base font-medium leading-7 text-slate-600 sm:text-lg sm:leading-8">
+              {heroSubtitle}
+            </p>
+          )}
         </div>
-
-        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
-            {heroTitle.includes("Elite Minds") ? (
-              <>
-                Everything Starts <br className="hidden sm:block" /> with{" "}
-                <span className="text-[#00a6cb]">Elite Minds.</span>
-              </>
-            ) : (
-              heroTitle
-            )}
-          </h1>
-          <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
-            {heroSubtitle}
-          </p>
-        </div>
-      </section>
+      </section>}
 
       <TeamSection
         data={aboutData?.sections}

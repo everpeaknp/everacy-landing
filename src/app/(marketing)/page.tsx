@@ -7,6 +7,7 @@ import { ProcessSection } from "@/components/sections/ProcessSection";
 import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
 import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
 import { fetchHomeData, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
 
   return genMeta({
-    title: "Home",
-    description: "Everacy — an elite IT engineering firm delivering cloud, AI, and web solutions that scale beautifully and reliably.",
+    title: homeData?.hero?.heading || undefined,
+    description: homeData?.hero?.subtext || undefined,
     canonicalPath: "/",
     seoData: homeData?.seo,
     globalSeo,
@@ -33,6 +34,8 @@ export default async function HomePage() {
     fetchPageSEO("home"),
   ]);
 
+  if (!homeData) return <EmptyState title="Homepage content isn't published yet" />;
+
   const schemaData = pageSeo?.jsonLd || pageSeo?.json_ld || buildOrganizationSchema();
 
   return (
@@ -44,7 +47,12 @@ export default async function HomePage() {
         }}
       />
       <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
-        <Hero data={homeData?.hero} />
+        <Hero
+          data={homeData.hero ? {
+            ...homeData.hero,
+            logo: homeData.hero.logo ?? homeData.navbar?.settings?.logo ?? null,
+          } : null}
+        />
       </div>
       
       <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>

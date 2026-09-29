@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { generateMetadata as genMeta } from "@/lib/seo";
-import { fetchServicesPage, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
-import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
-import ServicesClient from "./ServicesClient";
+import { ServicePageHero } from "@/components/sections/ServicePageHero";
+import { FadeIn } from "@/components/animations/FadeIn";
+import { fetchServicesPage, fetchServiceCategories, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
 
   return genMeta({
-    title: "Services",
-    description: "Everacy provides cutting-edge digital infrastructure and engineering services tailored to your needs.",
+    title: pageData?.hero?.title || undefined,
+    description: pageData?.hero?.subtitle || undefined,
     canonicalPath: "/services",
     seoData: pageData?.hero?.seo,
     globalSeo,
@@ -24,55 +27,56 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-  const [pageData, pageSeo] = await Promise.all([
+  const [pageData, categories] = await Promise.all([
     fetchServicesPage(),
-    fetchPageSEO("services"),
+    fetchServiceCategories(),
   ]);
 
-  const heroTitle =
-    pageData?.hero?.title ?? "Solutions for the Future.";
-  const heroSubtitle =
-    pageData?.hero?.subtitle ??
-    "Everacy provides cutting-edge digital infrastructure and engineering services tailored to your needs.";
-  const services = pageData?.services ?? [];
+  if (categories.length === 0) return <EmptyState title="No services published yet" />;
 
   return (
-    <main className="relative z-[1] bg-white">
-      {(pageSeo?.jsonLd || pageSeo?.json_ld) && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(pageSeo.jsonLd || pageSeo.json_ld),
-          }}
-        />
-      )}
-      {/* Dark Liquid Services Hero — matches /about aesthetics */}
-      <section className="relative pt-32 sm:pt-40 pb-24 sm:pb-32 font-mont overflow-hidden flex items-center justify-center min-h-[70vh] section-clip-x">
-        <div className="absolute inset-0 w-full h-full bg-black -z-10">
-          <LiquidEffectAnimation fill="absolute" zIndex={0} />
-          {/* Dark vignette matching home/about page */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background:
-                "radial-gradient(ellipse 90% 80% at 50% 45%, rgba(3,8,24,0.3) 0%, rgba(2,5,18,0.75) 100%)",
-            }}
-          />
-        </div>
+    <main className="min-h-screen bg-[#f7fafb]">
+      <ServicePageHero
+        eyebrow={pageData?.hero?.eyebrow}
+        title={pageData?.hero?.title}
+        description={pageData?.hero?.subtitle}
+        ctaHref="#service-categories"
+        ctaLabel={pageData?.hero?.cta_label}
+      />
 
-        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-[clamp(2.1rem,10vw,4.6rem)] font-black text-white drop-shadow-lg mb-6 uppercase tracking-tight leading-[1.08]">
-            {heroTitle}
-          </h1>
-          <p className="text-white/80 drop-shadow-md text-base sm:text-lg md:text-2xl font-medium max-w-3xl mx-auto leading-relaxed">
-            {heroSubtitle}
-          </p>
-        </div>
-      </section>
-
-      {/* Interactive Services Grid */}
-      <ServicesClient initialServices={services} />
+      <div id="service-categories" className="mx-auto max-w-7xl space-y-16 px-5 py-16 sm:space-y-24 sm:px-8 sm:py-20">
+        {categories.map((category, categoryIndex) => (
+          <section key={category.id} aria-labelledby={"category-" + category.slug} className="grid gap-8 pt-8 sm:pt-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.35fr)] lg:gap-16 lg:pt-12">
+            <FadeIn direction="up" duration={0.45}>
+              <div className="lg:sticky lg:top-28">
+                <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-[#0097a7]">Category {String(categoryIndex + 1).padStart(2, "0")}</p>
+                <h2 id={"category-" + category.slug} className="text-3xl font-black text-[#0d2a4a] sm:text-4xl">{category.title}</h2>
+                {category.description && <p className="mt-4 max-w-md leading-7 text-slate-600">{category.description}</p>}
+                <Link href={"/services/" + category.slug} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#00a6cb] hover:underline">
+                  {(pageData?.hero?.category_link_label || category.title).replaceAll("{category}", category.title)}<ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </Link>
+              </div>
+            </FadeIn>
+            <div className="divide-y divide-slate-200">
+              {category.services.map((service, index) => (
+                <FadeIn key={service.id} delay={Math.min(index * 0.06, 0.24)} duration={0.45}>
+                  <Link
+                    href={"/services/" + category.slug + "/" + (service.slug || service.id)}
+                    className="group grid grid-cols-[2.5rem_minmax(0,1fr)_1.25rem] items-start gap-3 py-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#00a6cb] sm:gap-5 sm:py-6"
+                  >
+                    <span className="pt-1 text-xs font-bold tracking-wider text-[#0097a7]">{String(index + 1).padStart(2, "0")}</span>
+                    <span>
+                      <span className="text-lg font-extrabold text-[#0d2a4a] transition-colors group-hover:text-[#0097a7] sm:text-xl">{service.title}</span>
+                      <span className="mt-2 block max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">{service.description}</span>
+                    </span>
+                    <ArrowRight aria-hidden="true" className="mt-1 h-5 w-5 text-[#0097a7] transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </FadeIn>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </main>
   );
 }

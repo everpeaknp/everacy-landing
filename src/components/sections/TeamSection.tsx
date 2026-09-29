@@ -6,9 +6,22 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { teamConfig } from "@/lib/site-theme";
 import Image from "next/image";
 import type { TeamSectionData } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
+
+function isLocalCmsMedia(src: string) {
+  try {
+    const url = new URL(src);
+    return (
+      url.pathname.startsWith("/media/") &&
+      url.port === "8000" &&
+      (url.hostname === "127.0.0.1" || url.hostname === "localhost")
+    );
+  } catch {
+    return false;
+  }
+}
 
 interface TeamSectionProps {
   data?: TeamSectionData[];
@@ -17,8 +30,8 @@ interface TeamSectionProps {
 }
 
 export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionProps) {
-  const sections = data && data.length > 0
-    ? data.map(section => ({
+  const sections = (data ?? [])
+    .map(section => ({
         id: String(section.id),
         title: section.title,
         members: section.members.map(m => ({
@@ -33,41 +46,9 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
           },
         })),
       }))
-    : [
-        {
-          id: "leadership",
-          title: "Leadership",
-          members: teamConfig.members.slice(0, 3).map(m => ({
-            id: m.id,
-            name: m.name,
-            role: m.role,
-            bio: m.bio,
-            image: m.image,
-            links: {
-              linkedin: m.links.linkedin,
-              github: m.links.github,
-            },
-          })),
-        },
-        {
-          id: "engineering-team",
-          title: "Engineering Team",
-          members: teamConfig.members.slice(3).map(m => ({
-            id: m.id,
-            name: m.name,
-            role: m.role,
-            bio: m.bio,
-            image: m.image,
-            links: {
-              linkedin: m.links.linkedin,
-              github: m.links.github,
-            },
-          })),
-        },
-      ];
+    .filter((section) => section.members.length > 0);
 
-  const title = headerTitle ?? teamConfig.header.title;
-  const subtitle = headerSubtitle ?? teamConfig.header.subtitle;
+  if (sections.length === 0) return <EmptyState title="No team members published yet" />;
 
   return (
     <section className="py-24 bg-white font-mont relative z-[2] section-clip-x">
@@ -80,17 +61,13 @@ export function TeamSection({ data, headerTitle, headerSubtitle }: TeamSectionPr
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-center mb-20 px-4"
         >
-          <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase tracking-tight" style={{ color: "#0d2a4a" }}>
-            {title}
-          </h2>
+          {headerTitle && <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase tracking-tight" style={{ color: "#0d2a4a" }}>{headerTitle}</h2>}
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="h-[2px] w-12" style={{ backgroundColor: "#0d2a4a4d" }} />
             <div className="w-3 h-3 rounded-full border-2" style={{ borderColor: "#0d2a4a" }} />
             <div className="h-[2px] w-12" style={{ backgroundColor: "#0d2a4a4d" }} />
           </div>
-          <p className="max-w-2xl mx-auto text-lg font-medium" style={{ color: "#0d2a4a" }}>
-            {subtitle}
-          </p>
+          {headerSubtitle && <p className="max-w-2xl mx-auto text-lg font-medium" style={{ color: "#0d2a4a" }}>{headerSubtitle}</p>}
         </motion.header>
 
         {sections.map((section, sectionIndex) => {
@@ -341,6 +318,7 @@ function PremiumTeamCard({ member, dark = false }: { member: any; dark?: boolean
         src={member.image}
         alt={member.name}
         fill
+        unoptimized={isLocalCmsMedia(member.image)}
         sizes="(max-width: 768px) 19rem, 20rem"
         className="morph-card-img"
       />
@@ -417,12 +395,13 @@ function PremiumTeamCard({ member, dark = false }: { member: any; dark?: boolean
 function TeamMemberCard({ member }: { member: any }) {
   return (
     <div className="flex flex-col items-center">
-      <Image
-        src={member.image}
-        alt={member.name}
-        width={560}
-        height={560}
-        sizes="(max-width: 360px) 228px, (max-width: 768px) 280px, 280px"
+          <Image
+            src={member.image}
+            alt={member.name}
+            width={560}
+            height={560}
+            unoptimized={isLocalCmsMedia(member.image)}
+            sizes="(max-width: 360px) 228px, (max-width: 768px) 280px, 280px"
         className="eng-card-img object-cover rounded-2xl mb-6"
       />
 

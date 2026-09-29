@@ -1,16 +1,28 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/seo";
-import { fetchGlobalSEO, fetchSitemapData } from "@/lib/api";
+import {
+  fetchCareers,
+  fetchGlobalSEO,
+  fetchServiceCategories,
+  fetchServices,
+  fetchSitemapData,
+} from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 
 /**
  * Next.js App Router sitemap.
  * Automatically available at /sitemap.xml
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const seo = await fetchGlobalSEO();
+  const [seo, sitemapData, serviceCategories, services, careers] = await Promise.all([
+    fetchGlobalSEO(),
+    fetchSitemapData(),
+    fetchServiceCategories(),
+    fetchServices(),
+    fetchCareers(),
+  ]);
   const baseUrl = seo?.site_url || siteConfig.url;
-
-  const sitemapData = await fetchSitemapData();
 
   const staticRoutes = [
     "",
@@ -20,6 +32,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/careers",
     "/contact",
     "/blogs",
+    "/privacy",
+    "/terms",
+    "/cookies",
   ] as const;
 
   const routes = staticRoutes.map((route) => ({
@@ -43,5 +58,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...routes, ...projectRoutes, ...blogRoutes];
+  const serviceCategoryRoutes = serviceCategories.filter((category) => category.slug).map((category) => ({
+    url: `${baseUrl}/services/${category.slug}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const serviceRoutes = services.flatMap((service) => {
+    if (!service.slug || !service.category?.slug) return [];
+
+    return [{
+      url: `${baseUrl}/services/${service.category.slug}/${service.slug}`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }];
+  });
+
+  const careerRoutes = (careers?.jobs || []).filter((job) => job.slug).map((job) => ({
+    url: `${baseUrl}/careers/${job.slug}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
+
+  return [...routes, ...serviceCategoryRoutes, ...serviceRoutes, ...projectRoutes, ...blogRoutes, ...careerRoutes];
 }

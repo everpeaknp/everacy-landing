@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { NAV_LINKS, SITE_NAME, SOCIAL_LINKS } from "@/lib/constants";
+import { NAV_LINKS, SITE_NAME } from "@/lib/constants";
 import { LiquidEffectAnimation } from "@/components/ui/liquid-effect-animation";
 import type { FooterData } from "@/lib/api";
+import { CookieSettingsButton} from "@/components/common/CookieConsent";
 
 interface FooterProps {
   data?: FooterData | null;
@@ -14,9 +15,7 @@ export function Footer({ data }: FooterProps) {
   // ── Resolve values: API data → static fallback ──────────
   const settings = data?.settings;
   const companyName = settings?.company_name ?? SITE_NAME;
-  const description =
-    settings?.description ??
-    "High-performance IT solutions engineered for the future. We build digital infrastructures that scale with your vision.";
+  const description = settings?.description;
   const copyright = settings?.copyright ?? `© ${year} ${companyName}`;
   const privacyText = settings?.privacy_policy_text ?? "Privacy Policy";
   const privacyUrl = settings?.privacy_policy_url || "/privacy";
@@ -35,11 +34,7 @@ export function Footer({ data }: FooterProps) {
       ? data.nav_items.map((item) => ({ label: item.title, href: item.link }))
       : NAV_LINKS.map((l) => ({ label: l.label, href: l.href }));
 
-  // Social links: use API social links if available, else static constants
-  const socialLinks =
-    data?.social_links && data.social_links.length > 0
-      ? data.social_links.map((s) => ({ name: s.platform, url: s.url }))
-      : Object.entries(SOCIAL_LINKS).map(([name, url]) => ({ name, url }));
+  const socialLinks = (data?.social_links ?? []).map((s) => ({ name: s.platform, url: s.url }));
 
   return (
     <footer
@@ -135,9 +130,9 @@ export function Footer({ data }: FooterProps) {
                 {companyName}
               </p>
             </div>
-            <p className="text-sm text-white/40 max-w-xs leading-relaxed font-light">
+            {description && <p className="text-sm text-white/40 max-w-xs leading-relaxed font-light">
               {description}
-            </p>
+            </p>}
           </div>
 
           {/* Navigation & Connect */}
@@ -164,7 +159,7 @@ export function Footer({ data }: FooterProps) {
             </nav>
 
             {/* Socials */}
-            <div className="flex-1">
+            {socialLinks.length > 0 && <div className="flex-1">
               <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em] mb-6 md:mb-8 text-right md:text-left">
                 Connect
               </p>
@@ -182,7 +177,7 @@ export function Footer({ data }: FooterProps) {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div>}
           </div>
         </div>
 
@@ -199,12 +194,12 @@ export function Footer({ data }: FooterProps) {
               <Link href={cookiesUrl} prefetch={false} className="hover:text-white transition-colors">
                 {cookiesText}
               </Link>
+              <CookieSettingsButton />
             </div>
 
             <div className="flex items-center gap-3 md:gap-4 text-[8px] md:text-[9px] uppercase tracking-[0.24em] md:tracking-[0.5em] text-white/20">
               <span>{copyright}</span>
               <span className="hidden xs:inline w-6 md:w-8 h-px bg-white/10" />
-              <span className="opacity-60 hidden xs:inline">Engineering Tomorrow</span>
             </div>
           </div>
         </div>

@@ -4,15 +4,16 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { processBg, processConfig } from "@/lib/site-theme";
+import { processBg } from "@/lib/site-theme";
 import type { ProcessStepData } from "@/lib/api";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 // Per-step static metadata (icons + sidebar labels) keyed by index
 const STEP_META = [
-  { sideLabel: "Idea",   icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /> },
-  { sideLabel: "Team",   icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> },
-  { sideLabel: "Design", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /> },
-  { sideLabel: "Scale",  icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" /> },
+  { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /> },
+  { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> },
+  { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /> },
+  { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" /> },
 ];
 
 // S-curve connector paths — alternating left-to-right and right-to-left
@@ -35,23 +36,13 @@ interface ProcessSectionProps {
 }
 
 export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessSectionProps) {
-  const steps: NormalisedStep[] = data && data.length > 0
-    ? data.map(s => ({
+  const steps: NormalisedStep[] = (data ?? []).map(s => ({
         step: s.step_label && s.step_label !== "PROCESS"
           ? s.step_label
           : `Step ${s.step_number}`,
         title: s.title,
         detail: s.description,
-      }))
-    : processConfig.steps.map(s => ({
-        step: s.step,
-        title: s.title,
-        detail: s.detail,
       }));
-
-  // Use API title/subtitle when available, fall back to static config
-  const title = sectionTitle || processConfig.title;
-  const subtitle = sectionSubtitle || processConfig.subtitle;
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,6 +99,8 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
     return () => ctx.revert();
   }, []);
 
+  if (steps.length === 0) return <EmptyState title="No process steps published yet" />;
+
   return (
     <section
       ref={sectionRef}
@@ -117,12 +110,8 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
       <div className="max-w-5xl mx-auto px-4 md:px-6 relative">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">
-            {title}
-          </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
-            {subtitle}
-          </p>
+          {sectionTitle && <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 uppercase tracking-tight">{sectionTitle}</h2>}
+          {sectionSubtitle && <p className="text-slate-600 max-w-2xl mx-auto text-lg font-medium leading-relaxed">{sectionSubtitle}</p>}
         </div>
 
         {/* Steps — rendered dynamically, no hardcoded index access */}
@@ -144,9 +133,6 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                       className={`w-32 py-6 border-2 border-[#27446e]/20 rounded-xl ${isEven ? "mr-4" : "ml-4"} uppercase flex flex-col items-center justify-center bg-white shadow-sm`}
                     >
                       <div className="text-3xl font-black text-[#27446e]">{step.step}</div>
-                      <div className="text-[#27446e]/60 text-xs font-bold tracking-widest mt-1">
-                        {meta.sideLabel}
-                      </div>
                     </div>
                   </div>
 

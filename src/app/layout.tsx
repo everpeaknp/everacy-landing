@@ -4,6 +4,8 @@ import "./globals.css";
 import { Providers } from "@/components/common/Providers";
 import { siteConfig } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 /* ── Font optimization ── */
 const geistSans = Geist({
   variable: "--font-geist-sans",

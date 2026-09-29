@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" fill="none">
+  <rect width="1440" height="900" fill="#F4F2EC"/>
+  <rect x="32" y="28" width="1376" height="844" rx="14" fill="#fff" stroke="#E5E2DA"/>
+  <rect x="32" y="28" width="1376" height="36" rx="14" fill="#F8F8F6"/>
+  <path d="M32 50a14 14 0 0 1 14-14h1348a14 14 0 0 1 14 14v14H32V50Z" fill="#F8F8F6"/>
+  <circle cx="57" cy="46" r="5" fill="#DC6B63"/><circle cx="76" cy="46" r="5" fill="#E9BD5B"/><circle cx="95" cy="46" r="5" fill="#6DB48A"/>
+  <rect x="500" y="38" width="440" height="16" rx="8" fill="#ECEEEB"/>
+  <rect x="33" y="65" width="1374" height="70" fill="#fff"/>
+  <text x="83" y="108" fill="#183F3D" font-family="Arial,sans-serif" font-size="23" font-weight="700" letter-spacing="3">HIMALAYAN HOUSE</text>
+  <text x="828" y="106" fill="#485D5A" font-family="Arial,sans-serif" font-size="14">STAYS</text><text x="904" y="106" fill="#485D5A" font-family="Arial,sans-serif" font-size="14">EXPERIENCES</text><text x="1014" y="106" fill="#485D5A" font-family="Arial,sans-serif" font-size="14">OUR STORY</text>
+  <rect x="1165" y="82" width="170" height="38" rx="3" fill="#183F3D"/><text x="1196" y="106" fill="#fff" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="1">CHECK AVAILABILITY</text>
+  <rect x="33" y="135" width="1374" height="635" fill="#D8E2DD"/>
+  <rect x="33" y="135" width="1374" height="635" fill="url(#sky)"/>
+  <path d="M33 526 292 270l165 170 208-247 279 337 179-175 284 251v164H33V526Z" fill="#A2B9AE"/>
+  <path d="m33 598 322-235 193 205 243-286 244 328 180-171 192 177v154H33V598Z" fill="#557B70"/>
+  <path d="m33 662 301-141 203 117 233-165 227 186 195-119 215 96v134H33V662Z" fill="#244E48"/>
+  <rect x="83" y="224" width="554" height="354" rx="5" fill="#F4F2EC" fill-opacity=".95"/>
+  <text x="124" y="280" fill="#48796E" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="3">A PLACE TO SLOW DOWN</text>
+  <text x="124" y="348" fill="#183F3D" font-family="Georgia,serif" font-size="52">Closer to the</text><text x="124" y="407" fill="#183F3D" font-family="Georgia,serif" font-size="52">mountains.</text>
+  <text x="124" y="450" fill="#5A6964" font-family="Arial,sans-serif" font-size="16">Thoughtful stays and local experiences</text><text x="124" y="474" fill="#5A6964" font-family="Arial,sans-serif" font-size="16">in the heart of the Himalayas.</text>
+  <rect x="124" y="510" width="174" height="42" rx="2" fill="#183F3D"/><text x="150" y="536" fill="#fff" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="1">EXPLORE OUR STAYS</text>
+  <rect x="756" y="678" width="536" height="60" rx="4" fill="#fff"/>
+  <text x="784" y="702" fill="#73807A" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1">CHECK IN</text><text x="784" y="724" fill="#183F3D" font-family="Arial,sans-serif" font-size="14">Choose a date</text>
+  <path d="M916 692v31" stroke="#E5E2DA"/><text x="947" y="702" fill="#73807A" font-family="Arial,sans-serif" font-size="10" font-weight="700" letter-spacing="1">CHECK OUT</text><text x="947" y="724" fill="#183F3D" font-family="Arial,sans-serif" font-size="14">Choose a date</text>
+  <rect x="1114" y="688" width="152" height="42" rx="2" fill="#B46B4E"/><text x="1148" y="714" fill="#fff" font-family="Arial,sans-serif" font-size="12" font-weight="700">FIND A STAY</text>
+  <rect x="33" y="770" width="1374" height="101" fill="#fff"/><text x="90" y="815" fill="#183F3D" font-family="Georgia,serif" font-size="22">Rooted in place. Made for the way you travel.</text><text x="90" y="844" fill="#697871" font-family="Arial,sans-serif" font-size="14">A calm, considered experience from first search to check-in.</text>
+  <defs><linearGradient id="sky" x1="720" y1="135" x2="720" y2="570" gradientUnits="userSpaceOnUse"><stop stop-color="#DCE9E5"/><stop offset="1" stop-color="#EFF0E9"/></linearGradient></defs>
+</svg>

@@ -15,7 +15,9 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis({
-      duration: 1.2,
+      // Keep the wheel glide responsive; a long duration makes page movement
+      // feel delayed, especially on content-heavy service pages.
+      duration: 0.75,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
@@ -29,9 +31,11 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
 
     (window as any).lenis = lenis;
 
-    gsap.ticker.add((time) => {
+    const updateLenis = (time: number) => {
       lenis.raf(time * 1000);
-    });
+    };
+
+    gsap.ticker.add(updateLenis);
 
     gsap.ticker.lagSmoothing(0);
 
@@ -40,9 +44,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       if ((window as any).lenis === lenis) {
         delete (window as any).lenis;
       }
-      gsap.ticker.remove((time) => {
-        lenis.raf(time * 1000);
-      });
+      gsap.ticker.remove(updateLenis);
     };
   }, []);
 

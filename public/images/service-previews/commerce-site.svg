@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" fill="none">
+  <rect width="1440" height="900" fill="#F0F0EC"/>
+  <rect x="32" y="28" width="1376" height="844" rx="14" fill="#fff" stroke="#E5E5DF"/>
+  <path d="M32 50a14 14 0 0 1 14-14h1348a14 14 0 0 1 14 14v14H32V50Z" fill="#F8F8F6"/>
+  <circle cx="57" cy="46" r="5" fill="#DC6B63"/><circle cx="76" cy="46" r="5" fill="#E9BD5B"/><circle cx="95" cy="46" r="5" fill="#6DB48A"/><rect x="500" y="38" width="440" height="16" rx="8" fill="#ECEEEB"/>
+  <rect x="33" y="65" width="1374" height="70" fill="#fff"/>
+  <text x="86" y="108" fill="#24352F" font-family="Georgia,serif" font-size="31" letter-spacing="1">form &amp; field</text>
+  <text x="624" y="106" fill="#59655F" font-family="Arial,sans-serif" font-size="14">SHOP ALL</text><text x="718" y="106" fill="#59655F" font-family="Arial,sans-serif" font-size="14">KITCHEN</text><text x="804" y="106" fill="#59655F" font-family="Arial,sans-serif" font-size="14">LIVING</text><text x="883" y="106" fill="#59655F" font-family="Arial,sans-serif" font-size="14">JOURNAL</text>
+  <circle cx="1268" cy="99" r="13" stroke="#31453F" stroke-width="1.5"/><path d="M1277 109 1287 119" stroke="#31453F" stroke-width="1.5"/><path d="M1312 89h19v23h-19z" stroke="#31453F" stroke-width="1.5"/><path d="M1317 89a4.5 4.5 0 1 1 9 0" stroke="#31453F" stroke-width="1.5"/>
+  <rect x="33" y="135" width="1374" height="356" fill="#EDEAE1"/>
+  <rect x="805" y="158" width="555" height="310" fill="#C8C5B7"/>
+  <rect x="837" y="190" width="210" height="278" fill="#9C9C83"/><rect x="1060" y="190" width="270" height="278" fill="#D5C6AD"/>
+  <path d="M900 405c-16-69 15-135 66-166 50 32 78 97 63 166H900Z" fill="#F1EEE5"/><path d="M925 306c4-25 16-48 41-67 22 19 36 42 40 67" stroke="#8E9B82" stroke-width="5"/><path d="M944 403c-8-42-3-78 22-105 24 28 30 64 22 105" fill="#6D806D"/>
+  <path d="M1120 405c-13-54 10-105 43-129 35 25 55 77 43 129h-86Z" fill="#F3EBDD"/><path d="M1142 334c2-20 10-38 21-51 15 14 22 31 24 51" stroke="#A37853" stroke-width="4"/><path d="M1153 403c-4-30 0-55 10-74 14 22 17 48 12 74" fill="#64755E"/>
+  <text x="104" y="208" fill="#6C7567" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="3">OBJECTS FOR SLOWER LIVING</text>
+  <text x="104" y="272" fill="#273A33" font-family="Georgia,serif" font-size="48">Everyday pieces,</text><text x="104" y="328" fill="#273A33" font-family="Georgia,serif" font-size="48">made to last.</text>
+  <text x="104" y="370" fill="#626D64" font-family="Arial,sans-serif" font-size="16">Thoughtful materials. Quiet forms. Useful</text><text x="104" y="394" fill="#626D64" font-family="Arial,sans-serif" font-size="16">details for the rituals of home.</text>
+  <rect x="104" y="424" width="154" height="42" fill="#273A33"/><text x="133" y="450" fill="#fff" font-family="Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="1">EXPLORE THE EDIT</text>
+  <rect x="33" y="491" width="1374" height="380" fill="#fff"/>
+  <text x="88" y="547" fill="#273A33" font-family="Georgia,serif" font-size="28">A few considered favourites</text><text x="1216" y="545" fill="#65766D" font-family="Arial,sans-serif" font-size="13">VIEW ALL PRODUCTS  →</text>
+  <rect x="88" y="574" width="385" height="204" fill="#EEEAE0"/><rect x="88" y="574" width="385" height="204" fill="#DCD6C7"/>
+  <rect x="527" y="574" width="385" height="204" fill="#E7EBE5"/><rect x="966" y="574" width="385" height="204" fill="#F0E7DD"/>
+  <path d="M245 726c-15-51 6-105 41-123 37 21 54 73 41 123h-82Z" fill="#AC8062"/><path d="M267 623c4-20 10-34 19-45 12 12 17 27 18 45" stroke="#68775E" stroke-width="4"/><path d="M292 621v-38" stroke="#68775E" stroke-width="3"/>
+  <path d="M653 695c0-48 30-83 67-83s67 35 67 83v35H653v-35Z" fill="#C6AA79"/><path d="M644 730h152v10H644z" fill="#897252"/><path d="M679 608c8-17 25-26 41-26s33 9 41 26" stroke="#897252" stroke-width="5"/>
+  <path d="M1085 705c0-47 30-81 71-81s71 34 71 81v22h-142v-22Z" fill="#6E8077"/><path d="M1076 727h160v12h-160z" fill="#44584F"/><path d="M1121 624v-25m70 25v-25" stroke="#44584F" stroke-width="4"/>
+  <text x="88" y="808" fill="#283A34" font-family="Arial,sans-serif" font-size="15" font-weight="700">Stoneware table set</text><text x="527" y="808" fill="#283A34" font-family="Arial,sans-serif" font-size="15" font-weight="700">Linen shade lamp</text><text x="966" y="808" fill="#283A34" font-family="Arial,sans-serif" font-size="15" font-weight="700">Oak side chair</text>
+  <text x="88" y="833" fill="#737B73" font-family="Arial,sans-serif" font-size="13">Objects for dining · From $48</text><text x="527" y="833" fill="#737B73" font-family="Arial,sans-serif" font-size="13">Lighting · From $120</text><text x="966" y="833" fill="#737B73" font-family="Arial,sans-serif" font-size="13">Furniture · From $340</text>
+</svg>

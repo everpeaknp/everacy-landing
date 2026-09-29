@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import type { CTASectionData } from "@/lib/api";
-import { contactConfig } from "@/lib/site-theme";
 
 interface CTASectionComponentProps {
   data?: CTASectionData | null;
@@ -20,10 +19,12 @@ export function CTASectionComponent({ data }: CTASectionComponentProps) {
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const spanRef = useRef<HTMLSpanElement | null>(null);
 
-  const heading = data?.heading ?? contactConfig.title;
-  const buttonText = data?.button_text ?? contactConfig.buttonLabel;
+  const heading = data?.heading;
+  const buttonText = data?.button_text;
   const buttonLink = data?.button_link ?? "/contact";
   const bgImage = data?.background_image ?? null;
+
+  if (!heading || !buttonText) return null;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {

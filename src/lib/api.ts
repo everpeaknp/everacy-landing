@@ -8,35 +8,54 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://everacylanding.everacy.com";
 
-// ── Shared fetch helper ────────────────────────────────────
-async function apiFetch<T>(path: string, options?: RequestInit): Promise<T | null> {
-  try {
-    const res = await fetch(`${API_BASE}/api/v1${path}`, {
-      next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
-      ...options,
-    });
-    if (!res.ok) {
-      return null;
-    }
-    return res.json() as Promise<T>;
-  } catch (err) {
-    return null;
+export class CmsApiError extends Error {
+  readonly endpoint: string;
+  readonly status?: number;
+
+  constructor(message: string, endpoint: string, status?: number, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "CmsApiError";
+    this.endpoint = endpoint;
+    this.status = status;
   }
 }
 
-// ── No-cache fetch for data that must always be fresh ──────
-async function apiFetchFresh<T>(path: string): Promise<T | null> {
+// CMS content is uncached so an admin edit is visible on the next request.
+// A null result is reserved for a missing detail record; empty collections
+// remain valid empty arrays and transport/server errors stay distinguishable.
+async function apiFetch<T>(
+  path: string,
+  options?: RequestInit,
+  allowNotFound = false
+): Promise<T | null> {
+  let res: Response;
   try {
-    const res = await fetch(`${API_BASE}/api/v1${path}`, {
+    res = await fetch(`${API_BASE}/api/v1${path}`, {
       cache: "no-store",
+      ...options,
     });
-    if (!res.ok) {
-      return null;
-    }
-    return res.json() as Promise<T>;
-  } catch (err) {
-    return null;
+  } catch (cause) {
+    throw new CmsApiError("The content service could not be reached.", path, undefined, { cause });
   }
+
+  if (allowNotFound && res.status === 404) return null;
+  if (!res.ok) {
+    throw new CmsApiError(
+      `The content service returned HTTP ${res.status}.`,
+      path,
+      res.status
+    );
+  }
+
+  try {
+    return (await res.json()) as T;
+  } catch (cause) {
+    throw new CmsApiError("The content service returned an invalid response.", path, res.status, { cause });
+  }
+}
+
+async function apiFetchFresh<T>(path: string, allowNotFound = false): Promise<T | null> {
+  return apiFetch<T>(path, undefined, allowNotFound);
 }
 
 // ── Types matching Django serializers ─────────────────────
@@ -169,7 +188,7 @@ export interface HeroData {
 export interface ServiceCapabilityData {
   title: string;
   description: string;
-  icon: string;
+  icon?: string;
 }
 
 export interface ServicePipelineStepData {
@@ -178,9 +197,38 @@ export interface ServicePipelineStepData {
   detail: string;
 }
 
+export interface ServiceBenefitData {
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+export interface ServiceFeatureData {
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+export interface ServiceFaqData {
+  question: string;
+  answer: string;
+}
+
+export interface ServiceCategorySummaryData {
+  id: number;
+  title: string;
+  slug: string;
+}
+
 export interface ServiceCardData {
   id: number;
   title: string;
+  slug?: string;
+  category?: ServiceCategorySummaryData | null;
+  featured_in_menu?: boolean;
+  icon?: string;
+  is_active?: boolean;
+  seo?: SEOFieldData | null;
   description: string;
   link_label: string;
   link_href: string;
@@ -195,13 +243,73 @@ export interface ServiceCardData {
   cta_label: string | null;
   capabilities: ServiceCapabilityData[] | null;
   tech_stack: string[] | null;
+  tech_stack_groups?: { label: string; technologies: string[] }[] | null;
+  show_capabilities?: boolean;
+  show_case_studies?: boolean;
+  case_study_card_label?: string;
+  show_pipeline?: boolean;
+  show_tech_stack?: boolean;
+  show_features?: boolean;
+  show_benefits?: boolean;
+  show_faqs?: boolean;
+  show_projects?: boolean;
+  projects_link_label?: string;
+  show_articles?: boolean;
+  journal_link_label?: string;
+  article_link_label?: string;
+  show_bottom_cta?: boolean;
+  bottom_cta_button_label?: string;
   pipeline: ServicePipelineStepData[] | null;
+  benefits?: ServiceBenefitData[] | null;
+  faqs?: ServiceFaqData[] | null;
+  features?: ServiceFeatureData[] | null;
+  case_studies?: ServiceCaseStudyPreviewData[] | null;
+  section_solutions_title?: string;
+  section_case_studies_title?: string;
+  section_pipeline_title?: string;
+  section_technology_title?: string;
+  section_features_title?: string;
+  section_benefits_title?: string;
+  section_faqs_title?: string;
+  section_projects_title?: string;
+  section_journal_title?: string;
+  section_cta_title?: string;
+}
+
+export interface ServiceCaseStudyPreviewData {
+  eyebrow: string;
+  title: string;
+  description: string;
+  image: string;
+  image_alt: string;
+}
+
+export interface ServiceCategoryData {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  breadcrumb_label?: string;
+  hero_eyebrow?: string;
+  cta_label?: string;
+  service_link_label?: string;
+  empty_state_text?: string;
+  image: string | null;
+  order: number;
+  services: ServiceCardData[];
+  featured_services: ServiceCardData[];
+  seo?: SEOFieldData | null;
 }
 
 export interface ServicesPageHeroData {
   id: number;
   title: string;
+  eyebrow?: string;
   subtitle: string;
+  cta_label?: string;
+  category_link_label?: string;
+  service_link_label?: string;
+  empty_state_text?: string;
   background_image: string | null;
   scroll_text: string | null;
   seo?: SEOFieldData | null;
@@ -266,19 +374,15 @@ export interface ContactSocialLinkData {
 
 export interface ContactPageData {
   id: number;
+  eyebrow?: string;
   title: string;
   subtitle: string;
   form_title?: string;
   form_subtitle?: string;
   button_text: string;
-  direct_connect_title: string;
-  inquiries_label: string;
   phones?: string[];
   work_types?: { id: string; title: string; desc: string }[];
   services_list?: string[];
-  email: string;
-  address_label: string;
-  address: string;
   follow_us_label: string;
   follow_us_text: string;
   social_links?: ContactSocialLinkData[];
@@ -556,6 +660,24 @@ export interface BlogsData {
   seo?: SEOFieldData | null;
 }
 
+export interface LegalPageSectionData {
+  id: number;
+  heading: string;
+  body: string;
+  bullet_items: string[];
+  order: number;
+}
+
+export interface LegalPageData {
+  key: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  effective_date: string | null;
+  updated_at: string;
+  sections: LegalPageSectionData[];
+}
+
 // ── API Fetchers ───────────────────────────────────────────
 
 export async function fetchHero(): Promise<HeroData | null> {
@@ -575,6 +697,19 @@ export async function fetchServicesPage(): Promise<ServicesPageData | null> {
   return apiFetch<ServicesPageData>("/services-page/");
 }
 
+export async function fetchServiceCategories(): Promise<ServiceCategoryData[]> {
+  const data = await apiFetch<ServiceCategoryData[]>("/service-categories/");
+  return data ?? [];
+}
+
+export async function fetchServiceCategory(slug: string): Promise<ServiceCategoryData | null> {
+  return apiFetch<ServiceCategoryData>("/service-categories/" + encodeURIComponent(slug) + "/", undefined, true);
+}
+
+export async function fetchServiceBySlug(slug: string): Promise<ServiceCardData | null> {
+  return apiFetchFresh<ServiceCardData>("/services/" + encodeURIComponent(slug) + "/", true);
+}
+
 export async function fetchTestimonials(): Promise<TestimonialData[]> {
   const data = await apiFetch<TestimonialData[]>("/testimonials/");
   return data ?? [];
@@ -583,6 +718,10 @@ export async function fetchTestimonials(): Promise<TestimonialData[]> {
 export async function fetchProcess(): Promise<ProcessStepData[]> {
   const data = await apiFetch<ProcessStepData[]>("/process/");
   return data ?? [];
+}
+
+export async function fetchLegalPage(key: string): Promise<LegalPageData | null> {
+  return apiFetch<LegalPageData>("/legal/" + encodeURIComponent(key) + "/", undefined, true);
 }
 
 export async function fetchTeam(): Promise<TeamSectionData[]> {
@@ -595,7 +734,9 @@ export async function fetchContact(): Promise<ContactPageData | null> {
 }
 
 export async function fetchFooter(): Promise<FooterData | null> {
-  return apiFetchFresh<FooterData>("/footer/");
+  // Footer settings are optional CMS content; an unpublished/missing singleton
+  // should leave the structural footer in place instead of failing every route.
+  return apiFetchFresh<FooterData>("/footer/", true);
 }
 
 export async function fetchProjects(): Promise<ProjectsData | null> {
@@ -603,7 +744,7 @@ export async function fetchProjects(): Promise<ProjectsData | null> {
 }
 
 export async function fetchProject(slug: string): Promise<ProjectData | null> {
-  return apiFetchFresh<ProjectData>(`/projects/${slug}/`);
+  return apiFetchFresh<ProjectData>(`/projects/${encodeURIComponent(slug)}/`, true);
 }
 
 export async function fetchCareers(): Promise<CareersData | null> {
@@ -611,7 +752,7 @@ export async function fetchCareers(): Promise<CareersData | null> {
 }
 
 export async function fetchJobPosition(slug: string): Promise<JobPositionData | null> {
-  return apiFetchFresh<JobPositionData>(`/careers/${slug}/`);
+  return apiFetchFresh<JobPositionData>(`/careers/${encodeURIComponent(slug)}/`, true);
 }
 
 export async function fetchBlogsPageData(): Promise<BlogsData | null> {
@@ -644,7 +785,7 @@ export async function fetchBlogs(): Promise<BlogsData | null> {
 }
 
 export async function fetchBlogPost(id: number | string): Promise<BlogPostData | null> {
-  return apiFetchFresh<BlogPostData>(`/blogs/${id}/`);
+  return apiFetchFresh<BlogPostData>(`/blogs/${encodeURIComponent(String(id))}/`, true);
 }
 
 export async function fetchHomeData(): Promise<HomeData | null> {

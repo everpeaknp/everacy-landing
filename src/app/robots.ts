@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { fetchGlobalSEO } from "@/lib/api";
 import { siteConfig } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Next.js App Router robots.txt.
  * Automatically available at /robots.txt

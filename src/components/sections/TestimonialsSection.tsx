@@ -7,12 +7,13 @@
    ───────────────────────────────────────────────────────── */
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { testimonials as staticTestimonials, testimonialBg } from "@/lib/site-theme";
+import { testimonialBg } from "@/lib/site-theme";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { TestimonialData } from "@/lib/api";
 
-const AUTO_INTERVAL = 8000;
+const AUTO_INTERVAL = 2500;
 
 interface NormalisedTestimonial {
   id: string;
@@ -26,17 +27,7 @@ interface NormalisedTestimonial {
   companyLogo: string | null;
 }
 
-// Curated professional, studio headshots for static testimonials
-const staticAvatarUrls = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face", // Marcus Chen (CTO)
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face", // Priya Nair (VP Eng)
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face", // James Okafor (Founder)
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face", // Sofia Reyes (Product Dir)
-  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face", // Liam Harrington (Head of Tech)
-  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face", // Ananya Mehta (CEO)
-];
-
-function normalise(t: TestimonialData, index: number): NormalisedTestimonial {
+function normalise(t: TestimonialData): NormalisedTestimonial {
   return {
     id: String(t.id),
     quote: t.quote,
@@ -45,7 +36,7 @@ function normalise(t: TestimonialData, index: number): NormalisedTestimonial {
     company: t.company ?? "",
     rating: t.rating,
     accent: t.accent_color || "#3b82f6",
-    image: t.image || staticAvatarUrls[index % staticAvatarUrls.length],
+    image: t.image || "",
     companyLogo: t.company_logo || null,
   };
 }
@@ -56,142 +47,26 @@ interface TestimonialsSectionProps {
   sectionSubtitle?: string;
 }
 
-// Dynamic vector SVG company logo generator with a clean geometric fallback placeholder system
-function getCompanyLogo(companyName: string, active: boolean, color: string) {
-  const norm = companyName.toLowerCase().trim();
-
-  // 1. ScaleAI
-  if (norm.includes("scaleai") || norm.includes("scale ai")) {
-    return (
-      <svg className="h-5 md:h-5.5 w-auto max-h-full transition-colors duration-350" fill="none" viewBox="0 0 110 24" style={{ color: active ? color : "inherit" }}>
-        <circle cx="12" cy="12" r="7" fill="currentColor" opacity="0.85"/>
-        <text x="24" y="17" fill="currentColor" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">ScaleAI</text>
-      </svg>
-    );
-  }
-  // 2. Nexora
-  if (norm.includes("nexora")) {
-    return (
-      <svg className="h-5 md:h-5.5 w-auto max-h-full transition-colors duration-350" fill="none" viewBox="0 0 110 24" style={{ color: active ? color : "inherit" }}>
-        <polygon points="12,5 19,9 19,15 12,19 5,15 5,9" stroke="currentColor" strokeWidth="2.5"/>
-        <text x="26" y="17" fill="currentColor" fontSize="12" fontWeight="800" fontFamily="system-ui, sans-serif" letterSpacing="0.05em">NEXORA</text>
-      </svg>
-    );
-  }
-  // 3. Fundra
-  if (norm.includes("fundra")) {
-    return (
-      <svg className="h-5 md:h-5.5 w-auto max-h-full transition-colors duration-350" fill="none" viewBox="0 0 110 24" style={{ color: active ? color : "inherit" }}>
-        <circle cx="9" cy="12" r="5" stroke="currentColor" strokeWidth="2"/>
-        <circle cx="15" cy="12" r="5" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
-        <text x="26" y="17" fill="currentColor" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">fundra</text>
-      </svg>
-    );
-  }
-  // 4. UrbanMove
-  if (norm.includes("urbanmove") || norm.includes("urban move")) {
-    return (
-      <svg className="h-5 md:h-5.5 w-auto max-h-full transition-colors duration-350" fill="none" viewBox="0 0 110 24" style={{ color: active ? color : "inherit" }}>
-        <path d="M4 12h12M11 7l5 5-5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
-        <text x="24" y="17" fill="currentColor" fontSize="11" fontWeight="900" fontFamily="system-ui, sans-serif" letterSpacing="0.08em">URBANMOVE</text>
-      </svg>
-    );
-  }
-  // 5. FinStack
-  if (norm.includes("finstack")) {
-    return (
-      <svg className="h-5 md:h-5.5 w-auto max-h-full transition-colors duration-350" fill="none" viewBox="0 0 110 24" style={{ color: active ? color : "inherit" }}>
-        <path d="M4 7h10M4 12h14M4 17h8" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-        <text x="26" y="17" fill="currentColor" fontSize="12" fontWeight="800" fontFamily="system-ui, sans-serif">FinStack</text>
-      </svg>
-    );
-  }
-  // 6. DataPulse
-  if (norm.includes("datapulse") || norm.includes("data pulse")) {
-    return (
-      <svg className="h-5 md:h-5.5 w-auto max-h-full transition-colors duration-350" fill="none" viewBox="0 0 110 24" style={{ color: active ? color : "inherit" }}>
-        <path d="M4 12h3l3-5 3 10 3-5h4" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"/>
-        <text x="24" y="17" fill="currentColor" fontSize="12" fontWeight="900" fontFamily="system-ui, sans-serif">DATAPULSE</text>
-      </svg>
-    );
-  }
-
-  // 7. DYNAMIC LOGO PLACEHOLDER (For backend API company additions)
-  const displayCompany = companyName.split(" ")[0] || "Client";
-  return (
-    <div 
-      className="flex items-center gap-1.5 px-2.5 py-1 rounded border transition-all duration-300 max-h-full select-none"
-      style={{ 
-        color: active ? color : "inherit",
-        borderColor: active ? `${color}40` : "rgba(13,26,38,0.08)",
-        background: active ? `${color}06` : "rgba(13,26,38,0.01)"
-      }}
-    >
-      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 113 0v2m6-2V5a2 2 0 00-3 0v2" />
-      </svg>
-      <span className="text-[11px] font-extrabold uppercase tracking-[0.06em]">{displayCompany}</span>
-    </div>
-  );
-}
-
 export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: TestimonialsSectionProps) {
-  // Normalize API data if present, otherwise fallback to static configuration
-  const testimonials: NormalisedTestimonial[] = data && data.length > 0
-    ? data.map((t, idx) => normalise(t, idx))
-    : staticTestimonials.map((t, idx) => ({
-        id: t.id,
-        quote: t.quote,
-        name: t.name,
-        role: t.role,
-        company: t.company,
-        rating: t.rating,
-        accent: t.accent,
-        image: staticAvatarUrls[idx % staticAvatarUrls.length],
-        companyLogo: null,
-      }));
+  const testimonials: NormalisedTestimonial[] = (data ?? []).map(normalise);
 
   const [active, setActive] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const goTo = useCallback((next: number) => {
-    setActive(next);
-  }, []);
-
-  const startAuto = useCallback(() => {
-    intervalRef.current = setInterval(() => {
-      setActive(prev => {
-        const next = (prev + 1) % testimonials.length;
-        goTo(next);
-        return next;
-      });
-    }, AUTO_INTERVAL);
-  }, [goTo, testimonials.length]);
-
-  const resetAuto = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
+  const [isImageHovered, setIsImageHovered] = useState(false);
 
   useEffect(() => {
-    startAuto();
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [startAuto]);
+    if (isImageHovered || testimonials.length < 2) return;
 
-  const handleSelect = useCallback((idx: number) => {
-    setActive(cur => {
-      if (idx === cur) return cur;
-      resetAuto();
-      goTo(idx);
-      return idx;
-    });
-  }, [goTo, resetAuto]);
+    const interval = window.setInterval(() => {
+      setActive((current) => (current + 1) % testimonials.length);
+    }, AUTO_INTERVAL);
+
+    return () => window.clearInterval(interval);
+  }, [active, isImageHovered, testimonials.length]);
+
+  const handleSelect = (idx: number) => setActive(idx);
 
   const activeT = testimonials[active];
+  if (!activeT) return <EmptyState title="No testimonials published yet" />;
 
   return (
     <section
@@ -223,7 +98,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
             className="text-[10px] md:text-[11px] font-extrabold uppercase tracking-[0.25em] transition-colors duration-500"
             style={{ color: `${activeT.accent}cc` }}
           >
-            {sectionSubtitle || sectionTitle || "Trusted by the World's Leading Engineering Teams"}
+            {sectionSubtitle || sectionTitle || ""}
           </span>
         </div>
 
@@ -237,6 +112,8 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
               <button
                 key={`logo-btn-${item.id}`}
                 onClick={() => handleSelect(idx)}
+                onMouseEnter={() => setIsImageHovered(true)}
+                onMouseLeave={() => setIsImageHovered(false)}
                 className={`flex items-center justify-center transition-all duration-300 transform hover:scale-[1.03] cursor-pointer shrink-0 ${
                   isActive 
                     ? "scale-[1.03] opacity-100" 
@@ -256,9 +133,9 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                     style={{ filter: isActive ? "none" : "grayscale(100%) opacity(40%)" }}
                     loading="lazy"
                   />
-                ) : (
-                  getCompanyLogo(item.company || "Client", isActive, item.accent)
-                )}
+                ) : item.company ? (
+                  <span className="text-sm font-bold text-slate-500">{item.company}</span>
+                ) : null}
               </button>
             );
           })}
@@ -318,19 +195,15 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                   </div>
 
                   {/* Reviewer Circle Portrait Image */}
-                  <div className="mb-4 relative select-none">
-                    <div 
-                      className="w-16 h-16 rounded-full overflow-hidden border-2 shadow-sm transition-colors duration-500" 
-                      style={{ borderColor: item.accent }}
-                    >
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
+                  {item.image && <div
+                    className="mb-4 relative select-none"
+                    onMouseEnter={() => setIsImageHovered(true)}
+                    onMouseLeave={() => setIsImageHovered(false)}
+                  >
+                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 shadow-sm transition-colors duration-500" style={{ borderColor: item.accent }}>
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
                     </div>
-                  </div>
+                  </div>}
 
                   {/* Reviewer Signature Details inside the slide */}
                   <div className="text-center">

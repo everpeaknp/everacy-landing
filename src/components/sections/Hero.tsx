@@ -9,11 +9,8 @@ interface HeroProps {
 }
 
 export function Hero({ data }: HeroProps) {
-  const tagline = data?.tagline ?? "Building Digital Experiences That Scale";
-  const heading = data?.heading ?? "Everacy";
-  const subtext = data?.subtext ?? "Engineering Tomorrow";
-  const scrollText = data?.scroll_text ?? "Scroll";
-  const logoSrc = data?.logo ?? "/logo/everacy_wo_bg.png";
+  if (!data) return null;
+  const { tagline, heading, subtext, scroll_text: scrollText, logo: logoSrc } = data;
   return (
     <>
       {/*
@@ -68,7 +65,7 @@ export function Hero({ data }: HeroProps) {
         <div
           style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "24px", padding: "0 24px", userSelect: "none" }}
         >
-          <div
+          {logoSrc && <div
             style={{
               position: "relative",
               width: "clamp(144px, 14vw, 208px)",
@@ -85,17 +82,17 @@ export function Hero({ data }: HeroProps) {
               priority
               unoptimized={logoSrc.startsWith("http")}
             />
-          </div>
+          </div>}
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", maxWidth: "min(760px, 94vw)" }}>
+          {tagline && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", maxWidth: "min(760px, 94vw)" }}>
             <span className="hidden min-[360px]:block" style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)" }} />
             <span style={{ fontSize: "clamp(0.56rem, 2.2vw, 0.72rem)", letterSpacing: "clamp(0.18em, 0.7vw, 0.5em)", textTransform: "uppercase", color: "rgba(140,212,221,0.92)", lineHeight: 1.65, maxWidth: "min(74vw, 600px)" }}>
               {tagline}
             </span>
             <span className="hidden min-[360px]:block" style={{ width: 32, height: 1.2, background: "rgba(140,212,221,0.5)" }} />
-          </div>
+          </div>}
 
-          <h1 style={{
+          {heading && <h1 style={{
             fontSize: "clamp(2.35rem, 11vw, 7rem)",
             fontWeight: 900,
             textTransform: "uppercase",
@@ -106,15 +103,15 @@ export function Hero({ data }: HeroProps) {
             margin: 0,
           }}>
             {heading}
-          </h1>
+          </h1>}
 
-          <p style={{ fontSize: "clamp(0.52rem, 2.1vw, 0.72rem)", letterSpacing: "clamp(0.2em, 0.8vw, 0.55em)", textTransform: "uppercase", color: "rgba(180,227,250,0.75)", fontWeight: 300, margin: 0 }}>
+          {subtext && <p style={{ fontSize: "clamp(0.52rem, 2.1vw, 0.72rem)", letterSpacing: "clamp(0.2em, 0.8vw, 0.55em)", textTransform: "uppercase", color: "rgba(180,227,250,0.75)", fontWeight: 300, margin: 0 }}>
             {subtext}
-          </p>
+          </p>}
         </div>
 
         {/* Scroll cue */}
-        <div
+        {scrollText && <div
           aria-hidden="true"
           style={{
             position: "absolute",
@@ -138,7 +135,7 @@ export function Hero({ data }: HeroProps) {
           <span style={{ fontSize: "8px", letterSpacing: "clamp(0.2em, 0.6vw, 0.5em)", textTransform: "uppercase", color: "rgba(140,212,221,0.35)" }}>
             {scrollText}
           </span>
-        </div>
+        </div>}
 
         {/* Divider removed so hero fills first viewport cleanly */}
       </section>
