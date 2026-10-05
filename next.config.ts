@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   // Enable React strict mode for better development safety
   reactStrictMode: true,
 
+  // Keep dev bundles separate so a production build cannot replace the assets
+  // used to hydrate an already-running local development server.
+  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
+
   // Experimental features
   experimental: {
     // Optimize package imports to reduce bundle size for large libraries
@@ -24,6 +28,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "i.pinimg.com" },
       { protocol: "https", hostname: "assets.codepen.io" },
       { protocol: "https", hostname: "everacylanding.everacy.com" },
+      { protocol: "https", hostname: "www.yummyever.com" },
       // Django backend media files (local dev)
       { protocol: "http", hostname: "127.0.0.1", port: "8000" },
       { protocol: "http", hostname: "localhost", port: "8000" },

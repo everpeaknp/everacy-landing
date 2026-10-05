@@ -98,7 +98,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
               
               {/* CKEditor Rich Text Content rendered securely */}
               <div 
-                className="prose prose-lg prose-gray max-w-none 
+                className="blog-article-content prose prose-lg prose-gray max-w-none
                            prose-headings:font-mont prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-brand-dark
                            prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
                            prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4

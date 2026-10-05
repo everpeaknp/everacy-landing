@@ -47,14 +47,14 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
         </header>
         </FadeIn>
 
-        {cards.length === 0 ? <EmptyState title="No services published yet" /> : <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4">
+        {cards.length === 0 ? <EmptyState title="No services published yet" /> : <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:mt-10 lg:grid-cols-4">
           {cards.map((service, index) => (
             <FadeIn key={service.id} className="h-full" delay={Math.min(index * 0.06, 0.24)} duration={0.45}>
             <Link
               href={serviceHref(service)}
-              className="group flex h-full min-h-[250px] flex-col bg-white p-7 transition-colors duration-200 hover:bg-[#f1f8f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008da4] focus-visible:ring-offset-2 sm:p-8"
+              className="group flex h-full min-h-[205px] flex-col border border-slate-100 bg-white p-5 transition-colors duration-200 hover:border-[#c8e7e8] hover:bg-[#f1f8f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008da4] focus-visible:ring-offset-2 sm:p-6"
             >
-              <span className="flex h-14 w-14 items-center justify-center overflow-hidden bg-[#effaf9] text-[#0097a7]">
+              <span className="flex h-11 w-11 items-center justify-center overflow-hidden bg-[#effaf9] text-[#0097a7]">
                 {service.image ? (
                   <img
                     src={service.image}
@@ -66,15 +66,15 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                   (() => {
                     const Icon = serviceIcon(service.title);
                     return service.icon
-                      ? <ServiceContentIcon name={service.icon} className="h-6 w-6" />
-                      : <Icon aria-hidden="true" className="h-6 w-6" strokeWidth={1.8} />;
+                      ? <ServiceContentIcon name={service.icon} className="h-5 w-5" />
+                      : <Icon aria-hidden="true" className="h-5 w-5" strokeWidth={1.8} />;
                   })()
                 )}
               </span>
-              <h3 className="mt-5 text-xl font-bold leading-snug text-[#008b9b]">
+              <h3 className="mt-4 text-lg font-bold leading-snug text-[#008b9b]">
                 {service.title}
               </h3>
-              <p className="mt-3 line-clamp-3 text-[15px] leading-7 text-slate-600">
+              <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">
                 {service.description}
               </p>
             </Link>

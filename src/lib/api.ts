@@ -244,6 +244,7 @@ export interface ServiceCardData {
   capabilities: ServiceCapabilityData[] | null;
   tech_stack: string[] | null;
   tech_stack_groups?: { label: string; technologies: string[] }[] | null;
+  tech_stack_items?: TechnologyStackItemData[] | null;
   show_capabilities?: boolean;
   show_case_studies?: boolean;
   case_study_card_label?: string;
@@ -444,6 +445,7 @@ export interface CTASectionData {
 
 export interface HomeData {
   hero: HeroData | null;
+  technology_section?: HomeTechnologySectionData | null;
   process_section?: { title: string; subtitle: string } | null;
   services_section?: { title: string } | null;
   testimonials_section?: { title: string; subtitle: string } | null;
@@ -489,6 +491,48 @@ export interface ProjectTaglineData {
   background_image: string | null;
 }
 
+export interface ProjectScreenshotData {
+  id: number;
+  image: string;
+  alt_text: string;
+  order: number;
+}
+
+export interface ProjectStorySectionData {
+  id: number;
+  section: "approach" | "solutions" | "result";
+  heading: string;
+  intro: string;
+  body: string;
+  highlights: string[];
+  order: number;
+}
+
+export interface TechnologyStackCategoryData {
+  name: string;
+  slug: string;
+  order: number;
+}
+
+export interface TechnologyStackItemData {
+  name: string;
+  category: TechnologyStackCategoryData;
+  logo_url: string | null;
+}
+
+export interface HomeTechnologySectionData {
+  enabled: boolean;
+  eyebrow: string;
+  title: string;
+  description: string;
+  stack_label: string;
+  feature_eyebrow: string;
+  feature_title: string;
+  feature_description: string;
+  layers: { title: string; description: string }[];
+  technologies: TechnologyStackItemData[];
+}
+
 export interface ProjectData {
   id: number;
   name: string;
@@ -498,6 +542,7 @@ export interface ProjectData {
   background_image?: string | null;
   accent_color: string;
   tech_stack?: string[] | null;
+  tech_stack_items?: TechnologyStackItemData[] | null;
   platforms?: string[] | null;
   challenges?: string[] | null;
   features?: string[] | null;
@@ -509,6 +554,8 @@ export interface ProjectData {
   hero: ProjectHeroData | null;
   details: ProjectDetailData[];
   tagline: ProjectTaglineData | null;
+  screenshots?: ProjectScreenshotData[];
+  story_sections?: ProjectStorySectionData[];
   seo?: SEOFieldData | null;
 }
 

@@ -23,9 +23,30 @@ function loadComponent(file) {
 test('PageSkeleton provides a labeled busy region and route-shaped placeholders', () => {
   const { PageSkeleton } = loadComponent('src/components/ui/PageSkeleton.tsx');
   const html = renderToStaticMarkup(React.createElement(PageSkeleton, { variant: 'editorial' }));
+  const styles = fs.readFileSync('src/app/globals.css', 'utf8');
   assert.match(html, /aria-busy="true"/);
   assert.match(html, /aria-label="Loading page content"/);
   assert.match(html, /skeleton/);
+  assert.match(styles, /\.page-skeleton\s*\{[^}]*background:\s*#fff/s);
+  assert.doesNotMatch(html, /Navbar|Everacy/);
+});
+
+test('homepage loading stays on an isolated light canvas while the site is in dark mode', () => {
+  const loader = fs.readFileSync('src/app/(marketing)/loading.tsx', 'utf8');
+  const styles = fs.readFileSync('src/app/globals.css', 'utf8');
+
+  assert.match(loader, /PageSkeleton variant="home"/);
+  assert.match(styles, /\.dark\s+\.page-skeleton--home\s*\{[^}]*background:\s*#fff/s);
+  assert.match(styles, /\.page-skeleton--home\s*\{[^}]*isolation:\s*isolate/s);
+});
+
+test('service detail loading uses its own light, page-shaped skeleton', () => {
+  const loader = fs.readFileSync('src/app/(marketing)/services/[categorySlug]/[serviceSlug]/loading.tsx', 'utf8');
+  const styles = fs.readFileSync('src/app/globals.css', 'utf8');
+
+  assert.match(loader, /ServiceDetailSkeleton/);
+  assert.match(styles, /\.service-detail-skeleton\s*\{[^}]*background:\s*#fff/s);
+  assert.match(styles, /\.service-detail-skeleton__grid/);
 });
 
 test('EmptyState identifies the empty collection accessibly', () => {

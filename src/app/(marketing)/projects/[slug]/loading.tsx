@@ -1,3 +1,3 @@
-import { PageSkeleton } from "@/components/ui/PageSkeleton";
+import { ProjectDetailSkeleton } from "@/components/sections/ProjectDetailSkeleton";
 
-export default function Loading() { return <PageSkeleton variant="detail" />; }
+export default function Loading() { return <ProjectDetailSkeleton />; }

@@ -146,7 +146,10 @@ export default async function ServiceDetailPage({ params }: PageProps) {
             {sectionCopy("technology", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("technology", "eyebrow")}</p>}
             {sectionCopy("technology", "title") && <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("technology", "title")}</h2>}
             {sectionCopy("technology", "description") && <p className="mx-auto mt-4 max-w-2xl leading-7 text-[#65778d]">{sectionCopy("technology", "description")}</p>}
-            <ServiceTechnologyStack technologies={service.tech_stack || service.tech_stack_groups?.flatMap((group) => group.technologies) || []} groups={service.tech_stack_groups} />
+            <ServiceTechnologyStack
+              technologies={service.tech_stack || service.tech_stack_groups?.flatMap((group) => group.technologies) || []}
+              items={service.tech_stack_items}
+            />
           </FadeIn>
         </section>
       )}

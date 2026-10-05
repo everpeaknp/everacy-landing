@@ -6,6 +6,7 @@ import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
 import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
+import { HomeTechnologySection } from "@/components/sections/HomeTechnologySection";
 import { fetchHomeData, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -61,6 +62,8 @@ export default async function HomePage() {
           sectionTitle={homeData?.services_section?.title}
         />
       </div>
+
+      <HomeTechnologySection services={homeData?.services} technologySection={homeData?.technology_section} />
 
       <TestimonialsSection 
         data={homeData?.testimonials} 

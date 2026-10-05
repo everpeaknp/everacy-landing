@@ -1,22 +1,44 @@
 import {
+  Activity,
   AppWindow,
   BarChart3,
   Blocks,
   BriefcaseBusiness,
+  Brush,
+  Cloud,
   Code2,
+  Cpu,
+  Database,
+  GitBranch,
   Gauge,
+  Globe,
+  Headset,
+  Layers,
+  Layout,
   LayoutGrid,
+  LayoutDashboard,
+  Lock,
+  Mail,
   Megaphone,
+  MessageCircle,
   MonitorCog,
+  MousePointerClick,
   Palette,
+  PanelTop,
   PenTool,
   Search,
+  Server,
   ShieldCheck,
+  Shield,
   ShoppingCart,
   Share2,
   Smartphone,
+  Store,
   Target,
+  Terminal,
+  Utensils,
   Workflow,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -42,6 +64,7 @@ import {
   siPostgresql,
   siPython,
   siRedis,
+  siRust,
   siRedux,
   siReact,
   siTypescript,
@@ -50,34 +73,72 @@ import {
   siNodedotjs,
   siVuedotjs,
   siAngular,
+  siCloudinary,
+  siAndroid,
+  siApple,
+  siExpress,
+  siFastapi,
+  siGo,
+  siSocketdotio,
   type SimpleIcon,
 } from "simple-icons";
 
 const serviceIcons: Record<string, LucideIcon> = {
+  Activity,
   AppWindow,
   BarChart3,
   Blocks,
   BriefcaseBusiness,
+  Brush,
+  Cloud,
   Code2,
+  Cpu,
+  Database,
+  GitBranch,
   Gauge,
+  Globe,
+  Headset,
+  Layers,
+  Layout,
+  LayoutDashboard,
   LayoutGrid,
+  Lock,
+  Mail,
   Megaphone,
+  MessageCircle,
   MonitorCog,
+  MousePointerClick,
   Palette,
+  PanelTop,
   PenTool,
   Search,
+  Server,
   ShieldCheck,
+  Shield,
   ShoppingCart,
   Share2,
   Smartphone,
+  Store,
   Target,
+  Terminal,
+  Utensils,
   Workflow,
+  Zap,
 };
 
 const technologyIcons: Record<string, SimpleIcon> = {
+  android: siAndroid,
+  apple: siApple,
   django: siDjango,
+  cloudinary: siCloudinary,
   docker: siDocker,
   facebook: siFacebook,
+  fastapi: siFastapi,
+  express: siExpress,
+  expressjs: siExpress,
+  go: siGo,
+  golang: siGo,
+  socketio: siSocketdotio,
   figma: siFigma,
   firebase: siFirebase,
   flutter: siFlutter,
@@ -96,11 +157,13 @@ const technologyIcons: Record<string, SimpleIcon> = {
   "next js": siNextdotjs,
   html: siHtml5,
   html5: siHtml5,
+  ios: siApple,
   css: siCss,
   css3: siCss,
   javascript: siJavascript,
   js: siJavascript,
   redux: siRedux,
+  rust: siRust,
   "node.js": siNodedotjs,
   nodejs: siNodedotjs,
   vue: siVuedotjs,
@@ -115,14 +178,22 @@ const technologyIcons: Record<string, SimpleIcon> = {
   vercel: siVercel,
 };
 
+const technologyIconsByNormalizedName = Object.fromEntries(
+  Object.entries(technologyIcons).map(([name, icon]) => [name.replace(/[^a-z0-9]+/gi, "").toLowerCase(), icon]),
+) as Record<string, SimpleIcon>;
+
 export function ServiceContentIcon({ name, className = "h-6 w-6" }: { name?: string | null; className?: string }) {
   const Icon = serviceIcons[name || ""] || Blocks;
   return <Icon aria-hidden="true" className={className} strokeWidth={1.7} />;
 }
 
-export function TechnologyMark({ name, className = "h-8 w-8" }: { name: string; className?: string }) {
-  const normalizedName = name.trim().toLowerCase();
-  const icon = technologyIcons[normalizedName];
+export function TechnologyMark({ name, logoUrl, className = "h-8 w-8" }: { name: string; logoUrl?: string | null; className?: string }) {
+  if (logoUrl) {
+    return <img src={logoUrl} alt="" aria-hidden="true" loading="lazy" className={`${className} shrink-0 object-contain`} />;
+  }
+
+  const normalizedName = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const icon = technologyIconsByNormalizedName[normalizedName];
   if (!icon) {
   const fallback = normalizedName.includes("seo") || normalizedName.includes("schema")
     ? "Search"

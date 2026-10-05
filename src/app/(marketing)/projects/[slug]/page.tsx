@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, Layers3, MonitorSmartphone, UsersRound } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ProjectScreenshotPreview } from "@/components/sections/ProjectScreenshotPreview";
+import { ProjectTechnologyStack } from "@/components/sections/ProjectTechnologyStack";
 import { fetchGlobalSEO, fetchProject } from "@/lib/api";
 import { generateMetadata as genMeta } from "@/lib/seo";
 
@@ -20,7 +21,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const [project, globalSeo] = await Promise.all([getProject(slug), fetchGlobalSEO()]);
   if (!project) return genMeta({ noIndex: true, globalSeo });
-
   return genMeta({
     title: project.seo?.meta_title || project.name,
     description: project.seo?.meta_description || project.description || undefined,
@@ -30,15 +30,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-function DetailSection({ title, children, icon }: { title: string; children: React.ReactNode; icon: React.ReactNode }) {
-  return (
-    <section className="min-w-0 border-t border-white/15 pt-5">
-      <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-white/60">
-        <span aria-hidden="true" className="text-[#65d5e1]">{icon}</span>{title}
-      </div>
-      <div className="mt-4">{children}</div>
-    </section>
-  );
+function SectionTitle({ eyebrow, children }: { eyebrow?: string; children: React.ReactNode }) {
+  return <div className="mb-7">
+    {eyebrow && <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-[#008fa4]">{eyebrow}</p>}
+    <h2 className="text-2xl font-bold tracking-tight text-[#142e4c] sm:text-3xl">{children}</h2>
+  </div>;
 }
 
 export default async function ProjectDetailPage({ params }: PageProps) {
@@ -46,104 +42,82 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const project = await getProject(slug);
   if (!project) notFound();
 
-  const heroTitle = project.hero?.title || project.name;
-  const summary = project.hero?.subtitle || project.description;
-  const heroImage = project.hero?.background_image || project.background_image;
-  const details = [...(project.details ?? [])].sort((a, b) => a.order - b.order);
+  const details = [...(project.details ?? [])]
+    .filter((detail) => detail.question?.trim() || detail.answer?.trim())
+    .sort((a, b) => a.order - b.order);
   const features = (project.features ?? []).filter(Boolean);
+  const capabilities = details.length
+    ? details.map((detail) => ({ title: detail.question, description: detail.answer }))
+    : features.map((feature) => ({ title: feature, description: "" }));
   const platforms = (project.platforms ?? []).filter(Boolean);
   const technologies = (project.tech_stack ?? []).filter(Boolean);
+  const technologyItems = project.tech_stack_items ?? [];
+  const screenshots = (project.screenshots ?? []).filter((screenshot) => screenshot.image);
   const team = (project.team_composition ?? []).filter((member) => member?.role && member.count > 0);
-  const teamSize = team.reduce((total, member) => total + member.count, 0);
   const links = (project.visit_links ?? []).filter((link) => link.href && link.label);
-  const hasSnapshot = platforms.length > 0 || team.length > 0 || technologies.length > 0;
+  const primaryLink = links[0];
+  const poster = project.background_image || project.hero?.background_image || null;
+  const title = project.hero?.title || project.name;
+  const tagline = project.tagline?.text?.trim();
 
-  return (
-    <main className="min-h-screen overflow-hidden bg-white text-[#142e4c]">
-      <section className="relative isolate overflow-hidden bg-[#f2f8f9] px-5 pb-16 pt-28 sm:px-8 sm:pb-24 sm:pt-36">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_75%_12%,rgba(0,166,203,0.15),transparent_45%),linear-gradient(120deg,transparent_40%,rgba(255,255,255,0.7))]" />
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-          <div className="relative z-10">
-            <Link href="/projects" className="mb-10 inline-flex items-center gap-2 text-sm font-semibold text-[#557089] transition hover:text-[#008da4]"><ArrowLeft aria-hidden="true" className="h-4 w-4" />All projects</Link>
-            <p className="mb-4 text-xs font-extrabold uppercase tracking-[0.2em] text-[#009eb4]">Project case study</p>
-            <h1 className="max-w-2xl text-5xl font-extrabold leading-[0.98] tracking-[-0.045em] sm:text-7xl">{heroTitle}</h1>
-            {summary && <p className="mt-7 max-w-xl text-lg leading-8 text-[#5e7289] sm:text-xl">{summary}</p>}
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              {links.map((link) => <a key={`${link.label}-${link.href}`} href={link.href} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center gap-3 rounded-full bg-[#27446e] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(39,68,110,0.16)] transition hover:bg-[#008da4]">Visit {link.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4" /></a>)}
-              {platforms.length > 0 && <span className="text-sm font-semibold text-[#688099]">{platforms.length} platforms</span>}
-            </div>
-          </div>
-
-          {(heroImage || project.logo) && <div className="relative mx-auto w-full max-w-2xl lg:ml-auto">
-            <div aria-hidden="true" className="absolute -inset-4 rounded-[2.5rem] bg-[#8ddce2]/25 blur-2xl sm:-inset-8" />
-            <div className="relative aspect-[1.16/1] overflow-hidden rounded-[1.75rem] border border-white/80 bg-white shadow-[0_32px_90px_rgba(22,60,83,0.18)] sm:rounded-[2.25rem]">
-              {heroImage && <Image src={heroImage} alt={project.name} fill priority unoptimized sizes="(max-width: 1024px) 100vw, 55vw" className="object-cover" />}
-              {!heroImage && <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,#bceef0,transparent_40%),linear-gradient(135deg,#f9ffff,#c4e9eb)]" />}
-              {project.logo && <div className="absolute bottom-5 left-5 flex h-20 min-w-32 items-center justify-center rounded-2xl border border-white/70 bg-white/90 px-5 shadow-lg backdrop-blur sm:bottom-7 sm:left-7"><Image src={project.logo} alt={`${project.name} logo`} width={200} height={80} unoptimized className="max-h-12 w-auto max-w-40 object-contain" /></div>}
-              <span className="absolute right-5 top-5 rounded-full border border-white/70 bg-white/85 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#27446e] backdrop-blur sm:right-7 sm:top-7">{features.length.toString().padStart(2, "0")} capabilities</span>
-            </div>
-          </div>}
+  return <main className="min-h-screen bg-white text-[#142e4c]">
+    <section className="project-detail-hero bg-[#f1f8f9] px-5 pb-8 pt-24 sm:px-8 sm:pb-12 sm:pt-28">
+      <div className="mx-auto max-w-6xl">
+        <Link href="/projects" className="mb-8 inline-flex min-h-10 items-center gap-2 text-sm font-medium text-[#57718a] transition hover:text-[#008da4]"><ArrowLeft aria-hidden="true" className="h-4 w-4" />All projects</Link>
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-[#008fa4]">Project case study</p>
+          <h1 className="text-4xl font-extrabold leading-[1.04] tracking-[-0.045em] text-[#142e4c] sm:text-5xl lg:text-6xl">{title}</h1>
+          {tagline && <p className="mt-4 text-xl font-semibold tracking-tight text-[#087f91] sm:text-2xl">{tagline}</p>}
+          {project.description && <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-[#526a81] sm:text-lg">{project.description}</p>}
+          {primaryLink && <a href={primaryLink.href} target="_blank" rel="noreferrer" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-sm bg-[#087f91] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#066b7a]">Visit {primaryLink.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4" /></a>}
         </div>
-      </section>
+      </div>
+    </section>
 
-      {features.length > 0 && <section className="px-5 py-20 sm:px-8 sm:py-28">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 flex flex-col justify-between gap-4 sm:mb-14 sm:flex-row sm:items-end">
-            <div>
-              <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.2em] text-[#009eb4]">Inside the product</p>
-              <h2 className="max-w-2xl text-3xl font-extrabold tracking-[-0.035em] sm:text-5xl">Product capabilities</h2>
-            </div>
-            <span className="text-sm font-semibold text-[#71839a]">{features.length.toString().padStart(2, "0")} capabilities</span>
-          </div>
-          <div className="grid gap-px overflow-hidden rounded-3xl border border-[#dce8ec] bg-[#dce8ec] sm:grid-cols-2 xl:grid-cols-4">
-            {features.map((feature, index) => <article key={`${feature}-${index}`} className="group relative flex min-h-60 flex-col justify-between bg-white p-7 transition-colors hover:bg-[#f3fafb] sm:min-h-72 sm:p-9">
-              <div className="flex items-start justify-between">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f7f7] text-sm font-extrabold text-[#009eb4]">{String(index + 1).padStart(2, "0")}</span>
-                <span aria-hidden="true" className="text-3xl font-light text-[#b3dce0] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
-              </div>
-              <h3 className="max-w-xs text-xl font-extrabold leading-snug tracking-[-0.02em] text-[#193653] sm:text-2xl">{feature}</h3>
-            </article>)}
-          </div>
+    {(poster || screenshots.length > 0) && <section className="bg-[#f1f8f9] px-5 pb-12 sm:px-8 sm:pb-16">
+      <ProjectScreenshotPreview projectName={project.name} poster={poster} screenshots={screenshots} />
+    </section>}
+
+    {capabilities.length > 0 && <section className="project-detail-list px-5 py-12 sm:px-8 sm:py-16">
+      <div className="mx-auto max-w-5xl">
+        <SectionTitle eyebrow="Product overview">Built around day-to-day restaurant operations</SectionTitle>
+        <ul className="grid grid-cols-1 gap-x-12 md:grid-cols-2">{capabilities.map((capability, index) => <li key={`${capability.title}-${index}`} className="project-detail-row border-t border-[#e2ebee] py-5">
+          <div className="flex gap-4"><span className="pt-1 text-xs font-bold tabular-nums text-[#008fa4]">{String(index + 1).padStart(2, "0")}</span><div>{capability.title && <h3 className="text-base font-semibold text-[#193653] sm:text-lg">{capability.title}</h3>}{capability.description && <p className="mt-1 text-sm leading-6 text-[#5b7187] sm:text-base">{capability.description}</p>}</div></div>
+        </li>)}</ul>
+      </div>
+    </section>}
+
+    {(technologyItems.length > 0 || technologies.length > 0) && <section className="project-technology border-t border-[#e2ebee] bg-[#f7fafb] px-5 py-14 sm:px-8 sm:py-20">
+      <div className="mx-auto max-w-5xl text-center">
+        <SectionTitle eyebrow="Technology stack">The tools behind the product</SectionTitle>
+        <p className="mx-auto -mt-3 mb-8 max-w-2xl text-base leading-7 text-[#60768a]">A carefully selected stack supports the product across web, mobile, services, and data.</p>
+        <ProjectTechnologyStack items={technologyItems} technologies={technologies} />
+      </div>
+    </section>}
+
+    {project.story_sections?.length ? <div className="project-story-sections">
+      {[...project.story_sections].sort((a, b) => a.order - b.order).map((section) => <section key={section.id} className="project-story-section border-t border-[#e2ebee] px-5 py-9 first:border-t-0 sm:px-8 sm:py-12">
+        <div className="project-story-section__content mx-auto max-w-5xl">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.15em] text-[#008fa4]">{section.section === "approach" ? "Our Approach" : section.section === "solutions" ? "Key Solutions" : section.section === "result" ? "Project Result" : "Case study"}</p>
+          <h2 className="text-3xl font-bold tracking-tight text-[#142e4c] sm:text-4xl">{section.heading}</h2>
+          {section.intro && <p className="mt-3 text-lg font-semibold leading-7 text-[#284865]">{section.intro}</p>}
+          {section.body && <p className="mt-4 whitespace-pre-line text-base leading-7 text-[#526a81]">{section.body}</p>}
+          {section.highlights?.length > 0 && <ul className="project-story-section__highlights mt-5 divide-y divide-[#e2ebee] border-y border-[#e2ebee]">{section.highlights.map((item, index) => <li key={`${item}-${index}`} className="flex gap-4 py-3 text-base leading-6 text-[#526a81]"><span className="font-semibold tabular-nums text-[#008fa4]">{String(index + 1).padStart(2, "0")}</span><span>{item}</span></li>)}</ul>}
         </div>
-      </section>}
+      </section>)}
+    </div> : null}
 
-      {details.length > 0 && <section className="border-y border-[#dce8ec] bg-[#f5f9fa] px-5 py-16 sm:px-8 sm:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[0.7fr_1.3fr]">
-          <div><p className="mb-3 text-xs font-extrabold uppercase tracking-[0.2em] text-[#009eb4]">The brief</p><h2 className="text-3xl font-extrabold">Project overview</h2></div>
-          <div className="divide-y divide-[#dce8ec] border-y border-[#dce8ec]">
-            {details.map((detail) => <article key={detail.id} className="py-6 first:pt-6 last:pb-6">
-              {detail.question && <h3 className="text-lg font-bold">{detail.question}</h3>}
-              {detail.answer && <p className="mt-3 leading-7 text-[#65778d]">{detail.answer}</p>}
-            </article>)}
-          </div>
-        </div>
-      </section>}
+    {(platforms.length > 0 || team.length > 0) && <section className="project-team border-t border-[#e2ebee] px-5 py-12 sm:px-8 sm:py-16">
+      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-2 md:gap-14">
+        {platforms.length > 0 && <div><SectionTitle>Platforms</SectionTitle><ul className="space-y-3">{platforms.map((platform) => <li key={platform} className="border-b border-[#e2ebee] pb-3 text-base text-[#526a81]">{platform}</li>)}</ul></div>}
+        {team.length > 0 && <div><SectionTitle>Project team</SectionTitle><ul className="space-y-3">{team.map((member) => <li key={member.role} className="flex items-baseline justify-between gap-4 border-b border-[#e2ebee] pb-3 text-base text-[#526a81]"><span>{member.role}</span><span className="text-sm tabular-nums text-[#6d8296]">{member.count}</span></li>)}</ul></div>}
+      </div>
+    </section>}
 
-      {hasSnapshot && <section className="bg-[#102f50] px-5 py-16 text-white sm:px-8 sm:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 sm:mb-14"><p className="mb-3 text-xs font-extrabold uppercase tracking-[0.2em] text-[#65d5e1]">Project snapshot</p><h2 className="text-3xl font-extrabold tracking-[-0.035em] sm:text-5xl">What it runs on</h2></div>
-          <div className="grid gap-8 md:grid-cols-3 md:gap-10">
-            {platforms.length > 0 && <DetailSection title="Platforms" icon={<MonitorSmartphone className="h-4 w-4" />}>
-              <ul className="flex flex-wrap gap-2">{platforms.map((platform) => <li key={platform} className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white/90">{platform}</li>)}</ul>
-            </DetailSection>}
-            {team.length > 0 && <DetailSection title="Team" icon={<UsersRound className="h-4 w-4" />}>
-              <p className="mb-3 text-3xl font-extrabold tracking-tight">{teamSize}<span className="ml-2 text-base font-semibold text-white/60">contributors</span></p>
-              <ul className="space-y-2 text-sm text-white/75">{team.map((member) => <li key={member.role} className="flex justify-between gap-3"><span>{member.role}</span><span className="font-bold text-white">{member.count.toString().padStart(2, "0")}</span></li>)}</ul>
-            </DetailSection>}
-            {technologies.length > 0 && <DetailSection title="Technology" icon={<Layers3 className="h-4 w-4" />}>
-              <ul className="flex flex-wrap gap-2">{technologies.map((technology) => <li key={technology} className="rounded-lg border border-white/20 px-3 py-2 text-sm font-semibold text-white/90">{technology}</li>)}</ul>
-            </DetailSection>}
-          </div>
-        </div>
-      </section>}
+    {primaryLink && <section className="project-cta border-t border-[#e2ebee] px-5 py-12 sm:px-8 sm:py-16">
+      <div className="mx-auto flex max-w-5xl flex-col justify-between gap-5 sm:flex-row sm:items-center"><div><p className="text-sm text-[#657b90]">Want to see the product?</p><h2 className="mt-1 text-2xl font-bold tracking-tight text-[#142e4c]">Explore {project.name}</h2></div><a href={primaryLink.href} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-sm bg-[#087f91] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#066b7a]">Visit {primaryLink.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4" /></a></div>
+    </section>}
 
-      {project.tagline?.text && <section className="relative isolate overflow-hidden bg-[#f2f8f9] px-5 py-20 text-center sm:px-8 sm:py-28">
-        {project.tagline.background_image && <Image src={project.tagline.background_image} alt="" fill unoptimized sizes="100vw" className="-z-10 object-cover opacity-20" />}
-        <p className="mx-auto max-w-5xl text-3xl font-extrabold leading-tight tracking-[-0.035em] sm:text-5xl">{project.tagline.text}</p>
-        {links.map((link) => <a key={`${link.label}-${link.href}`} href={link.href} target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center gap-2 font-bold text-[#008da4] hover:text-[#27446e]">Visit {link.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4" /></a>)}
-      </section>}
-
-      {!summary && details.length === 0 && !technologies.length && !platforms.length && !features.length && !project.tagline?.text && <div className="px-5 py-12"><EmptyState title="More project details haven't been published yet" /></div>}
-    </main>
-  );
+    {!project.description && capabilities.length === 0 && technologies.length === 0 && platforms.length === 0 && <div className="px-5 py-12"><EmptyState title="More project details haven’t been published yet" /></div>}
+  </main>;
 }

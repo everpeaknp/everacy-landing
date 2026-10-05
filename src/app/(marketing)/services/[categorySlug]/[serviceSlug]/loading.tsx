@@ -1,3 +1,3 @@
-import { PageSkeleton } from "@/components/ui/PageSkeleton";
+import { ServiceDetailSkeleton } from "@/components/sections/ServiceDetailSkeleton";
 
-export default function Loading() { return <PageSkeleton variant="service" />; }
+export default function Loading() { return <ServiceDetailSkeleton />; }

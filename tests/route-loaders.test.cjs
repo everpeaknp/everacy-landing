@@ -17,6 +17,9 @@ test('every public page family has a matching route loading boundary', () => {
     const file = path.join(root, route, 'loading.tsx');
     assert.ok(fs.existsSync(file), 'missing route loading boundary: ' + file);
     const source = fs.readFileSync(file, 'utf8');
-    assert.ok(source.includes('variant="' + variant + '"'), file + ' should use ' + variant + ' skeleton');
+    const expected = variant === 'service' ? 'ServiceDetailSkeleton'
+      : route === 'projects/[slug]' ? 'ProjectDetailSkeleton'
+      : 'variant="' + variant + '"';
+    assert.ok(source.includes(expected), file + ' should use ' + variant + ' skeleton');
   }
 });
