@@ -87,7 +87,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       </div>
     </section>}
 
-    {(technologyItems.length > 0 || technologies.length > 0) && <section className="project-technology border-t border-[#e2ebee] bg-[#f7fafb] px-5 py-14 sm:px-8 sm:py-20">
+    {(technologyItems.length > 0 || technologies.length > 0) && <section className="project-technology border-t border-[#e2ebee] bg-[#f7fafb] px-5 pt-14 pb-8 sm:px-8 sm:pt-20 sm:pb-10">
       <div className="mx-auto max-w-5xl text-center">
         <SectionTitle eyebrow="Technology stack">The tools behind the product</SectionTitle>
         <p className="mx-auto -mt-3 mb-8 max-w-2xl text-base leading-7 text-[#60768a]">A carefully selected stack supports the product across web, mobile, services, and data.</p>

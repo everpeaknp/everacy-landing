@@ -120,6 +120,17 @@ test('project page shows technologies as centered selectable logo tabs and keeps
   assert.ok(!preview.includes('project-screen-preview__toggle'));
 });
 
+test('project technology stack uses compact panel sizing and closes the gap before the case study', () => {
+  const route = fs.readFileSync('src/app/(marketing)/projects/[slug]/page.tsx', 'utf8');
+  const projectStack = fs.readFileSync('src/components/sections/ProjectTechnologyStack.tsx', 'utf8');
+  const sharedStack = fs.readFileSync('src/components/sections/TechnologyStack.tsx', 'utf8');
+  assert.match(route, /project-technology[^\n]*pt-14 pb-8 sm:px-8 sm:pt-20 sm:pb-10/);
+  assert.match(projectStack, /TechnologyStack[^\n]*compact/);
+  assert.match(sharedStack, /compact\?: boolean/);
+  assert.match(sharedStack, /compact \? 0 : 23 \* 16/);
+  assert.match(sharedStack, /compact \? "" : "min-h-\[23rem\]"/);
+});
+
 test('project page renders CMS narrative sections for approach, solutions, and result', () => {
   const route = fs.readFileSync('src/app/(marketing)/projects/[slug]/page.tsx', 'utf8');
   assert.ok(route.includes('project.story_sections'));

@@ -8,5 +8,5 @@ export function ProjectTechnologyStack({
   items?: TechnologyStackItemData[] | null;
   technologies?: string[] | null;
 }) {
-  return <TechnologyStack idPrefix="project-stack" items={items} technologies={technologies} />;
+  return <TechnologyStack idPrefix="project-stack" items={items} technologies={technologies} compact />;
 }

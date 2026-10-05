@@ -43,10 +43,12 @@ export function TechnologyStack({
   items,
   technologies = [],
   idPrefix = "technology-stack",
+  compact = false,
 }: {
   items?: TechnologyStackItemData[] | null;
   technologies?: string[] | null;
   idPrefix?: string;
+  compact?: boolean;
 }) {
   const groups = useMemo(
     () => groupTechnologies(items?.length ? items : legacyItems(technologies ?? [])),
@@ -61,10 +63,10 @@ export function TechnologyStack({
   // Keep one stable panel height across tab changes, while accounting for the
   // tighter three-column layout on phones and larger icons above the sm breakpoint.
   const panelMinHeight = Math.max(
-    23 * 16,
+    compact ? 0 : 23 * 16,
     Math.ceil(maxItemsInGroup / 3) * 80 + 44,
-    Math.ceil(maxItemsInGroup / 4) * 108 + 56,
-    Math.ceil(maxItemsInGroup / 5) * 108 + 56,
+    Math.ceil(maxItemsInGroup / 4) * 80 + 56,
+    Math.ceil(maxItemsInGroup / 5) * 80 + 56,
   );
 
   function selectByKeyboard(event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) {
@@ -81,7 +83,7 @@ export function TechnologyStack({
   }
 
   const panelId = `${idPrefix}-panel`;
-  return <div className="mx-auto mt-10 max-w-5xl">
+  return <div className={`mx-auto ${compact ? "mt-8" : "mt-10"} max-w-5xl`}>
     <div className="flex flex-wrap justify-center gap-2" role="tablist" aria-label="Technology categories">
       {groups.map((group, index) => <button
         key={group.slug}
@@ -96,7 +98,7 @@ export function TechnologyStack({
         className={`min-h-12 px-5 py-3 text-xs font-extrabold uppercase tracking-[0.08em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008da4] focus-visible:ring-offset-2 sm:text-sm ${selected.slug === group.slug ? "bg-[#008da4] text-white shadow-sm" : "bg-[#edf3f5] text-[#28435f] hover:bg-[#e2eef0]"}`}
       >{group.name}</button>)}
     </div>
-    <div id={panelId} role="tabpanel" aria-labelledby={`${idPrefix}-tab-${selected.slug}`} style={{ minHeight: panelMinHeight }} className="flex min-h-[23rem] flex-wrap content-start justify-center gap-x-2 gap-y-2 px-1 pb-3 pt-8 sm:gap-x-4 sm:gap-y-3 sm:px-3 sm:pb-4 sm:pt-10">
+    <div id={panelId} role="tabpanel" aria-labelledby={`${idPrefix}-tab-${selected.slug}`} style={{ minHeight: panelMinHeight }} className={`flex ${compact ? "" : "min-h-[23rem]"} flex-wrap content-start justify-center gap-x-2 gap-y-2 px-1 pb-3 pt-8 sm:gap-x-4 sm:gap-y-3 sm:px-3 sm:pb-4 sm:pt-10`}>
       {selected.technologies.map((technology) => <div key={`${selected.slug}-${technology.name}`} title={technology.name} className="grid min-h-[4.5rem] min-w-0 basis-[calc(33.333%-0.334rem)] justify-items-center content-center gap-1 transition-transform hover:-translate-y-1 sm:min-h-24 sm:basis-[calc(25%-0.75rem)] xl:basis-[calc(20%-0.8rem)]">
         <TechnologyMark name={technology.name} logoUrl={technology.logo_url} className="h-9 w-9 sm:h-14 sm:w-14" />
         <span className="line-clamp-2 max-w-full break-words px-1 text-center text-[11px] font-semibold leading-tight text-[#36546e] sm:text-sm">{technology.name}</span>
