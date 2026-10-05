@@ -56,6 +56,13 @@ export function LiquidEffectAnimation({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Use the CSS liquid fallback on phones: mobile Safari can silently lose
+    // WebGL contexts under memory pressure, leaving the hero visually frozen.
+    if (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches) {
+      canvas.style.display = "none";
+      return;
+    }
+
     let app: any = null;
     let disposed = false;
 
@@ -95,12 +102,19 @@ export function LiquidEffectAnimation({
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      id="liquid-canvas"
-      className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 w-full h-full pointer-events-none`}
-      style={{ zIndex, touchAction: "none" }}
-      aria-hidden="true"
-    />
+    <>
+      {/* Keep the hero atmospheric when mobile Safari blocks or drops WebGL. */}
+      <div
+        className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 h-full w-full pointer-events-none liquid-effect__fallback`}
+        style={{ zIndex }}
+        aria-hidden="true"
+      />
+      <canvas
+        ref={canvasRef}
+        className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 h-full w-full pointer-events-none`}
+        style={{ zIndex: zIndex + 1 }}
+        aria-hidden="true"
+      />
+    </>
   );
 }

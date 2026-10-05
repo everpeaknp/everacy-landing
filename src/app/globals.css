@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Always keep a lightweight branded motion layer under the WebGL liquid canvas.
+   It remains visible on iOS devices where WebGL initialization is unreliable. */
+.liquid-effect__fallback {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 78% 72% at 18% 22%, rgba(14, 113, 154, .62), transparent 72%),
+    radial-gradient(ellipse 72% 78% at 82% 78%, rgba(15, 73, 119, .78), transparent 70%),
+    radial-gradient(ellipse 90% 92% at 52% 42%, #102e50 0%, #07182d 74%, #040813 100%);
+}
+.liquid-effect__fallback::before,
+.liquid-effect__fallback::after {
+  position: absolute;
+  inset: -28%;
+  content: "";
+  border-radius: 46%;
+  pointer-events: none;
+  will-change: transform;
+}
+.liquid-effect__fallback::before {
+  background: radial-gradient(ellipse 46% 38% at 38% 42%, rgba(20, 165, 193, .36), transparent 76%);
+  animation: liquid-effect-drift 18s ease-in-out infinite alternate;
+}
+.liquid-effect__fallback::after {
+  background: radial-gradient(ellipse 42% 48% at 72% 62%, rgba(37, 94, 153, .48), transparent 76%);
+  animation: liquid-effect-drift 25s ease-in-out -8s infinite alternate-reverse;
+}
+@keyframes liquid-effect-drift {
+  from { transform: translate3d(-3%, -2%, 0) rotate(-7deg) scale(.96); }
+  to { transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .liquid-effect__fallback::before,
+  .liquid-effect__fallback::after { animation: none; }
+}
+
 @keyframes cms-skeleton-pulse {
   0%, 100% { opacity: .56; }
   50% { opacity: 1; }

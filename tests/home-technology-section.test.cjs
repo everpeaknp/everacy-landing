@@ -31,7 +31,8 @@ test('technology panel keeps section height stable across tab changes', () => {
   const stack = fs.readFileSync('src/components/sections/TechnologyStack.tsx', 'utf8');
   const marks = fs.readFileSync('src/components/sections/ServiceContentIcon.tsx', 'utf8');
   assert.match(stack, /role="tabpanel"[^\n]*h-\[/);
-  assert.match(stack, /flex min-h-\[23rem\] flex-wrap content-start justify-center/);
+  assert.match(stack, /compact \? "" : "min-h-\[23rem\]"/);
+  assert.match(stack, /flex \$\{compact \? "" : "min-h-\[23rem\]"\} flex-wrap content-start justify-center/);
   assert.match(stack, /pt-8/);
   assert.match(stack, /sm:pt-10/);
   assert.match(stack, /basis-\[calc\(33\.333%/);
