@@ -37,7 +37,7 @@ export function Hero({ data }: HeroProps) {
         }}
       >
           <div className="absolute inset-0 w-full h-full -z-10 origin-top bg-[#040813] overflow-hidden">
-            <LiquidEffectAnimation fill="absolute" zIndex={0} />
+            <LiquidEffectAnimation fill="absolute" zIndex={0} mobileOverlay />
             {/* Dark vignette */}
             <div
               aria-hidden="true"

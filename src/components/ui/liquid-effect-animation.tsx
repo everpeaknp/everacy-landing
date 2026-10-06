@@ -44,11 +44,13 @@ function makeBrandGradient(): string {
 interface LiquidEffectAnimationProps {
   fill?: "fixed" | "absolute";
   zIndex?: number;
+  mobileOverlay?: boolean;
 }
 
 export function LiquidEffectAnimation({
   fill = "fixed",
   zIndex = 0,
+  mobileOverlay = false,
 }: LiquidEffectAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -101,13 +103,13 @@ export function LiquidEffectAnimation({
     <>
       {/* Keep the hero atmospheric when mobile Safari blocks or drops WebGL. */}
       <div
-        className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 h-full w-full pointer-events-none liquid-effect__fallback`}
+        className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 h-full w-full pointer-events-none liquid-effect__fallback${mobileOverlay ? " liquid-effect__fallback--mobile-overlay" : ""}`}
         style={{ zIndex }}
         aria-hidden="true"
       />
       <canvas
         ref={canvasRef}
-        className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 h-full w-full pointer-events-none`}
+        className={`${fill === "fixed" ? "fixed" : "absolute"} inset-0 h-full w-full pointer-events-none${mobileOverlay ? " liquid-effect__canvas--mobile-overlay" : ""}`}
         style={{ zIndex: zIndex + 1 }}
         aria-hidden="true"
       />

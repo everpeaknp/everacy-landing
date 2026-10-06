@@ -28,6 +28,15 @@
   background: radial-gradient(ellipse 42% 48% at 72% 62%, rgba(37, 94, 153, .48), transparent 76%);
   animation: liquid-effect-drift 25s ease-in-out -8s infinite alternate-reverse;
 }
+@media (max-width: 767px), (pointer: coarse) {
+  /* Keep the animated brand color visible over mobile WebGL's opaque canvas. */
+  .liquid-effect__canvas--mobile-overlay { z-index: 1 !important; }
+  .liquid-effect__fallback--mobile-overlay {
+    z-index: 2 !important;
+    opacity: .78;
+    mix-blend-mode: screen;
+  }
+}
 @keyframes liquid-effect-drift {
   from { transform: translate3d(-3%, -2%, 0) rotate(-7deg) scale(.96); }
   to { transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.06); }
