@@ -29,12 +29,12 @@
   animation: liquid-effect-drift 25s ease-in-out -8s infinite alternate-reverse;
 }
 @media (max-width: 767px), (pointer: coarse) {
-  /* Keep the animated brand color visible over mobile WebGL's opaque canvas. */
+  /* Sit above the hero's z-10 vignette; keep mobile colors fully saturated. */
   .liquid-effect__canvas--mobile-overlay { z-index: 1 !important; }
   .liquid-effect__fallback--mobile-overlay {
-    z-index: 2 !important;
-    opacity: .78;
-    mix-blend-mode: screen;
+    z-index: 11 !important;
+    opacity: .96;
+    mix-blend-mode: normal;
   }
 }
 @keyframes liquid-effect-drift {
