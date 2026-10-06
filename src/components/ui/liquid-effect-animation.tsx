@@ -56,13 +56,9 @@ export function LiquidEffectAnimation({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Use the CSS liquid fallback on phones: mobile Safari can silently lose
-    // WebGL contexts under memory pressure, leaving the hero visually frozen.
-    if (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches) {
-      canvas.style.display = "none";
-      return;
-    }
-
+    // Keep real WebGL liquid motion on phones, but cap the backing resolution
+    // to avoid spending unnecessary GPU memory on high-DPI mobile screens.
+    const isMobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
     let app: any = null;
     let disposed = false;
 
@@ -79,7 +75,7 @@ export function LiquidEffectAnimation({
         app = LiquidBackground(canvas);
 
         if (app.renderer?.setPixelRatio) {
-          app.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+          app.renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5));
         }
 
         app.loadImage(makeBrandGradient());
