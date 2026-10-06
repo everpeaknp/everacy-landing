@@ -46,6 +46,18 @@
   .liquid-effect__fallback::after { animation: none; }
 }
 
+.cookie-consent-banner {
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+.cookie-preferences-sheet {
+  max-height: calc(100dvh - max(1.5rem, env(safe-area-inset-top)) - max(1.5rem, env(safe-area-inset-bottom)));
+  margin-bottom: env(safe-area-inset-bottom);
+}
+@media (min-width: 640px) {
+  .cookie-consent-banner { bottom: 1.5rem; }
+  .cookie-preferences-sheet { margin-bottom: 0; }
+}
+
 @keyframes cms-skeleton-pulse {
   0%, 100% { opacity: .56; }
   50% { opacity: 1; }
