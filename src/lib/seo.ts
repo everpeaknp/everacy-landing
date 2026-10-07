@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolveImageAlt } from "@/lib/image-seo";
 
 /** ── Site-wide configuration ── */
 export const siteConfig = {
@@ -26,6 +27,8 @@ interface MetaOptions {
   description?: string;
   canonicalPath?: string;
   image?: string;
+  imageAlt?: string;
+  imageDecorative?: boolean;
   noIndex?: boolean;
   seoData?: SEOFieldData | null;
   globalSeo?: GlobalSEOData | null;
@@ -37,6 +40,8 @@ export function generateMetadata({
   description = siteConfig.description,
   canonicalPath = "/",
   image = siteConfig.ogImage,
+  imageAlt,
+  imageDecorative,
   noIndex = false,
   seoData = null,
   globalSeo = null,
@@ -78,6 +83,18 @@ export function generateMetadata({
     : (fallbackDefaultOg 
         ? (fallbackDefaultOg.startsWith('http') ? fallbackDefaultOg : `${baseUrl}${fallbackDefaultOg}`) 
         : undefined);
+  const selectedImageIsDecorative = pageSeo?.og_image
+    ? pageSeo.og_image_is_decorative
+    : seoData?.og_image
+      ? seoData.og_image_is_decorative
+      : imageDecorative ?? globalSeo?.default_og_image_is_decorative;
+  const resolvedImageAlt = resolveImageAlt({
+    alt: imageAlt ?? pageSeo?.og_image_alt ?? pageSeo?.ogImageAlt ?? seoData?.og_image_alt ?? globalSeo?.default_og_image_alt,
+    imageTitle: pageSeo?.og_image_title || pageSeo?.ogImageTitle || seoData?.og_image_title || globalSeo?.default_og_image_title,
+    recordTitle: resolvedTitle,
+    keywords: rawKeywords,
+    decorative: selectedImageIsDecorative,
+  });
 
   return {
     title: resolvedTitle,
@@ -92,13 +109,13 @@ export function generateMetadata({
       url: canonical,
       siteName,
       type: ogType,
-      images: resolvedImageUrl ? [{ url: resolvedImageUrl, width: 1200, height: 630 }] : [],
+      images: resolvedImageUrl ? [{ url: resolvedImageUrl, width: 1200, height: 630, alt: resolvedImageAlt }] : [],
     },
     twitter: {
       card: twitterCard,
       title: finalOgTitle || resolvedTitle,
       description: finalOgDescription || finalDescription,
-      images: resolvedImageUrl ? [resolvedImageUrl] : [],
+      images: resolvedImageUrl ? [{ url: resolvedImageUrl, alt: resolvedImageAlt }] : [],
       creator: globalSeo?.twitter_handle || globalSeo?.twitterHandle || siteConfig.twitterHandle,
     },
     robots: isIndexed

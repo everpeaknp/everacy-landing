@@ -11,6 +11,9 @@ export type BlogCard = {
   intro: string;
   content: string;
   image: string;
+  imageAlt?: string;
+  imageTitle?: string;
+  imageDecorative?: boolean;
   comments: string;
   date: string;
   category?: string;
@@ -28,8 +31,11 @@ export function BlogsClient({ posts }: { posts: BlogCard[] }) {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
             className="blog-card"
-            style={{ backgroundImage: `url(${blog.image})` }}
           >
+            {blog.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="blog-card-image" src={blog.image} alt={blog.imageDecorative ? "" : blog.imageAlt || blog.title} title={blog.imageDecorative ? undefined : blog.imageTitle || blog.imageAlt || blog.title} loading="lazy" />
+            )}
             <div className="title-content">
               {blog.category && (
                 <div className="inline-block px-3 py-1 mb-3 text-xs font-bold uppercase tracking-wider text-white bg-[#00a6cb]/80 backdrop-blur-md rounded-full border border-white/20">

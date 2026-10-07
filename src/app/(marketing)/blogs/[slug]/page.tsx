@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ArrowRight, MessageCircle, Calendar } from "lucide-react";
 import { ScrollAnimationWrapper } from "@/components/ui/scroll-animation-wrapper";
 import { BlogCommentForm } from "@/components/sections/BlogCommentForm";
+import { addImageSeoAttributes, resolveImageAlt } from "@/lib/image-seo";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const resolvedParams = await params;
   const [data, globalSeo] = await Promise.all([
     fetchBlogPost(resolvedParams.slug),
-    fetchGlobalSEO(),
+    fetchGlobalSEO().catch(() => null),
   ]);
   
   if (!data) return genMeta({ title: "Post Not Found", globalSeo });
@@ -24,19 +25,37 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description: data.intro || "",
     canonicalPath: `/blogs/${resolvedParams.slug}`,
     seoData: data.seo,
+    image: data.seo?.og_image || data.cover_image || undefined,
+    imageAlt: data.seo?.og_image
+      ? (data.seo.og_image_alt || data.seo.og_image_title || data.title)
+      : resolveImageAlt({
+          alt: data.cover_image_alt,
+          imageTitle: data.cover_image_title,
+          recordTitle: data.title,
+          keywords: data.seo?.meta_keywords || globalSeo?.default_keywords,
+          decorative: data.cover_image_is_decorative,
+        }),
+    imageDecorative: !data.seo?.og_image && data.cover_image_is_decorative,
     globalSeo,
   });
 }
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const post = await fetchBlogPost(resolvedParams.slug);
+  const [post, globalSeo] = await Promise.all([
+    fetchBlogPost(resolvedParams.slug),
+    fetchGlobalSEO(),
+  ]);
 
   if (!post) {
     notFound();
   }
 
   const { title, intro, content, cover_image, publish_date, comments_count, recommended_blogs, comments } = post;
+  const articleContent = addImageSeoAttributes(content || "", {
+    recordTitle: title,
+    keywords: post.seo?.meta_keywords || globalSeo?.default_keywords,
+  });
 
   return (
     <main className="relative z-[1] bg-white">
@@ -109,7 +128,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                            prose-strong:text-brand-dark prose-strong:font-bold
                            prose-ul:list-disc prose-ul:pl-6 prose-li:text-gray-700
                            prose-ol:list-decimal prose-ol:pl-6"
-                dangerouslySetInnerHTML={{ __html: content }}
+                dangerouslySetInnerHTML={{ __html: articleContent }}
               />
 
               {/* Tags Section at the bottom of the article */}
@@ -173,7 +192,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                           <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-gray-200">
                             <Image
                               src={recBlog.cover_image}
-                              alt={recBlog.title}
+                              alt={recBlog.cover_image_alt || recBlog.cover_image_title || recBlog.title}
                               width={320}
                               height={180}
                               className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"

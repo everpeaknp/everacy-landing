@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { resolveImageAlt } from "@/lib/image-seo";
 import { motion } from "framer-motion";
 import type { BlogPostData } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -68,12 +69,22 @@ export function FeaturedBlogs({ posts = [], sectionTitle, sectionSubtitle }: Fea
                 >
                   {/* Thumb / Image Container */}
                   <div
-                    className="relative w-full overflow-hidden transition-all duration-500 bg-cover bg-center group-hover:scale-[1.02]"
+                    className="relative w-full overflow-hidden transition-all duration-500 group-hover:scale-[1.02]"
                     style={{
-                      backgroundImage: coverImage ? `url(${coverImage})` : undefined,
                       paddingBottom: isFirst ? "50%" : "60%",
                     }}
-                  />
+                  >
+                    {coverImage && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={coverImage}
+                        alt={resolveImageAlt({ alt: post.cover_image_alt, imageTitle: post.cover_image_title, recordTitle: post.title, keywords: post.seo?.meta_keywords, decorative: post.cover_image_is_decorative })}
+                        title={post.cover_image_is_decorative ? undefined : post.cover_image_title || post.cover_image_alt || post.title}
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    )}
+                  </div>
 
                   {/* Glass Card Article Content */}
                   <article className="flex-1 flex flex-col justify-between p-5 md:p-6 bg-white">

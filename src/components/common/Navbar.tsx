@@ -58,6 +58,8 @@ export function Navbar({ data, categories = [] }: NavbarProps) {
   // the navbar background itself provides the white backdrop.
   // Only use scrolled_logo from admin if explicitly set.
   const logoOnLight = data?.settings?.scrolled_logo ?? data?.settings?.logo ?? "/logo/everacy_wo_bg.png";
+  const logoAlt = data?.settings?.logo_is_decorative ? "" : data?.settings?.logo_alt || `${siteName} logo`;
+  const logoTitle = data?.settings?.logo_title || logoAlt;
 
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -221,7 +223,8 @@ export function Navbar({ data, categories = [] }: NavbarProps) {
             >
               <Image
                 src={logoOnDark}
-                alt={`${siteName} logo`}
+                alt={logoAlt}
+                title={data?.settings?.logo_is_decorative ? undefined : logoTitle}
                 fill
                 sizes="34px"
                 className="object-contain transition-opacity duration-300"
@@ -231,7 +234,8 @@ export function Navbar({ data, categories = [] }: NavbarProps) {
               />
               <Image
                 src={logoOnLight}
-                alt={`${siteName} logo`}
+                alt={data?.settings?.scrolled_logo_is_decorative ? "" : data?.settings?.scrolled_logo_alt || logoAlt}
+                title={data?.settings?.scrolled_logo_is_decorative ? undefined : data?.settings?.scrolled_logo_title || logoTitle}
                 fill
                 sizes="34px"
                 className="object-contain transition-opacity duration-300"

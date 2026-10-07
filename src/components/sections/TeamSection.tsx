@@ -316,7 +316,8 @@ function PremiumTeamCard({ member, dark = false }: { member: any; dark?: boolean
     <div className={`morph-card ${dark ? "dark" : ""}`}>
       <Image
         src={member.image}
-        alt={member.name}
+        alt={member.image_is_decorative ? "" : member.image_alt || member.name}
+        title={member.image_is_decorative ? undefined : member.image_title || member.image_alt || member.name}
         fill
         unoptimized={isLocalCmsMedia(member.image)}
         sizes="(max-width: 768px) 19rem, 20rem"
@@ -397,7 +398,8 @@ function TeamMemberCard({ member }: { member: any }) {
     <div className="flex flex-col items-center">
           <Image
             src={member.image}
-            alt={member.name}
+            alt={member.image_is_decorative ? "" : member.image_alt || member.name}
+            title={member.image_is_decorative ? undefined : member.image_title || member.image_alt || member.name}
             width={560}
             height={560}
             unoptimized={isLocalCmsMedia(member.image)}

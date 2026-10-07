@@ -24,6 +24,9 @@ interface NormalisedTestimonial {
   rating: number;
   accent: string;
   image: string;
+  imageAlt: string;
+  imageTitle: string;
+  imageDecorative: boolean;
   companyLogo: string | null;
 }
 
@@ -37,6 +40,9 @@ function normalise(t: TestimonialData): NormalisedTestimonial {
     rating: t.rating,
     accent: t.accent_color || "#3b82f6",
     image: t.image || "",
+    imageAlt: t.image_alt || t.name,
+    imageTitle: t.image_title || t.image_alt || t.name,
+    imageDecorative: Boolean(t.image_is_decorative),
     companyLogo: t.company_logo || null,
   };
 }
@@ -201,7 +207,7 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
                     onMouseLeave={() => setIsImageHovered(false)}
                   >
                     <div className="w-16 h-16 rounded-full overflow-hidden border-2 shadow-sm transition-colors duration-500" style={{ borderColor: item.accent }}>
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+                      <img src={item.image} alt={item.imageDecorative ? "" : item.imageAlt} title={item.imageDecorative ? undefined : item.imageTitle} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                   </div>}
 

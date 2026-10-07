@@ -70,6 +70,9 @@ export interface GlobalSEOData {
   default_description?: string;
   default_keywords?: string;
   default_og_image?: string | null;
+  default_og_image_title?: string;
+  default_og_image_alt?: string;
+  default_og_image_is_decorative?: boolean;
   favicon?: string | null;
   twitter_handle?: string | null;
   facebook_page_id?: string;
@@ -84,6 +87,9 @@ export interface GlobalSEOData {
   sitemap_priority?: number;
   organization_name?: string;
   organization_logo?: string | null;
+  organization_logo_title?: string;
+  organization_logo_alt?: string;
+  organization_logo_is_decorative?: boolean;
   organization_address?: string;
   organization_phone?: string;
   organization_email?: string;
@@ -128,6 +134,11 @@ export interface PageSEOData {
   og_type?: string;
   ogType?: string;
   og_image?: string | null;
+  og_image_title?: string;
+  og_image_alt?: string;
+  og_image_is_decorative?: boolean;
+  ogImageTitle?: string;
+  ogImageAlt?: string;
   ogImage?: string | null;
   twitter_card_type?: string;
   twitterCardType?: string;
@@ -148,6 +159,9 @@ export interface SEOFieldData {
   meta_description: string | null;
   meta_keywords: string | null;
   og_image: string | null;
+  og_image_title?: string | null;
+  og_image_alt?: string | null;
+  og_image_is_decorative?: boolean;
   canonical_url: string | null;
   is_indexed: boolean;
 }
@@ -157,7 +171,12 @@ export interface NavbarSettingsData {
   site_name: string;
   logo: string | null;
   logo_alt: string;
+  logo_title?: string;
+  logo_is_decorative?: boolean;
   scrolled_logo: string | null;
+  scrolled_logo_title?: string;
+  scrolled_logo_alt?: string;
+  scrolled_logo_is_decorative?: boolean;
   button_text: string;
   button_link: string;
 }
@@ -236,6 +255,8 @@ export interface ServiceCardData {
   background_color: string;
   image: string | null;
   image_alt: string;
+  image_title?: string;
+  image_is_decorative?: boolean;
   layout: "left" | "right";
   order: number;
   // Dynamic drawer fields
@@ -283,6 +304,8 @@ export interface ServiceCaseStudyPreviewData {
   description: string;
   image: string;
   image_alt: string;
+  image_title?: string;
+  image_is_decorative?: boolean;
 }
 
 export interface ServiceCategoryData {
@@ -296,6 +319,9 @@ export interface ServiceCategoryData {
   service_link_label?: string;
   empty_state_text?: string;
   image: string | null;
+  image_title?: string;
+  image_alt?: string;
+  image_is_decorative?: boolean;
   order: number;
   services: ServiceCardData[];
   featured_services: ServiceCardData[];
@@ -329,7 +355,13 @@ export interface TestimonialData {
   company: string | null;
   quote: string;
   image: string | null;
+  image_title?: string;
+  image_alt?: string;
+  image_is_decorative?: boolean;
   company_logo: string | null;
+  company_logo_title?: string;
+  company_logo_alt?: string;
+  company_logo_is_decorative?: boolean;
   rating: number;
   accent_color: string;
   order: number;
@@ -350,6 +382,9 @@ export interface TeamMemberData {
   role: string;
   subtitle: string;
   image: string | null;
+  image_title?: string;
+  image_alt?: string;
+  image_is_decorative?: boolean;
   section: string;
   linkedin: string | null;
   twitter: string | null;
@@ -388,6 +423,9 @@ export interface ContactPageData {
   follow_us_text: string;
   social_links?: ContactSocialLinkData[];
   hero_image?: string | null;
+  hero_image_title?: string;
+  hero_image_alt?: string;
+  hero_image_is_decorative?: boolean;
   lets_talk_title?: string | null;
   lets_talk_subtitle?: string | null;
   phone?: string | null;
@@ -402,6 +440,9 @@ export interface FooterSettingsData {
   id: number;
   company_name: string;
   logo: string | null;
+  logo_title?: string;
+  logo_alt?: string;
+  logo_is_decorative?: boolean;
   background_logo: string | null;
   description: string | null;
   copyright: string;
@@ -495,6 +536,8 @@ export interface ProjectScreenshotData {
   id: number;
   image: string;
   alt_text: string;
+  image_title?: string;
+  image_is_decorative?: boolean;
   order: number;
 }
 
@@ -539,6 +582,9 @@ export interface ProjectData {
   slug: string;
   description: string | null;
   logo: string | null;
+  logo_title?: string;
+  logo_alt?: string;
+  logo_is_decorative?: boolean;
   background_image?: string | null;
   accent_color: string;
   tech_stack?: string[] | null;
@@ -564,6 +610,8 @@ export interface ProjectsPageHeroData {
   title: string;
   subtitle: string | null;
   logo: string | null;
+  logo_title?: string;
+  logo_is_decorative?: boolean;
   logo_alt: string;
   background_image: string | null;
   scroll_text: string | null;
@@ -590,6 +638,9 @@ export interface JobPositionData {
   title: string;
   slug: string;
   image: string | null;
+  image_title?: string;
+  image_alt?: string;
+  image_is_decorative?: boolean;
   location: string;
   location_icon: string;
   job_type: string;
@@ -634,6 +685,9 @@ export interface CareerTestimonialData {
   role: string | null;
   quote: string;
   image: string | null;
+  image_title?: string;
+  image_alt?: string;
+  image_is_decorative?: boolean;
   order: number;
 }
 
@@ -690,6 +744,9 @@ export interface BlogPostData {
   intro: string | null;
   content: string;
   cover_image: string | null;
+  cover_image_title?: string;
+  cover_image_alt?: string;
+  cover_image_is_decorative?: boolean;
   comments_count: number;
   publish_date: string | null;
   order: number;

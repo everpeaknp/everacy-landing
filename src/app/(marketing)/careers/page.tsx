@@ -299,7 +299,12 @@ export default async function CareersPage() {
                   <div className="flex items-center gap-4 mt-auto">
                     {test.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={test.image} alt={test.name} className="w-12 h-12 rounded-full object-cover border border-slate-200" />
+                      <img
+                        src={test.image}
+                        alt={test.image_is_decorative ? "" : test.image_alt || test.image_title || test.name}
+                        title={test.image_is_decorative ? undefined : test.image_title || test.image_alt || test.name}
+                        className="w-12 h-12 rounded-full object-cover border border-slate-200"
+                      />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center border border-slate-200">
                         <Icons.User className="w-5 h-5 text-slate-500" />

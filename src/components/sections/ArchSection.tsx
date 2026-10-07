@@ -58,7 +58,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 {service.image ? (
                   <img
                     src={service.image}
-                    alt={service.image_alt || service.title}
+                    alt={service.image_is_decorative ? "" : service.image_alt || service.title}
+                    title={service.image_is_decorative ? undefined : service.image_title || service.image_alt || service.title}
                     className="h-full w-full object-cover"
                     loading="lazy"
                   />

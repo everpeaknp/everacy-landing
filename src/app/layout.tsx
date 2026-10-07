@@ -41,6 +41,7 @@ export const viewport: Viewport = {
 };
 
 import { fetchGlobalSEO } from "@/lib/api";
+import { resolveImageAlt } from "@/lib/image-seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await fetchGlobalSEO();
@@ -50,6 +51,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const metaTitle = seo?.default_meta_title || siteName;
   const metaDesc = seo?.default_description || seo?.default_meta_description || siteConfig.description;
   const ogImage = seo?.default_og_image || seo?.defaultOgImage || siteConfig.ogImage;
+  const ogImageAlt = resolveImageAlt({
+    alt: seo?.default_og_image_alt,
+    imageTitle: seo?.default_og_image_title,
+    recordTitle: siteName,
+    keywords: seo?.default_keywords || seo?.defaultKeywords,
+    decorative: seo?.default_og_image_is_decorative,
+  });
   const twitterHandle = seo?.twitter_handle || seo?.twitterHandle || siteConfig.twitterHandle;
   const favicon = seo?.favicon || "/logo/everacy_wo_bg.png";
   const titleTemplate = seo?.default_title_template || seo?.titleTemplate || `%s | ${siteName}`;
@@ -73,7 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: metaTitle,
       description: metaDesc,
       siteName: siteName,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: siteName }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogImageAlt }],
     },
     twitter: {
       card: "summary_large_image",

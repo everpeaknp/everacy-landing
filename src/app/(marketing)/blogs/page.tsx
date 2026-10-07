@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { fetchBlogs, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
+import { resolveImageAlt } from "@/lib/image-seo";
 import { BlogsClient } from "./BlogsClient";
 import { EmptyState } from "@/components/ui/EmptyState";
 import "./styles.css";
@@ -42,6 +43,15 @@ export default async function BlogsPage() {
     intro: blog.intro || "",
     content: blog.content,
     image: blog.cover_image || "",
+    imageAlt: resolveImageAlt({
+      alt: blog.cover_image_alt,
+      imageTitle: blog.cover_image_title,
+      recordTitle: blog.title,
+      keywords: blog.seo?.meta_keywords || blogsData.seo?.meta_keywords,
+      decorative: blog.cover_image_is_decorative,
+    }),
+    imageTitle: blog.cover_image_title || "",
+    imageDecorative: Boolean(blog.cover_image_is_decorative),
     comments: String(blog.comments_count ?? 0),
     date: blog.publish_date || "",
     category: blog.category?.name,

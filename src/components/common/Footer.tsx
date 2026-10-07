@@ -112,7 +112,8 @@ export function Footer({ data }: FooterProps) {
               <div className="relative w-8 h-8 filter drop-shadow(0 0 12px rgba(17,142,198,0.5))">
                 <Image
                   src={logoSrc}
-                  alt={companyName}
+                  alt={settings?.logo_is_decorative ? "" : settings?.logo_alt || companyName}
+                  title={settings?.logo_is_decorative ? undefined : settings?.logo_title || settings?.logo_alt || companyName}
                   fill
                   sizes="32px"
                   className="object-contain"

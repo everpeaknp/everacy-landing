@@ -24,6 +24,16 @@
   isolation: isolate;
 }
 
+.blog-card-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 /* View More — hidden by default, shown on hover */
 .blog-view-btn {
   position: absolute;
