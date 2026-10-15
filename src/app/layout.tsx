@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/common/Providers";
-import { siteConfig } from "@/lib/seo";
+import { resolveMetadataImageUrl, siteConfig } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +50,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = seo?.organization_name || seo?.organizationName || seo?.site_name || siteConfig.name;
   const metaTitle = seo?.default_meta_title || siteName;
   const metaDesc = seo?.default_description || seo?.default_meta_description || siteConfig.description;
-  const ogImage = seo?.default_og_image || seo?.defaultOgImage || siteConfig.ogImage;
+  const ogImage = resolveMetadataImageUrl(
+    seo?.default_og_image || seo?.defaultOgImage,
+    siteUrl,
+  );
   const ogImageAlt = resolveImageAlt({
     alt: seo?.default_og_image_alt,
     imageTitle: seo?.default_og_image_title,
@@ -81,13 +84,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: metaTitle,
       description: metaDesc,
       siteName: siteName,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: ogImageAlt }],
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: ogImageAlt }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: metaTitle,
       description: metaDesc,
-      images: [ogImage],
+      images: ogImage ? [ogImage] : [],
       creator: twitterHandle,
     },
     robots: {

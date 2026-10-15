@@ -127,8 +127,9 @@ test('project technology stack uses compact panel sizing and closes the gap befo
   assert.match(route, /project-technology[^\n]*pt-14 pb-8 sm:px-8 sm:pt-20 sm:pb-10/);
   assert.match(projectStack, /TechnologyStack[^\n]*compact/);
   assert.match(sharedStack, /compact\?: boolean/);
-  assert.match(sharedStack, /compact \? 0 : 23 \* 16/);
-  assert.match(sharedStack, /compact \? "" : "min-h-\[23rem\]"/);
+  assert.match(sharedStack, /--technology-panel-height-mobile/);
+  assert.match(sharedStack, /transition-\[min-height\]/);
+  assert.doesNotMatch(sharedStack, /23\s*\*\s*16|min-h-\[23rem\]/);
 });
 
 test('project page renders CMS narrative sections for approach, solutions, and result', () => {

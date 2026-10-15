@@ -6,7 +6,6 @@ export const siteConfig = {
   name: "Everacy",
   description: "High-performance IT solutions — engineered for the future.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://everacy.com",
-  ogImage: "/og-image.png",
   author: "Everacy Team",
   twitterHandle: "@everacy",
   keywords: [
@@ -39,7 +38,7 @@ export function generateMetadata({
   title,
   description = siteConfig.description,
   canonicalPath = "/",
-  image = siteConfig.ogImage,
+  image,
   imageAlt,
   imageDecorative,
   noIndex = false,
@@ -51,7 +50,8 @@ export function generateMetadata({
   const finalDescription = pageSeo?.meta_description || pageSeo?.metaDescription || seoData?.meta_description || description;
   const finalOgTitle = pageSeo?.og_title || pageSeo?.ogTitle || finalTitle;
   const finalOgDescription = pageSeo?.og_description || pageSeo?.ogDescription || finalDescription;
-  const finalImage = pageSeo?.og_image || pageSeo?.ogImage || seoData?.og_image || image;
+  const fallbackDefaultOg = globalSeo?.default_og_image || globalSeo?.defaultOgImage;
+  const finalImage = pageSeo?.og_image || pageSeo?.ogImage || seoData?.og_image || fallbackDefaultOg || image;
   const ogType = (pageSeo?.og_type || pageSeo?.ogType || 'website') as any;
   const twitterCard = (pageSeo?.twitter_card_type || pageSeo?.twitterCardType || 'summary_large_image') as any;
 
@@ -77,12 +77,7 @@ export function generateMetadata({
     ? rawKeywords.split(',').map((k: string) => k.trim()).filter(Boolean)
     : [...siteConfig.keywords];
 
-  const fallbackDefaultOg = globalSeo?.default_og_image || globalSeo?.defaultOgImage;
-  const resolvedImageUrl = finalImage 
-    ? (finalImage.startsWith('http') ? finalImage : `${baseUrl}${finalImage}`)
-    : (fallbackDefaultOg 
-        ? (fallbackDefaultOg.startsWith('http') ? fallbackDefaultOg : `${baseUrl}${fallbackDefaultOg}`) 
-        : undefined);
+  const resolvedImageUrl = resolveMetadataImageUrl(finalImage, baseUrl);
   const selectedImageIsDecorative = pageSeo?.og_image
     ? pageSeo.og_image_is_decorative
     : seoData?.og_image
@@ -122,6 +117,21 @@ export function generateMetadata({
       ? { index: true, follow: true }
       : { index: false, follow: false },
   };
+}
+
+/** Resolve Django media paths against the CMS host; static paths belong to the website host. */
+export function resolveMetadataImageUrl(image: string | null | undefined, siteBaseUrl: string) {
+  if (!image) return undefined;
+  if (/^https?:\/\//i.test(image)) return image;
+
+  const isCmsMediaPath = /^\/?media\//i.test(image);
+  const cmsBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://everacylanding.everacy.com";
+  const baseUrl = isCmsMediaPath ? cmsBaseUrl : siteBaseUrl;
+  try {
+    return new URL(image, `${baseUrl.replace(/\/$/, "")}/`).toString();
+  } catch {
+    return undefined;
+  }
 }
 
 /** ── JSON-LD structured data helpers ── */

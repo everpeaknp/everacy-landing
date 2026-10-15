@@ -27,12 +27,15 @@ test('homepage technology section copy and visibility come from Home CMS data', 
   assert.match(types, /export interface HomeTechnologySectionData/);
 });
 
-test('technology panel keeps section height stable across tab changes', () => {
+test('technology panel keeps section height stable across tab changes without a fixed empty block', () => {
   const stack = fs.readFileSync('src/components/sections/TechnologyStack.tsx', 'utf8');
   const marks = fs.readFileSync('src/components/sections/ServiceContentIcon.tsx', 'utf8');
-  assert.match(stack, /role="tabpanel"[^\n]*h-\[/);
-  assert.match(stack, /compact \? "" : "min-h-\[23rem\]"/);
-  assert.match(stack, /flex \$\{compact \? "" : "min-h-\[23rem\]"\} flex-wrap content-start justify-center/);
+  assert.match(stack, /role="tabpanel"[^\n]*min-h-\[var\(--technology-panel-height-mobile\)\]/);
+  assert.match(stack, /--technology-panel-height-mobile/);
+  assert.match(stack, /--technology-panel-height-tablet/);
+  assert.match(stack, /--technology-panel-height-desktop/);
+  assert.doesNotMatch(stack, /23\s*\*\s*16|min-h-\[23rem\]/);
+  assert.match(stack, /transition-\[min-height\]/);
   assert.match(stack, /pt-8/);
   assert.match(stack, /sm:pt-10/);
   assert.match(stack, /basis-\[calc\(33\.333%/);

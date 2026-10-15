@@ -1,6 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import type { ServiceCardData } from "@/lib/api";
+import { resolveImageAlt } from "@/lib/image-seo";
+import { resolveMetadataImageUrl, siteConfig } from "@/lib/seo";
 
 interface ServiceDetailHeroProps {
   service: ServiceCardData;
@@ -19,6 +22,26 @@ export function ServiceDetailHero({
 }: ServiceDetailHeroProps) {
   const description = service.tagline || service.description;
   const internalCta = ctaHref.startsWith("/");
+  const seoServiceImage = resolveMetadataImageUrl(service.seo?.og_image, siteConfig.url);
+  const serviceImage = service.image || seoServiceImage || "/images/service-previews/responsive-platforms.png";
+  const isStaticPreview = !service.image && !seoServiceImage;
+  const serviceImageAlt = service.image
+    ? resolveImageAlt({
+        alt: service.image_alt,
+        imageTitle: service.image_title,
+        recordTitle: service.title,
+        keywords: service.seo?.meta_keywords,
+        decorative: service.image_is_decorative,
+      })
+    : seoServiceImage
+      ? resolveImageAlt({
+        alt: service.seo?.og_image_alt,
+        imageTitle: service.seo?.og_image_title,
+        recordTitle: service.title,
+        keywords: service.seo?.meta_keywords,
+        decorative: service.seo?.og_image_is_decorative,
+      })
+      : `${service.title} digital product preview`;
   return (
     <section data-service-hero className="relative isolate overflow-hidden border-b border-[#dce8ec] bg-[#f4f9fa] px-5 pb-10 pt-24 text-[#0d2a4a] sm:px-8 sm:pb-12 sm:pt-28">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_75%_0%,rgba(0,166,203,0.08),transparent_55%)]" />
@@ -31,8 +54,8 @@ export function ServiceDetailHero({
           <span aria-current="page" className="line-clamp-1 text-[#0d2a4a]">{service.title}</span>
         </nav>
 
-        <div>
-          <div className="max-w-4xl">
+        <div className={`grid items-center gap-10 lg:gap-16 ${serviceImage ? "lg:grid-cols-[1.02fr_0.98fr]" : ""}`}>
+          <div className={serviceImage ? "max-w-3xl" : "max-w-4xl"}>
             <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.06] tracking-[-0.035em] text-[#0d2a4a] sm:text-6xl lg:text-7xl">
               {service.title}
             </h1>
@@ -54,6 +77,38 @@ export function ServiceDetailHero({
               </a>
             </div>
           </div>
+          {serviceImage && (
+            <figure className="relative isolate mx-auto w-full max-w-2xl lg:mx-0 lg:max-w-none">
+              <div className={`relative overflow-hidden ${isStaticPreview ? "flex items-center justify-center" : "aspect-[1.22]"}`}>
+                {isStaticPreview ? (
+                  <Image
+                    src={serviceImage}
+                    alt={serviceImageAlt}
+                    width={1280}
+                    height={853}
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 48vw"
+                    className="h-auto max-h-[440px] w-full object-contain drop-shadow-[0_24px_32px_rgba(20,46,76,0.13)] sm:max-h-[520px]"
+                  />
+                ) : (
+                  <Image
+                    src={serviceImage}
+                    alt={serviceImageAlt}
+                    title={(service.image ? service.image_title : service.seo?.og_image_title) || undefined}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 48vw"
+                    className="object-cover"
+                  />
+                )}
+              </div>
+              {service.image && service.image_title ? (
+                <figcaption className="mt-3 text-xs font-semibold tracking-wide text-slate-500">
+                  {service.image_title}
+                </figcaption>
+              ) : null}
+            </figure>
+          )}
         </div>
       </div>
     </section>

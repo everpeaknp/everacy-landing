@@ -257,6 +257,18 @@ export interface ServiceCardData {
   image_alt: string;
   image_title?: string;
   image_is_decorative?: boolean;
+  capabilities_image?: string | null;
+  capabilities_image_alt?: string;
+  capabilities_image_title?: string;
+  capabilities_image_is_decorative?: boolean;
+  features_image?: string | null;
+  features_image_alt?: string;
+  features_image_title?: string;
+  features_image_is_decorative?: boolean;
+  benefits_image?: string | null;
+  benefits_image_alt?: string;
+  benefits_image_title?: string;
+  benefits_image_is_decorative?: boolean;
   layout: "left" | "right";
   order: number;
   // Dynamic drawer fields

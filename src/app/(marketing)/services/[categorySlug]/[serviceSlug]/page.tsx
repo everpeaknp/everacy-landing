@@ -5,9 +5,12 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ArrowUpRight, ChevronDown, Code2 } from "lucide-react";
 import { generateMetadata as genMeta } from "@/lib/seo";
 import { ServiceDetailHero } from "@/components/sections/ServiceDetailHero";
+import { ServiceCapabilityExplorer } from "@/components/sections/ServiceCapabilityExplorer";
 import { ServiceContentIcon } from "@/components/sections/ServiceContentIcon";
 import { ServiceTechnologyStack } from "@/components/sections/ServiceTechnologyStack";
 import { FadeIn } from "@/components/animations/FadeIn";
+import { resolveImageAlt } from "@/lib/image-seo";
+import { resolveMetadataImageUrl, siteConfig } from "@/lib/seo";
 import { fetchBlogsPageData, fetchGlobalSEO, fetchProjects, fetchServiceBySlug, fetchServiceCategory } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +48,10 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   const [projectsData, blogsData] = await Promise.all([fetchProjects(), fetchBlogsPageData()]);
   const projects = (projectsData?.projects ?? []).filter((project) => project.is_active && project.is_featured).slice(0, 3);
   const articles = (blogsData?.posts ?? []).slice(0, 3);
+  const caseStudies = (service.case_studies ?? []).map((study) => ({
+    ...study,
+    image: resolveMetadataImageUrl(study.image, siteConfig.url) || study.image,
+  }));
   const ctaHref = service.link_href && service.link_href !== "/services"
     ? service.link_href
     : "/contact?service=" + encodeURIComponent(service.title);
@@ -62,32 +69,19 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       />
 
       {service.show_capabilities !== false && service.capabilities && service.capabilities.length > 0 && (
-        <section id="service-solutions" className="scroll-mt-20 px-5 py-20 sm:px-8 sm:py-24">
-          <FadeIn className="mx-auto max-w-7xl" duration={0.5}>
-            <div className="mx-auto max-w-2xl text-center">
-              {sectionCopy("solutions", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("solutions", "eyebrow")}</p>}
-              {sectionCopy("solutions", "title") && <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("solutions", "title").replaceAll("{title}", service.title)}</h2>}
-              {sectionCopy("solutions", "description") && <p className="mt-4 leading-7 text-[#65778d]">{sectionCopy("solutions", "description")}</p>}
-            </div>
-            <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-              {service.capabilities.map((capability, index) => (
-                <article key={capability.title} className="group border-t border-[#dce9ed] pt-5">
-                  <div className="flex items-center justify-between">
-                    <span className="grid h-10 w-10 place-items-center text-[#008da4]">
-                      <ServiceContentIcon name={capability.icon} className="h-6 w-6" />
-                    </span>
-                    <span className="text-xs font-bold tracking-[0.12em] text-[#88a0b0]">0{index + 1}</span>
-                  </div>
-                  <h3 className="mt-5 text-lg font-extrabold leading-snug text-[#142e4c]">{capability.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#667990]">{capability.description}</p>
-                </article>
-              ))}
-            </div>
-          </FadeIn>
-        </section>
+        <ServiceCapabilityExplorer
+          capabilities={service.capabilities}
+          eyebrow={sectionCopy("solutions", "eyebrow")}
+          title={sectionCopy("solutions", "title").replaceAll("{title}", service.title)}
+          description={sectionCopy("solutions", "description")}
+          image={service.capabilities_image}
+          imageAlt={service.capabilities_image_alt}
+          imageTitle={service.capabilities_image_title}
+          imageIsDecorative={service.capabilities_image_is_decorative}
+        />
       )}
 
-      {service.show_case_studies !== false && service.case_studies && service.case_studies.length > 0 && (
+      {service.show_case_studies !== false && caseStudies.length > 0 && (
         <section className="border-y border-[#e5ecee] bg-[#f6fafb] px-5 py-16 sm:px-8 sm:py-20">
           <FadeIn className="mx-auto max-w-7xl" duration={0.5}>
             <div className="flex flex-wrap items-end justify-between gap-5">
@@ -99,7 +93,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               {service.case_study_card_label && <span className="text-xs font-semibold text-[#718296]">{service.case_study_card_label}</span>}
             </div>
             <div className="mt-9 grid gap-5 md:grid-cols-3">
-              {service.case_studies.map((study) => (
+              {caseStudies.map((study) => (
                 <article key={study.title} className="group overflow-hidden border border-[#dfe8eb] bg-white">
                   <div className="relative aspect-[1.55] overflow-hidden bg-[#e9f0f1]">
                     <Image src={study.image} alt={study.image_alt} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.025]" />
@@ -120,12 +114,12 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       {service.show_pipeline !== false && service.pipeline && service.pipeline.length > 0 && (
         <section className="px-5 py-20 sm:px-8 sm:py-24">
           <FadeIn className="mx-auto max-w-7xl" duration={0.5}>
-            <div className="mx-auto max-w-3xl text-center">
-                {sectionCopy("pipeline", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("pipeline", "eyebrow")}</p>}
-                {sectionCopy("pipeline", "title") && <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("pipeline", "title")}</h2>}
-                {sectionCopy("pipeline", "description") && <p className="mt-4 leading-7 text-[#65778d]">{sectionCopy("pipeline", "description")}</p>}
+            <div className="max-w-3xl">
+              {sectionCopy("pipeline", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("pipeline", "eyebrow")}</p>}
+              {sectionCopy("pipeline", "title") && <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("pipeline", "title")}</h2>}
+              {sectionCopy("pipeline", "description") && <p className="mt-4 leading-7 text-[#65778d]">{sectionCopy("pipeline", "description")}</p>}
             </div>
-            <ol className="mx-auto mt-12 grid max-w-7xl min-w-0 grid-cols-1 border-l border-t border-[#dce9ed] sm:grid-cols-2 xl:grid-cols-3">
+            <ol className="mx-auto mt-6 grid max-w-7xl min-w-0 grid-cols-1 border-l border-t border-[#dce9ed] sm:mt-8 sm:grid-cols-2 xl:grid-cols-3">
                 {service.pipeline.map((step, index) => (
                   <li key={step.step + step.title} className="min-w-0 border-b border-r border-[#dce9ed] bg-white p-6 sm:p-8">
                     <div className="flex items-center gap-4 text-xs font-extrabold tracking-[0.12em] text-[#008da4]">
@@ -141,7 +135,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         </section>
       )}
       {service.show_tech_stack !== false && ((service.tech_stack_groups?.length ?? 0) > 0 || (service.tech_stack?.length ?? 0) > 0) && (
-        <section className="bg-[#f6fafb] px-5 py-20 sm:px-8 sm:py-24">
+        <section className="bg-[#f6fafb] px-5 py-14 sm:px-8 sm:py-16 lg:py-18">
           <FadeIn className="mx-auto max-w-6xl text-center" duration={0.5}>
             {sectionCopy("technology", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("technology", "eyebrow")}</p>}
             {sectionCopy("technology", "title") && <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("technology", "title")}</h2>}
@@ -157,12 +151,29 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       {service.show_features !== false && service.features && service.features.length > 0 && (
         <section className="px-5 py-20 sm:px-8 sm:py-24">
           <FadeIn className="mx-auto max-w-7xl" duration={0.5}>
-            <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-8 max-w-3xl">
               {sectionCopy("features", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("features", "eyebrow")}</p>}
               {sectionCopy("features", "title") && <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("features", "title")}</h2>}
               {sectionCopy("features", "description") && <p className="mt-4 leading-7 text-[#65778d]">{sectionCopy("features", "description")}</p>}
             </div>
-            <ul className="mx-auto mt-12 grid max-w-6xl grid-cols-1 border-l border-t border-[#dce9ed] sm:grid-cols-2 xl:grid-cols-4">
+            <div className={service.features.length <= 4 && service.features_image ? "grid items-center gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:gap-10" : ""}>
+              {service.features_image && service.features.length <= 4 && <div className="order-2 flex items-center justify-center lg:order-1">
+                <Image
+                  src={service.features_image}
+                  alt={service.features_image_is_decorative ? "" : resolveImageAlt({
+                    alt: service.features_image ? service.features_image_alt : "A responsive mobile product with security, accessibility, and performance details",
+                    imageTitle: service.features_image_title,
+                    recordTitle: service.title,
+                    decorative: service.features_image ? service.features_image_is_decorative : false,
+                  })}
+                  title={service.features_image && !service.features_image_is_decorative ? service.features_image_title || undefined : undefined}
+                  width={960}
+                  height={640}
+                  sizes="(max-width: 1024px) 100vw, 38vw"
+                  className="h-auto max-h-[300px] w-full max-w-[460px] object-contain drop-shadow-[0_20px_28px_rgba(20,46,76,0.12)] transition-transform duration-500 hover:scale-[1.025] sm:max-h-[360px]"
+                />
+              </div>}
+              <ul className={`order-1 grid min-w-0 grid-cols-1 border-l border-t border-[#dce9ed] sm:grid-cols-2 lg:order-2 ${service.features.length > 4 || !service.features_image ? "xl:grid-cols-4" : ""}`}>
               {service.features.map((feature) => (
                 <li key={feature.title} className="min-w-0 border-b border-r border-[#dce9ed] bg-white p-6 sm:p-7">
                   <span className="mb-5 grid h-11 w-11 place-items-center border border-[#dce9ed] text-[#008da4]"><ServiceContentIcon name={feature.icon} className="h-5 w-5" /></span>
@@ -172,29 +183,48 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                   </div>
                 </li>
               ))}
-            </ul>
+              </ul>
+            </div>
           </FadeIn>
         </section>
       )}
       {service.show_benefits !== false && service.benefits && service.benefits.length > 0 && (
         <section className="bg-[#f6fafb] px-5 py-20 sm:px-8 sm:py-24">
-          <FadeIn className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16" duration={0.5}>
-            <div className="max-w-xl">
+          <FadeIn className="mx-auto max-w-7xl" duration={0.5}>
+            <div className="mb-8 max-w-3xl">
               {sectionCopy("benefits", "eyebrow") && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{sectionCopy("benefits", "eyebrow")}</p>}
               {sectionCopy("benefits", "title") && <h2 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight text-[#142e4c] sm:text-4xl">{sectionCopy("benefits", "title")}</h2>}
               {sectionCopy("benefits", "description") && <p className="mt-4 leading-7 text-[#65778d]">{sectionCopy("benefits", "description")}</p>}
             </div>
-            <ul className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-              {service.benefits.map((benefit) => (
-                <li key={benefit.title} className="flex min-w-0 gap-4 border border-[#dce9ed] bg-white p-5 sm:p-6">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center bg-[#edf7f8] text-[#008da4]"><ServiceContentIcon name={benefit.icon || "ShieldCheck"} className="h-5 w-5" /></span>
-                  <div className="min-w-0">
-                    <h3 className="font-bold text-[#142e4c]">{benefit.title}</h3>
-                    <p className="mt-2 break-words text-sm leading-6 text-[#667990]">{benefit.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <div className={service.benefits.length <= 4 && service.benefits_image ? "grid items-center gap-6 lg:grid-cols-[1.22fr_0.78fr] lg:gap-10" : ""}>
+              <ul className={`order-2 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:order-1 ${service.benefits.length > 4 || !service.benefits_image ? "xl:grid-cols-4" : ""}`}>
+                {service.benefits.map((benefit) => (
+                  <li key={benefit.title} className="flex min-w-0 gap-4 border border-[#dce9ed] bg-white p-5 sm:p-6">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center bg-[#edf7f8] text-[#008da4]"><ServiceContentIcon name={benefit.icon || "ShieldCheck"} className="h-5 w-5" /></span>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-[#142e4c]">{benefit.title}</h3>
+                      <p className="mt-2 break-words text-sm leading-6 text-[#667990]">{benefit.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {service.benefits_image && service.benefits.length <= 4 && <div className="order-1 flex items-center justify-center lg:order-2">
+              <Image
+                src={service.benefits_image}
+                alt={service.benefits_image_is_decorative ? "" : resolveImageAlt({
+                  alt: service.benefits_image ? service.benefits_image_alt : "A mobile product preview with performance, reliability, and growth indicators",
+                  imageTitle: service.benefits_image_title,
+                  recordTitle: service.title,
+                  decorative: service.benefits_image ? service.benefits_image_is_decorative : false,
+                })}
+                title={service.benefits_image && !service.benefits_image_is_decorative ? service.benefits_image_title || undefined : undefined}
+                width={960}
+                height={640}
+                sizes="(max-width: 1024px) 100vw, 38vw"
+                className="h-auto max-h-[320px] w-full max-w-[500px] object-contain drop-shadow-[0_24px_32px_rgba(20,46,76,0.13)] transition-transform duration-500 hover:scale-[1.025] sm:max-h-[420px]"
+              />
+              </div>}
+            </div>
           </FadeIn>
         </section>
       )}
