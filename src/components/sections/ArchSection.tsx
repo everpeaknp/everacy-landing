@@ -531,17 +531,17 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 </div>
               </div>
 
-              {/* Right Column: Consistent Aspect-Ratio Image Frame (4 cols - Moved Rightwards) */}
-              <div className="lg:col-span-4 lg:ml-auto w-full max-w-[390px]">
+              {/* Right Column: Editorial Image Frame (4 cols - Moved Rightwards, Longer & Bigger) */}
+              <div className="lg:col-span-4 lg:ml-auto w-full max-w-[425px]">
                 <figure className="relative w-full">
-                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) with Height Matching Left Browser Box */}
-                  <div className="relative aspect-[4/5.35] lg:min-h-[515px] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
+                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) */}
+                  <div className="relative aspect-[4/5.45] lg:min-h-[550px] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
                     <Image
                       key={activePreset.id}
                       src={activePreset.image}
                       alt={activePreset.caption || "Everacy engineering team collaborating on software architecture"}
                       fill
-                      sizes="(max-width: 1024px) 100vw, 390px"
+                      sizes="(max-width: 1024px) 100vw, 425px"
                       className="object-cover object-center w-full h-full transition-all duration-700 hover:scale-[1.03]"
                       priority
                     />
@@ -561,12 +561,6 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                         Enterprise squads, sub-second latency, and production architectures built to scale.
                       </p>
                     </div>
-                  </div>
-
-                  {/* Sub-label technical specs indicator */}
-                  <div className="mt-3 flex items-center justify-between border-t border-[#dce8ec] pt-2.5 font-mono text-[11px] text-[#7a8f9f]">
-                    <span>SCENARIO: <strong className="text-[#0d2a4a] uppercase">{activePreset.label}</strong></span>
-                    <span className="text-[#008da4] font-bold">EVERACY ENGINEERING</span>
                   </div>
                 </figure>
               </div>
