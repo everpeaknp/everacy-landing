@@ -266,12 +266,12 @@ export function TestimonialsSection({
           </div>
         </div>
 
-        {/* 1. Client Organization Logo Ribbon (Scalable for Any Number of Clients) */}
-        <div className="relative mb-8 group/ribbon">
-          <div className="relative border border-[#dce8ec] bg-white shadow-sm overflow-hidden">
+        {/* 1. Client Organization Logo Ribbon (Fluid, Organic & Breathable — No Squary Grid Boxes) */}
+        <div className="relative mb-10">
+          <div className="relative">
             <div
               ref={scrollRef}
-              className="flex items-stretch overflow-x-auto scrollbar-none divide-x divide-[#dce8ec] scroll-smooth"
+              className="flex items-center justify-start md:justify-center gap-8 sm:gap-12 md:gap-16 overflow-x-auto scrollbar-none py-3 px-4 scroll-smooth"
             >
               {testimonials.map((item, idx) => {
                 const isActive = active === idx;
@@ -281,28 +281,19 @@ export function TestimonialsSection({
                     ref={isActive ? activeTabRef : null}
                     type="button"
                     onClick={() => setActive(idx)}
-                    className={`group relative flex items-center justify-center px-6 py-4 transition-all duration-200 cursor-pointer shrink-0 min-w-[150px] sm:min-w-[185px] h-18 sm:h-20 ${
-                      isActive
-                        ? "bg-[#f8fbfc]"
-                        : "bg-white hover:bg-[#fafcfe]"
-                    }`}
+                    className="group relative flex flex-col items-center justify-center py-2 px-3 transition-all duration-300 cursor-pointer shrink-0"
                     aria-label={`View testimonial from ${item.company}`}
                   >
-                    {/* Subtle active underline instead of loud chunky borders */}
-                    {isActive && (
-                      <div className="absolute bottom-0 inset-x-0 h-[2px] bg-[#008da4]" />
-                    )}
-
-                    {/* Logo Image Preview (Clean, unchopped brand mark) */}
-                    <div className="relative h-9 w-full flex items-center justify-center">
+                    {/* Clean Logo Image (No squary cell walls or divide lines) */}
+                    <div className="relative h-9 sm:h-11 w-auto min-w-[90px] max-w-[140px] flex items-center justify-center">
                       <img
                         src={item.companyLogo}
                         alt={item.company}
                         title={item.company}
-                        className={`h-full w-auto max-w-[120px] max-h-9 object-contain transition-all duration-300 ${
+                        className={`h-full w-auto max-h-9 sm:max-h-11 max-w-[130px] object-contain transition-all duration-300 ${
                           isActive
-                            ? "grayscale-0 opacity-100 scale-105"
-                            : "grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-85"
+                            ? "grayscale-0 opacity-100 scale-105 drop-shadow-sm"
+                            : "grayscale opacity-35 hover:grayscale-0 hover:opacity-75"
                         }`}
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
@@ -310,29 +301,38 @@ export function TestimonialsSection({
                         }}
                       />
                     </div>
+
+                    {/* Elegant Minimalist Active Underline Pill */}
+                    {isActive && (
+                      <motion.span
+                        layoutId="active-testimonial-logo-pill"
+                        className="absolute -bottom-2 h-[2.5px] w-8 bg-[#008da4]"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Subtle Scroll Controls for Many Clients */}
-            {testimonials.length > 4 && (
+            {/* Subtle Floating Scroll Controls (Only if overflowing) */}
+            {testimonials.length > 5 && (
               <>
                 <button
                   type="button"
                   onClick={() => scrollNav(-220)}
-                  className="absolute left-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-r from-white via-white/95 to-transparent text-[#7a8f9f] hover:text-[#008da4] flex items-center justify-start pl-1 cursor-pointer transition-colors"
+                  className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 items-center justify-center bg-white border border-[#dce8ec] text-[#7a8f9f] hover:text-[#008da4] hover:border-[#008da4] transition-all cursor-pointer shadow-sm rounded-none"
                   aria-label="Scroll logos left"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <ChevronLeft className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => scrollNav(220)}
-                  className="absolute right-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-l from-white via-white/95 to-transparent text-[#7a8f9f] hover:text-[#008da4] flex items-center justify-end pr-1 cursor-pointer transition-colors"
+                  className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 h-8 w-8 items-center justify-center bg-white border border-[#dce8ec] text-[#7a8f9f] hover:text-[#008da4] hover:border-[#008da4] transition-all cursor-pointer shadow-sm rounded-none"
                   aria-label="Scroll logos right"
                 >
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </>
             )}
