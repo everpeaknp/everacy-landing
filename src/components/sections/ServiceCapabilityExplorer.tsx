@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { ServiceCapabilityData } from "@/lib/api";
-import { ServiceContentIcon } from "@/components/sections/ServiceContentIcon";
-import { resolveImageAlt } from "@/lib/image-seo";
 
 interface ServiceCapabilityExplorerProps {
   capabilities: ServiceCapabilityData[];
@@ -18,113 +16,185 @@ interface ServiceCapabilityExplorerProps {
   imageIsDecorative?: boolean;
 }
 
+interface CapabilityShowcase {
+  photoSrc: string;
+  categoryLabel: string;
+  highlights: string[];
+}
+
+function getCapabilityShowcase(title: string, index: number): CapabilityShowcase {
+  const normalized = title.toLowerCase();
+
+  if (/e-?commerce|store|shop|checkout|retail/.test(normalized)) {
+    return {
+      photoSrc: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=85",
+      categoryLabel: "Commerce & Storefronts",
+      highlights: ["Catalog & Instant Search", "Checkout & Payment Gateways", "Order & Inventory Sync"],
+    };
+  }
+
+  if (/headless|next\.?js|react|dashboard|saas|portal|web app|platform/.test(normalized)) {
+    return {
+      photoSrc: "/images/saas.jpg",
+      categoryLabel: "Web Apps & Platforms",
+      highlights: ["Next.js & React Architecture", "Modular Design System", "Typed APIs & Auth"],
+    };
+  }
+
+  if (/redesign|optimization|performance|seo|speed|audit|migration/.test(normalized)) {
+    return {
+      photoSrc: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85",
+      categoryLabel: "Performance & SEO",
+      highlights: ["Core Web Vitals Tuning", "UX & Conversion Audit", "Zero-Loss SEO Migration"],
+    };
+  }
+
+  if (/corporate|business|brand|hospitality|landing|website/.test(normalized)) {
+    return {
+      photoSrc: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85",
+      categoryLabel: "Brand & Corporate Sites",
+      highlights: ["Editorial Brand Storytelling", "Code-Free Django CMS", "Full Schema & On-Page SEO"],
+    };
+  }
+
+  const fallbacks: CapabilityShowcase[] = [
+    {
+      photoSrc: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85",
+      categoryLabel: "Digital Experience",
+      highlights: ["Responsive UI System", "Structured CMS", "Technical SEO Baseline"],
+    },
+    {
+      photoSrc: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=85",
+      categoryLabel: "Commerce Systems",
+      highlights: ["High-Converting Flows", "Payment Integrations", "Inventory Automation"],
+    },
+    {
+      photoSrc: "/images/saas.jpg",
+      categoryLabel: "Custom Web Platform",
+      highlights: ["Modern React & Next.js", "Role-Based Dashboards", "Automated CI/CD"],
+    },
+    {
+      photoSrc: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85",
+      categoryLabel: "Optimization & Scale",
+      highlights: ["Sub-Second Page Loads", "Accessibility (WCAG)", "Analytics & Tracking"],
+    },
+  ];
+
+  return fallbacks[index % fallbacks.length];
+}
+
 export function ServiceCapabilityExplorer({
   capabilities,
   eyebrow,
   title,
   description,
-  image,
-  imageAlt,
-  imageTitle,
-  imageIsDecorative,
 }: ServiceCapabilityExplorerProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-
   if (capabilities.length === 0) return null;
 
   return (
     <section
       id="service-solutions"
-      className="scroll-mt-20 overflow-hidden border-y border-[#e1ebef] bg-[#f5f9fa] px-5 py-14 sm:px-8 sm:py-16 lg:py-20"
+      className="scroll-mt-24 border-b border-[#dce8ec] bg-[#f4f9fa] px-5 py-20 sm:px-8 sm:py-28"
+      style={{ fontFamily: "'Montserrat', sans-serif" }}
     >
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        {/* Editorial Header */}
+        <div className="mb-12 flex flex-col justify-between gap-6 border-b border-[#d5e4e8] pb-8 lg:flex-row lg:items-end">
           <div className="max-w-2xl">
-            {eyebrow && <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">{eyebrow}</p>}
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#142e4c] sm:text-4xl">{title || "What we can build"}</h2>
+            <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">
+              {eyebrow || "Solutions & Deliverables"}
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
+              {title || "What we can build"}
+            </h2>
           </div>
-          {description && <p className="max-w-xl leading-7 text-[#65778d] md:pb-1">{description}</p>}
+          <p className="max-w-md text-sm leading-6 text-[#586d82] sm:text-base">
+            {description ||
+              "Every solution is tailored to your audience, engineered on a modern stack, and delivered with full code ownership."}
+          </p>
         </div>
 
-        <div className={image ? "grid items-center gap-7 lg:grid-cols-[0.82fr_1.18fr] lg:gap-12" : "mx-auto max-w-4xl"}>
-          {image && <figure className="relative flex flex-col items-center justify-center lg:min-h-[390px]">
-            <Image
-              src={image}
-              alt={imageIsDecorative ? "" : resolveImageAlt({
-                alt: image ? imageAlt : "Responsive screens and interface previews representing digital products and connected systems",
-                imageTitle,
-                recordTitle: title || "Digital product capabilities",
-                decorative: image ? imageIsDecorative : false,
-              })}
-              title={image && !imageIsDecorative ? imageTitle || undefined : undefined}
-              width={1000}
-              height={1053}
-              sizes="(max-width: 1024px) 100vw, 38vw"
-              className="h-auto max-h-[320px] w-full max-w-[430px] object-contain drop-shadow-[0_20px_30px_rgba(20,46,76,0.12)] transition-transform duration-700 hover:scale-[1.025] sm:max-h-[390px]"
-            />
-            <figcaption className="mt-1 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#31536c] sm:mt-2">
-              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#08a4ad]" />
-              Built around your goals
-            </figcaption>
-          </figure>}
+        {/* 2x2 Architectural Image Cards — Single Clean Full-Bleed Image Header */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {capabilities.map((capability, index) => {
+            const showcase = getCapabilityShowcase(capability.title, index);
 
-          <div className="flex flex-col justify-center">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#08a1ad]">Choose an area to explore</p>
-            <div className="mt-4 border-t border-[#dce8ec]" role="tablist" aria-label="Service capabilities">
-              {capabilities.map((capability, index) => {
-                const selected = index === activeIndex;
-                const tabId = `service-capability-tab-${index}`;
-                const panelId = `service-capability-panel-${index}`;
+            return (
+              <article
+                key={`${capability.title}-${index}`}
+                className="group flex flex-col overflow-hidden border border-[#d5e4e8] bg-white transition-all duration-300 hover:border-[#00a6cb] hover:shadow-[0_24px_48px_-28px_rgba(13,42,74,0.2)]"
+              >
+                {/* Single Clean Full-Bleed Photograph (No double layering) */}
+                <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-[#dce8ec] bg-[#06182c]">
+                  <Image
+                    src={showcase.photoSrc}
+                    alt={capability.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-t from-[#06182c]/55 via-transparent to-transparent"
+                  />
 
-                return (
-                  <div key={`${capability.title}-${index}`} className={`border-b transition-colors ${selected ? "border-[#cce2e7] bg-white/70" : "border-[#dce8ec]"}`}>
-                    <button
-                      id={tabId}
-                      type="button"
-                      role="tab"
-                      aria-selected={selected}
-                      aria-controls={panelId}
-                      tabIndex={selected ? 0 : -1}
-                      onClick={() => setActiveIndex(index)}
-                      onKeyDown={(event) => {
-                        const lastIndex = capabilities.length - 1;
-                        const nextIndex = event.key === "ArrowDown" || event.key === "ArrowRight"
-                          ? (index + 1) % capabilities.length
-                          : event.key === "ArrowUp" || event.key === "ArrowLeft"
-                            ? (index - 1 + capabilities.length) % capabilities.length
-                            : event.key === "Home"
-                              ? 0
-                              : event.key === "End"
-                                ? lastIndex
-                                : -1;
-                        if (nextIndex >= 0) {
-                          event.preventDefault();
-                          setActiveIndex(nextIndex);
-                          document.getElementById(`service-capability-tab-${nextIndex}`)?.focus();
-                        }
-                      }}
-                      className={`group flex min-h-[68px] w-full items-center gap-4 px-3 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#008da4] sm:min-h-[76px] sm:px-4 ${selected ? "text-[#142e4c]" : "text-[#61758b] hover:bg-white/50 hover:text-[#142e4c]"}`}
-                    >
-                      <span className={`grid h-10 w-10 shrink-0 place-items-center transition-colors sm:h-11 sm:w-11 ${selected ? "bg-[#e2f3f4] text-[#008da4]" : "bg-[#edf3f5] text-[#8194a4] group-hover:bg-[#e2f3f4] group-hover:text-[#008da4]"}`}>
-                        <ServiceContentIcon name={capability.icon} className="h-5 w-5" />
-                      </span>
-                      <span className="min-w-0 flex-1 text-base font-extrabold leading-snug sm:text-lg">{capability.title}</span>
-                      <ArrowRight aria-hidden="true" className={`h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1 ${selected ? "translate-x-0.5 text-[#008da4]" : "text-[#91a2b0]"}`} />
-                    </button>
-                    <div
-                      id={panelId}
-                      role="tabpanel"
-                      aria-labelledby={tabId}
-                      hidden={!selected}
-                      className={selected ? "pb-5 pl-[4.25rem] pr-8 sm:pb-6 sm:pl-[4.75rem]" : "hidden"}
-                    >
-                      <p className="max-w-xl text-sm leading-6 text-[#61758b] sm:text-[15px] sm:leading-7">{capability.description}</p>
+                  <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
+                    <span className="bg-[#06182c]/85 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#7fdcf0] backdrop-blur-sm">
+                      {showcase.categoryLabel}
+                    </span>
+                    <span className="grid h-8 w-8 place-items-center bg-white/95 text-xs font-black tabular-nums text-[#0d2a4a]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Clean Editorial Card Body */}
+                <div className="flex flex-1 flex-col justify-between p-7 sm:p-8">
+                  <div>
+                    <h3 className="text-xl font-black leading-snug text-[#0d2a4a] transition-colors group-hover:text-[#008da4] sm:text-2xl">
+                      {capability.title}
+                    </h3>
+                    <p className="mt-2.5 text-sm leading-6 text-[#586d82] sm:text-[15px]">
+                      {capability.description}
+                    </p>
+                  </div>
+
+                  {/* Clean Deliverable Spec Chips */}
+                  <div className="mt-6 border-t border-[#e5eef1] pt-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {showcase.highlights.map((item) => (
+                        <span
+                          key={item}
+                          className="border border-[#dce8ec] bg-[#f4f9fa] px-3 py-1.5 text-xs font-extrabold text-[#142e4c] transition-colors group-hover:border-[#00a6cb]/40 group-hover:bg-[#eaf6f8]"
+                        >
+                          {item}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        {/* Bottom Architect Strip (No blue left border) */}
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 border border-[#d5e4e8] bg-white px-6 py-5 sm:flex-row sm:items-center sm:px-8">
+          <div>
+            <p className="text-sm font-extrabold text-[#0d2a4a]">
+              Have a custom architecture or multi-platform build in mind?
+            </p>
+            <p className="mt-0.5 text-xs font-medium text-[#586d82]">
+              We can combine any of these capabilities into a single roadmap.
+            </p>
           </div>
+          <Link
+            href="/contact"
+            className="inline-flex shrink-0 items-center gap-2 bg-[#0d2a4a] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-[#00a6cb]"
+          >
+            Scope your project
+            <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </section>
