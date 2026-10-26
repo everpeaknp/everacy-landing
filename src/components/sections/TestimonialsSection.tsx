@@ -1,19 +1,18 @@
 /* ─────────────────────────────────────────────────────────
    TestimonialsSection — Architectural Wall of Trust
-   Matches the sharp, high-contrast engineering aesthetic of the site:
-   - High-contrast architectural badge & section header
-   - Interactive top client ribbon showcasing authentic organization logos
-   - Hero testimonial spotlight card with sharp borders and cyan drop-shadow
+   Clean, refined engineering showcase:
+   - Subtle architectural borders (no heavy/exaggerated solid colored shadows)
+   - Scalable client logo ribbon with auto-scroll and arrow controls for any number of clients
+   - Logo-first representation without awkward label truncations
    - High-fidelity portrait showcase with robust local demo fallbacks
    - Rectangular slide indicators and clean previous/next controls
    - Sharp, boxy architectural geometry (rounded-none throughout)
    ───────────────────────────────────────────────────────── */
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, ChevronLeft, ChevronRight, ShieldCheck, Building2 } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
 import type { TestimonialData } from "@/lib/api";
 
 const AUTO_INTERVAL_MS = 5000;
@@ -194,6 +193,9 @@ export function TestimonialsSection({
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const activeTabRef = useRef<HTMLButtonElement | null>(null);
+
   const handleNext = useCallback(() => {
     setActive((curr) => (curr + 1) % testimonials.length);
   }, [testimonials.length]);
@@ -202,12 +204,29 @@ export function TestimonialsSection({
     setActive((curr) => (curr - 1 + testimonials.length) % testimonials.length);
   }, [testimonials.length]);
 
+  // Keep active client tab smoothly in view when active changes
+  useEffect(() => {
+    if (activeTabRef.current && scrollRef.current) {
+      activeTabRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [active]);
+
   useEffect(() => {
     if (isPaused || testimonials.length <= 1) return;
 
     const interval = setInterval(handleNext, AUTO_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [handleNext, isPaused, testimonials.length]);
+
+  const scrollNav = (delta: number) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: delta, behavior: "smooth" });
+    }
+  };
 
   const current = testimonials[active] ?? testimonials[0];
 
@@ -247,80 +266,99 @@ export function TestimonialsSection({
           </div>
         </div>
 
-        {/* 1. Client Organization Logo Ribbon (Interactive Tab Strip) */}
-        <div className="border border-[#dce8ec] bg-white shadow-sm overflow-x-auto scrollbar-none mb-8">
-          <div className="flex min-w-max divide-x divide-[#dce8ec]">
-            {testimonials.map((item, idx) => {
-              const isActive = active === idx;
-              return (
-                <button
-                  key={`client-tab-${item.id}`}
-                  type="button"
-                  onClick={() => setActive(idx)}
-                  className={`group relative flex flex-col items-center justify-center px-6 py-4 transition-all duration-200 cursor-pointer min-w-[170px] sm:min-w-[195px] h-20 sm:h-24 ${
-                    isActive
-                      ? "bg-[#f0f9fa]/60 text-[#0d2a4a]"
-                      : "bg-white hover:bg-[#fafcfe] text-[#7a8f9f] hover:text-[#0d2a4a]"
-                  }`}
-                  aria-label={`View testimonial from ${item.company}`}
-                >
-                  {/* Top active indicator line */}
-                  {isActive && (
-                    <div className="absolute top-0 inset-x-0 h-1 bg-[#008da4]" />
-                  )}
-
-                  {/* Company Logo Image Preview */}
-                  <div className="relative h-8 sm:h-10 w-full flex items-center justify-center">
-                    <img
-                      src={item.companyLogo}
-                      alt={item.company}
-                      className={`h-full w-auto max-w-[130px] object-contain transition-all duration-300 ${
-                        isActive
-                          ? "grayscale-0 opacity-100 scale-105"
-                          : "grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-80"
-                      }`}
-                      onError={(e) => {
-                        // If logo fails, fallback to default logo
-                        (e.target as HTMLImageElement).src =
-                          DEFAULT_LOGOS[idx % DEFAULT_LOGOS.length];
-                      }}
-                    />
-                  </div>
-
-                  {/* Company Name Micro Label */}
-                  <span
-                    className={`mt-1.5 text-[10px] font-mono font-bold uppercase tracking-wider truncate max-w-[140px] ${
-                      isActive ? "text-[#008da4]" : "text-[#7a8f9f] group-hover:text-[#0d2a4a]"
+        {/* 1. Client Organization Logo Ribbon (Scalable for Any Number of Clients) */}
+        <div className="relative mb-8 group/ribbon">
+          <div className="relative border border-[#dce8ec] bg-white shadow-sm overflow-hidden">
+            <div
+              ref={scrollRef}
+              className="flex items-stretch overflow-x-auto scrollbar-none divide-x divide-[#dce8ec] scroll-smooth"
+            >
+              {testimonials.map((item, idx) => {
+                const isActive = active === idx;
+                return (
+                  <button
+                    key={`client-tab-${item.id}`}
+                    ref={isActive ? activeTabRef : null}
+                    type="button"
+                    onClick={() => setActive(idx)}
+                    className={`group relative flex items-center justify-center px-6 py-4 transition-all duration-200 cursor-pointer shrink-0 min-w-[150px] sm:min-w-[185px] h-18 sm:h-20 ${
+                      isActive
+                        ? "bg-[#f8fbfc]"
+                        : "bg-white hover:bg-[#fafcfe]"
                     }`}
+                    aria-label={`View testimonial from ${item.company}`}
                   >
-                    {item.company}
-                  </span>
+                    {/* Subtle active underline instead of loud chunky borders */}
+                    {isActive && (
+                      <div className="absolute bottom-0 inset-x-0 h-[2px] bg-[#008da4]" />
+                    )}
+
+                    {/* Logo Image Preview (Clean, unchopped brand mark) */}
+                    <div className="relative h-9 w-full flex items-center justify-center">
+                      <img
+                        src={item.companyLogo}
+                        alt={item.company}
+                        title={item.company}
+                        className={`h-full w-auto max-w-[120px] max-h-9 object-contain transition-all duration-300 ${
+                          isActive
+                            ? "grayscale-0 opacity-100 scale-105"
+                            : "grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-85"
+                        }`}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            DEFAULT_LOGOS[idx % DEFAULT_LOGOS.length];
+                        }}
+                      />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Subtle Scroll Controls for Many Clients */}
+            {testimonials.length > 4 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => scrollNav(-220)}
+                  className="absolute left-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-r from-white via-white/95 to-transparent text-[#7a8f9f] hover:text-[#008da4] flex items-center justify-start pl-1 cursor-pointer transition-colors"
+                  aria-label="Scroll logos left"
+                >
+                  <ChevronLeft className="h-5 w-5" />
                 </button>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={() => scrollNav(220)}
+                  className="absolute right-0 top-0 bottom-0 z-10 w-8 bg-gradient-to-l from-white via-white/95 to-transparent text-[#7a8f9f] hover:text-[#008da4] flex items-center justify-end pr-1 cursor-pointer transition-colors"
+                  aria-label="Scroll logos right"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* 2. Main Architectural Spotlight Card */}
-        <div className="relative border-2 border-[#008da4] bg-white p-6 sm:p-10 lg:p-12 shadow-[8px_8px_0px_0px_#008da4] rounded-none">
+        {/* 2. Refined Architectural Spotlight Card (Subtle hairline border + elegant top accent) */}
+        <div className="relative border border-[#dce8ec] border-t-2 border-t-[#008da4] bg-white p-6 sm:p-10 lg:p-12 shadow-[0_4px_24px_rgba(13,42,74,0.04)] rounded-none">
           {/* Subtle Technical Corner Crosshairs */}
-          <span className="absolute top-2 left-2 font-mono text-[10px] font-bold text-[#008da4]/40 select-none">+</span>
-          <span className="absolute top-2 right-2 font-mono text-[10px] font-bold text-[#008da4]/40 select-none">+</span>
-          <span className="absolute bottom-2 left-2 font-mono text-[10px] font-bold text-[#008da4]/40 select-none">+</span>
-          <span className="absolute bottom-2 right-2 font-mono text-[10px] font-bold text-[#008da4]/40 select-none">+</span>
+          <span className="absolute top-2 left-2 font-mono text-[10px] font-bold text-[#7a8f9f]/30 select-none">+</span>
+          <span className="absolute top-2 right-2 font-mono text-[10px] font-bold text-[#7a8f9f]/30 select-none">+</span>
+          <span className="absolute bottom-2 left-2 font-mono text-[10px] font-bold text-[#7a8f9f]/30 select-none">+</span>
+          <span className="absolute bottom-2 right-2 font-mono text-[10px] font-bold text-[#7a8f9f]/30 select-none">+</span>
 
           <AnimatePresence mode="wait">
             <motion.div
               key={`testimonial-spotlight-${current.id}`}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="grid grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] gap-8 lg:gap-12 items-center"
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="grid grid-cols-1 md:grid-cols-[200px_1fr] lg:grid-cols-[240px_1fr] gap-8 lg:gap-12 items-center"
             >
-              {/* Left Column: Architectural Photo Box + Verification + Stars */}
+              {/* Left Column: Clean Architectural Portrait Box + Star Rating */}
               <div className="flex flex-col items-center md:items-start">
-                <div className="relative h-[220px] w-[200px] sm:w-[220px] overflow-hidden rounded-none border-2 border-[#0d2a4a] bg-[#f0f4f6] shadow-sm">
+                <div className="relative h-[210px] w-[190px] sm:w-[210px] overflow-hidden rounded-none border border-[#dce8ec] bg-[#f0f4f6]">
                   <img
                     src={current.image}
                     alt={current.name}
@@ -329,14 +367,14 @@ export function TestimonialsSection({
                       (e.target as HTMLImageElement).src = "/images/person.png";
                     }}
                   />
-                  {/* Cyan bottom tag */}
-                  <div className="absolute bottom-0 inset-x-0 bg-[#0d2a4a] py-1 text-center font-mono text-[9px] font-bold uppercase tracking-widest text-[#008da4]">
-                    VERIFIED PARTNER
+                  {/* Subtle dark bottom status tag */}
+                  <div className="absolute bottom-0 inset-x-0 bg-[#0d2a4a]/90 py-1 text-center font-mono text-[9px] font-bold uppercase tracking-widest text-white">
+                    VERIFIED CLIENT
                   </div>
                 </div>
 
                 {/* Stars Rating */}
-                <div className="mt-4 flex items-center gap-1" aria-label={`${current.rating} out of 5 stars`}>
+                <div className="mt-3.5 flex items-center justify-center md:justify-start gap-1" aria-label={`${current.rating} out of 5 stars`}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={`star-${i}`}
@@ -347,19 +385,11 @@ export function TestimonialsSection({
                       }`}
                     />
                   ))}
-                  <span className="ml-2 font-mono text-[11px] font-bold text-[#0d2a4a]">5.0</span>
-                </div>
-
-                {/* Organization Pill Below Image */}
-                <div className="mt-3 flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3 py-1.5 w-[200px] sm:w-[220px]">
-                  <Building2 className="h-3.5 w-3.5 text-[#008da4] shrink-0" />
-                  <span className="text-[11px] font-mono font-bold text-[#0d2a4a] truncate">
-                    {current.company}
-                  </span>
+                  <span className="ml-1.5 font-mono text-xs font-bold text-[#0d2a4a]">5.0</span>
                 </div>
               </div>
 
-              {/* Right Column: Double Quote SVG + Quote Body + Detailed Signature */}
+              {/* Right Column: Double Quote SVG + Quote Body + Editorial Signature */}
               <div className="flex flex-col justify-between">
                 <div>
                   {/* Clean Geometric Cyan Quote SVG */}
@@ -381,7 +411,7 @@ export function TestimonialsSection({
                   </blockquote>
                 </div>
 
-                {/* Sign-Off & Organization Card */}
+                {/* Sign-Off & Organization Wordmark (Editorial & Clean) */}
                 <div className="mt-8 pt-6 border-t border-[#e2ecee] flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-[#0d2a4a]">
@@ -398,25 +428,18 @@ export function TestimonialsSection({
                     </div>
                   </div>
 
-                  {/* Organization Logo Tag */}
-                  <div className="flex items-center gap-3 border border-[#dce8ec] bg-[#f8fbfc] px-3.5 py-2">
-                    <div className="h-8 w-20 relative flex items-center justify-center">
-                      <img
-                        src={current.companyLogo}
-                        alt={current.company}
-                        className="h-full w-auto max-w-[80px] object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            DEFAULT_LOGOS[active % DEFAULT_LOGOS.length];
-                        }}
-                      />
-                    </div>
-                    <div className="border-l border-[#dce8ec] pl-3">
-                      <div className="text-[9px] font-mono uppercase text-[#7a8f9f]">ORGANIZATION</div>
-                      <div className="text-xs font-mono font-bold text-[#0d2a4a] uppercase tracking-wider truncate max-w-[120px]">
-                        {current.company}
-                      </div>
-                    </div>
+                  {/* Clean Client Organization Logo (No bulky boxed nesting) */}
+                  <div className="h-10 max-w-[140px] flex items-center justify-center">
+                    <img
+                      src={current.companyLogo}
+                      alt={current.company}
+                      title={current.company}
+                      className="h-full w-auto max-h-10 max-w-[130px] object-contain opacity-90"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          DEFAULT_LOGOS[active % DEFAULT_LOGOS.length];
+                      }}
+                    />
                   </div>
                 </div>
               </div>
