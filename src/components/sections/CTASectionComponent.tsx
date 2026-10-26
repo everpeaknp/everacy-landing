@@ -1,10 +1,10 @@
 /* ─────────────────────────────────────────────────────────
-   CTASectionComponent — Full-width CTA banner
+   CTASectionComponent — Full-width Sharp Architectural CTA
    Driven by Django CTASection model data.
+   Razor-sharp geometry (rounded-none), crisp tactile button.
    ───────────────────────────────────────────────────────── */
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -16,8 +16,6 @@ interface CTASectionComponentProps {
 
 export function CTASectionComponent({ data }: CTASectionComponentProps) {
   const router = useRouter();
-  const btnRef = useRef<HTMLButtonElement | null>(null);
-  const spanRef = useRef<HTMLSpanElement | null>(null);
 
   const heading = data?.heading;
   const buttonText = data?.button_text;
@@ -26,81 +24,54 @@ export function CTASectionComponent({ data }: CTASectionComponentProps) {
 
   if (!heading || !buttonText) return null;
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const target = btnRef.current;
-      if (!target || !spanRef.current) return;
-      const { width, left } = target.getBoundingClientRect();
-      const x = e.clientX - left;
-      spanRef.current.animate(
-        { left: `${(x / width) * 100}%` },
-        { duration: 250, fill: "forwards" }
-      );
-    };
-
-    const handleMouseLeave = () => {
-      spanRef.current?.animate(
-        { left: "50%" },
-        { duration: 100, fill: "forwards" }
-      );
-    };
-
-    const btn = btnRef.current;
-    btn?.addEventListener("mousemove", handleMouseMove);
-    btn?.addEventListener("mouseleave", handleMouseLeave);
-    return () => {
-      btn?.removeEventListener("mousemove", handleMouseMove);
-      btn?.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
   return (
-    <section className="relative z-[2] py-32 overflow-hidden font-mont bg-white">
+    <section className="relative z-[2] overflow-hidden border-t border-[#dce8ec] bg-white py-24 sm:py-32 font-mont">
       {bgImage && (
         <Image
           src={bgImage}
           alt="CTA background"
           fill
-          className="object-cover opacity-10"
+          className="object-cover opacity-5"
           priority={false}
         />
       )}
 
-      <div className="relative max-w-4xl mx-auto px-4 text-center">
+      <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
+        {/* Micro tag */}
+        <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3 py-1 shadow-sm mb-6">
+          <span className="h-2 w-2 bg-[#008da4]" />
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
+            Start Your Project
+          </span>
+        </div>
+
         {/* Heading */}
         <motion.h2
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="text-4xl md:text-6xl font-black text-slate-900 mb-12 tracking-tight leading-tight"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0d2a4a] tracking-tight leading-tight uppercase"
         >
           {heading}
         </motion.h2>
 
-        {/* Spotlight button */}
+        {/* Sharp Tactile Button */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-          className="flex items-center justify-center"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+          className="mt-10 flex items-center justify-center"
         >
-          <motion.button
-            whileTap={{ scale: 0.985 }}
-            ref={btnRef}
+          <button
             type="button"
             onClick={() => router.push(buttonLink)}
-            className="relative overflow-hidden rounded-2xl bg-slate-950 px-10 py-5 text-xl font-bold text-white shadow-2xl transition-all hover:shadow-xl active:shadow-none"
+            className="group relative inline-flex items-center gap-3 rounded-none border-2 border-[#0d2a4a] bg-[#0d2a4a] px-8 py-4 text-sm sm:text-base font-mono font-bold uppercase tracking-wider text-white shadow-[4px_4px_0px_0px_#008da4] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-[#008da4] hover:bg-[#008da4] hover:shadow-[6px_6px_0px_0px_#0d2a4a] active:translate-x-0 active:translate-y-0 active:shadow-none cursor-pointer"
           >
-            <span className="pointer-events-none relative z-10 mix-blend-difference">
-              {buttonText}
-            </span>
-            <span
-              ref={spanRef}
-              className="pointer-events-none absolute left-[50%] top-[50%] h-40 w-40 -translate-x-[50%] -translate-y-[50%] rounded-full bg-[#27446e] opacity-60 blur-2xl"
-            />
-          </motion.button>
+            <span>{buttonText}</span>
+            <span className="transition-transform duration-150 group-hover:translate-x-1">&rarr;</span>
+          </button>
         </motion.div>
       </div>
     </section>

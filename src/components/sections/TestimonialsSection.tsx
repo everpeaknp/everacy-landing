@@ -1,19 +1,20 @@
 /* ─────────────────────────────────────────────────────────
-   TestimonialsSection — Interactive Logo Slider & Typographic Swiper
-   An editorial, luxury-tier typographic showcase featuring:
-   - Top: Minimalist vector SVG client logos strictly aligned in a single horizontal line
-   - Center: Buttery-smooth horizontal sliding testimonial swiper (with professional headshots)
-   - Background: Beautiful, spacious breathing room and clean white space
+   TestimonialsSection — Sharp Architectural Client Validation
+   Boxy, high-trust, editorial showcase:
+   - Razor-sharp geometry (rounded-none throughout)
+   - Boxy interactive company tab row
+   - High-contrast featured testimonial card with sharp borders & shadow
+   - Clean keyboard-accessible Prev/Next & step-indicator navigation
    ───────────────────────────────────────────────────────── */
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { testimonialBg } from "@/lib/site-theme";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { TestimonialData } from "@/lib/api";
 
-const AUTO_INTERVAL = 2500;
+const AUTO_INTERVAL = 6000;
 
 interface NormalisedTestimonial {
   id: string;
@@ -38,7 +39,7 @@ function normalise(t: TestimonialData): NormalisedTestimonial {
     role: t.designation,
     company: t.company ?? "",
     rating: t.rating,
-    accent: t.accent_color || "#3b82f6",
+    accent: t.accent_color || "#008da4",
     image: t.image || "",
     imageAlt: t.image_alt || t.name,
     imageTitle: t.image_title || t.image_alt || t.name,
@@ -57,208 +58,228 @@ export function TestimonialsSection({ data, sectionTitle, sectionSubtitle }: Tes
   const testimonials: NormalisedTestimonial[] = (data ?? []).map(normalise);
 
   const [active, setActive] = useState(0);
-  const [isImageHovered, setIsImageHovered] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (isImageHovered || testimonials.length < 2) return;
+    if (isPaused || testimonials.length < 2) return;
 
     const interval = window.setInterval(() => {
       setActive((current) => (current + 1) % testimonials.length);
     }, AUTO_INTERVAL);
 
     return () => window.clearInterval(interval);
-  }, [active, isImageHovered, testimonials.length]);
+  }, [isPaused, testimonials.length]);
 
-  const handleSelect = (idx: number) => setActive(idx);
+  if (testimonials.length === 0) return <EmptyState title="No testimonials published yet" />;
 
-  const activeT = testimonials[active];
-  if (!activeT) return <EmptyState title="No testimonials published yet" />;
+  const activeT = testimonials[active] ?? testimonials[0];
+  const cleanQuote = activeT.quote.replace(/^["'“‟”‟\s]+|["'“‟”‟\s]+$/g, "");
+
+  const handlePrev = () => {
+    setActive((curr) => (curr - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const handleNext = () => {
+    setActive((curr) => (curr + 1) % testimonials.length);
+  };
 
   return (
     <section
-      className="relative z-[3] overflow-hidden"
-      style={{ 
-        background: `radial-gradient(circle at 50% 50%, #ffffff 0%, ${testimonialBg} 100%)`, 
-        paddingBlock: "clamp(2.5rem, 6vw, 5rem)" 
+      className="relative z-[3] overflow-hidden border-t border-[#dce8ec]"
+      style={{
+        background: testimonialBg || "#f8fbfc",
+        paddingBlock: "clamp(3.5rem, 7vw, 6rem)",
       }}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Subtle, ambient background radial aura matching the active branding accent */}
-      <div
-        className="absolute inset-0 pointer-events-none transition-all duration-1000 ease-in-out"
-        style={{
-          background: `radial-gradient(circle at 50% 50%, ${activeT.accent}05 0%, transparent 60%)`,
-          zIndex: 0,
-        }}
-      />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8 sm:mb-12 text-center">
+          <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm">
+            <span className="h-2 w-2 bg-[#008da4]" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
+              {sectionSubtitle || "Client Validation"}
+            </span>
+          </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-6xl mx-auto px-6 relative z-10 flex flex-col items-center"
-      >
-        {/* Subtle, Ultra-Elegant Muted Tagline */}
-        <div className="text-center mb-4 select-none">
-          <span 
-            className="text-[10px] md:text-[11px] font-extrabold uppercase tracking-[0.25em] transition-colors duration-500"
-            style={{ color: `${activeT.accent}cc` }}
-          >
-            {sectionSubtitle || sectionTitle || ""}
-          </span>
+          <h2 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#0d2a4a] sm:text-3xl lg:text-4xl">
+            {sectionTitle || "What Leaders Say About Everacy"}
+          </h2>
         </div>
 
-        {/* Minimalist Vector Logo Row (strictly aligned in a single line, same container heights) */}
-        <div 
-          className="flex flex-row flex-nowrap justify-start md:justify-center items-center gap-x-4 md:gap-x-7 mb-5 w-full select-none overflow-x-auto scrollbar-none scroll-smooth pb-3"
-        >
-          {testimonials.map((item, idx) => {
-            const isActive = active === idx;
-            return (
-              <button
-                key={`logo-btn-${item.id}`}
-                onClick={() => handleSelect(idx)}
-                onMouseEnter={() => setIsImageHovered(true)}
-                onMouseLeave={() => setIsImageHovered(false)}
-                className={`flex items-center justify-center transition-all duration-300 transform hover:scale-[1.03] cursor-pointer shrink-0 ${
-                  isActive 
-                    ? "scale-[1.03] opacity-100" 
-                    : "text-slate-400 opacity-40 hover:opacity-75"
-                }`}
-                style={{
-                  height: "64px", // Strict same-height boundary box for perfect alignment
-                  minWidth: "160px", // Standard min-width for balanced layout spacing
-                }}
-                aria-label={`View testimonial from ${item.company}`}
-              >
-                {item.companyLogo ? (
-                  <img 
-                    src={item.companyLogo} 
-                    alt={item.company} 
-                    className="h-full w-auto object-contain max-h-[52px] transition-all"
-                    style={{ filter: isActive ? "none" : "grayscale(100%) opacity(40%)" }}
-                    loading="lazy"
-                  />
-                ) : item.company ? (
-                  <span className="text-sm font-bold text-slate-500">{item.company}</span>
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Cinematic Horizontal Sliding Swiper (Sliders to slide) */}
-        <div className="relative w-full max-w-4xl overflow-hidden min-h-[25rem] md:min-h-[20rem] flex items-center">
-          
-          {/* Muted background luxury quotation mark */}
-          <span 
-            className="absolute top-2 left-6 md:left-14 text-[11rem] font-serif transition-colors duration-500 select-none pointer-events-none opacity-4"
-            style={{ color: `${activeT.accent}0e`, zIndex: 0 }}
-          >
-            “
-          </span>
-
-          <div 
-            className="flex transition-transform duration-700 w-full h-full"
-            style={{ 
-              transform: `translateX(-${active * 100}%)`,
-              transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)"
-            }}
-          >
-            {testimonials.map((item) => {
-              const cleanQuote = item.quote.replace(/^["'“‟”‟\s]+|["'“‟”‟\s]+$/g, "");
+        {/* Sharp Boxy Company Tabs */}
+        {testimonials.length > 1 && (
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            {testimonials.map((item, idx) => {
+              const isActive = active === idx;
               return (
-                <div 
-                  key={`slide-${item.id}`} 
-                  className="w-full flex-shrink-0 flex flex-col items-center justify-center px-4 md:px-16 text-center relative z-10"
+                <button
+                  key={`company-tab-${item.id}`}
+                  onClick={() => setActive(idx)}
+                  className={`group relative flex h-11 items-center justify-center border px-4 transition-all duration-150 rounded-none cursor-pointer ${
+                    isActive
+                      ? "border-[#008da4] bg-white text-[#0d2a4a] shadow-[3px_3px_0px_0px_#008da4]"
+                      : "border-[#dce8ec] bg-white/70 text-[#5c7288] hover:border-[#008da4]/50 hover:bg-white hover:text-[#0d2a4a]"
+                  }`}
+                  aria-label={`View feedback from ${item.company || item.name}`}
                 >
-                  {/* Dynamic Quote Body */}
-                  <p
-                    className="font-medium tracking-tight leading-[1.4] max-w-3xl"
-                    style={{
-                      fontFamily: "'Outfit', 'Inter', sans-serif",
-                      fontSize: "clamp(1.35rem, 3.6vw, 2.15rem)",
-                      color: "#0d2a4a",
-                      margin: 0,
-                    }}
-                  >
-                    &ldquo;{cleanQuote}&rdquo;
-                  </p>
-
-                  {/* Rating Stars inside the slide */}
-                  <div className="flex justify-center gap-1.5 mt-8 mb-6 select-none">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={`star-${item.id}-${i}`}
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill={i < item.rating ? "#f59e0b" : "#e2e8f0"}
-                        className="w-4 h-4"
-                      >
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                    ))}
-                  </div>
-
-                  {/* Reviewer Circle Portrait Image */}
-                  {item.image && <div
-                    className="mb-4 relative select-none"
-                    onMouseEnter={() => setIsImageHovered(true)}
-                    onMouseLeave={() => setIsImageHovered(false)}
-                  >
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 shadow-sm transition-colors duration-500" style={{ borderColor: item.accent }}>
-                      <img src={item.image} alt={item.imageDecorative ? "" : item.imageAlt} title={item.imageDecorative ? undefined : item.imageTitle} className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                  </div>}
-
-                  {/* Reviewer Signature Details inside the slide */}
-                  <div className="text-center">
-                    <div className="font-extrabold text-base md:text-lg text-[#0d2a4a] tracking-tight">
-                      {item.name}
-                    </div>
-                    <div className="text-[10px] font-extrabold text-slate-400 mt-1.5 uppercase tracking-[0.1em] flex items-center justify-center gap-1.5">
-                      <span>{item.role}</span>
-                      <span className="opacity-30">•</span>
-                      <span className="font-bold text-[#0d2a4a]">{item.company}</span>
-                    </div>
-                  </div>
-                </div>
+                  {item.companyLogo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.companyLogo}
+                      alt={item.company || item.name}
+                      className="max-h-5 w-auto object-contain transition-all"
+                      style={{ filter: isActive ? "none" : "grayscale(100%) opacity(60%)" }}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider">
+                      {item.company || item.name}
+                    </span>
+                  )}
+                </button>
               );
             })}
           </div>
+        )}
+
+        {/* Sharp Main Testimonial Card */}
+        <div className="relative mx-auto max-w-4xl rounded-none border border-[#dce8ec] bg-white p-6 shadow-[4px_4px_0px_0px_#008da4] sm:p-10">
+          {/* Top Bar inside Card */}
+          <div className="flex items-center justify-between border-b border-[#eef4f6] pb-4">
+            {/* Stars & Company Tag */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg
+                    key={`star-${i}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill={i < activeT.rating ? "#008da4" : "#e2ecee"}
+                    className="h-3.5 w-3.5"
+                  >
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
+                ))}
+              </div>
+              {activeT.company && (
+                <span className="hidden text-[11px] font-mono font-bold uppercase tracking-wider text-[#008da4] sm:inline-block">
+                  / {activeT.company}
+                </span>
+              )}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-semibold text-[#5c7288]">
+                {String(active + 1).padStart(2, "0")} / {String(testimonials.length).padStart(2, "0")}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="grid h-8 w-8 place-items-center rounded-none border border-[#dce8ec] bg-white text-[#0d2a4a] transition-all hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
+                  aria-label="Previous testimonial"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="grid h-8 w-8 place-items-center rounded-none border border-[#dce8ec] bg-white text-[#0d2a4a] transition-all hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
+                  aria-label="Next testimonial"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quote Body with AnimatePresence */}
+          <div className="py-6 sm:py-8 min-h-[140px] flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeT.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18 }}
+                className="w-full"
+              >
+                <p className="text-lg font-medium leading-relaxed tracking-tight text-[#0d2a4a] sm:text-xl md:text-2xl">
+                  &ldquo;{cleanQuote}&rdquo;
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Bottom Reviewer Row */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#eef4f6] pt-5">
+            <div className="flex items-center gap-3.5">
+              {/* Sharp Square Avatar */}
+              {activeT.image ? (
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-none border border-[#008da4] bg-[#f8fbfc] p-0.5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={activeT.image}
+                    alt={activeT.imageDecorative ? "" : activeT.imageAlt}
+                    title={activeT.imageDecorative ? undefined : activeT.imageTitle}
+                    className="h-full w-full rounded-none object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ) : (
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-none border border-[#008da4] bg-[#f0f8fa] text-xs font-mono font-bold text-[#008da4]">
+                  {activeT.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()}
+                </div>
+              )}
+
+              <div>
+                <div className="text-sm font-black tracking-tight text-[#0d2a4a] sm:text-base">
+                  {activeT.name}
+                </div>
+                <div className="text-xs font-mono font-medium text-[#5c7288]">
+                  {activeT.role} {activeT.company ? `— ${activeT.company}` : ""}
+                </div>
+              </div>
+            </div>
+
+            {/* Boxy Verified Badge */}
+            <div className="inline-flex items-center gap-1.5 border border-[#dce8ec] bg-[#f8fbfc] px-2.5 py-1 text-[11px] font-mono text-[#008da4]">
+              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>VERIFIED PARTNER</span>
+            </div>
+          </div>
         </div>
 
-        {/* Carousel Slide Bullet indicators at the bottom */}
-        <div className="flex gap-2.5 justify-center mt-10">
-          {testimonials.map((_, idx) => (
-            <button
-              key={`dot-nav-${idx}`}
-              onClick={() => handleSelect(idx)}
-              style={{
-                width: active === idx ? "28px" : "8px",
-                height: "8px",
-                borderRadius: "100px",
-                backgroundColor: active === idx ? activeT.accent : "rgba(13, 26, 38, 0.12)",
-                border: "none",
-                cursor: "pointer",
-                transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-
-      </motion.div>
-
-      <style>{`
-        .scrollbar-none::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-none {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
+        {/* Sharp Bar Indicators */}
+        {testimonials.length > 1 && (
+          <div className="mt-6 flex justify-center gap-2">
+            {testimonials.map((_, idx) => (
+              <button
+                key={`bar-indicator-${idx}`}
+                onClick={() => setActive(idx)}
+                className={`h-1.5 transition-all duration-200 rounded-none cursor-pointer ${
+                  active === idx ? "w-8 bg-[#008da4]" : "w-3 bg-[#dce8ec] hover:bg-[#b8d2d9]"
+                }`}
+                aria-label={`Jump to review ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
