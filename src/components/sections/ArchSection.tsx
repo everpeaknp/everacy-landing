@@ -195,7 +195,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
       return { service: s, info, score, idx };
     });
     const matches = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score);
-    return matches.length > 0 ? matches.slice(0, 3) : scored.slice(0, 3);
+    return matches.length > 0 ? matches.slice(0, 2) : scored.slice(0, 2);
   }, [cards, customQuery, activePreset, hasUserEdited]);
 
   if (cards.length === 0) {
@@ -534,8 +534,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
               {/* Right Column: Consistent Aspect-Ratio Image Frame (4 cols - Moved Rightwards) */}
               <div className="lg:col-span-4 lg:ml-auto w-full max-w-[390px]">
                 <figure className="relative w-full">
-                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) with Consistent Proportions */}
-                  <div className="relative aspect-[4/4.7] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
+                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) with Height Matching Left Browser Box */}
+                  <div className="relative aspect-[4/5.35] lg:min-h-[515px] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
                     <Image
                       key={activePreset.id}
                       src={activePreset.image}
