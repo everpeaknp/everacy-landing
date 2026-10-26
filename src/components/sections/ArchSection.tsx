@@ -93,7 +93,7 @@ const COMMAND_PRESETS = [
     query: "Build a custom internal operations & inventory software system with API sync",
     tags: ["stack: Python + PostgreSQL", "security: Role-Based Access", "scope: Custom Software"],
     matchKeywords: ["software", "system"],
-    image: "/images/partnership-culture.png",
+    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=85",
     caption: "Enterprise Operations & Internal Process Automation",
   },
   {
@@ -102,7 +102,7 @@ const COMMAND_PRESETS = [
     query: "Launch an iOS and Android mobile app with offline mode and SMS OTP login",
     tags: ["stack: Flutter + REST API", "feature: Offline Sync + OTP", "scope: Mobile + SMS"],
     matchKeywords: ["app", "mobile", "sms"],
-    image: "/images/mobile-in-action.png",
+    image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1200&q=85",
     caption: "Cross-Platform iOS & Android Native Applications",
   },
   {
@@ -111,7 +111,7 @@ const COMMAND_PRESETS = [
     query: "Scale qualified inbound leads through technical SEO and conversion funnels",
     tags: ["focus: Core Web Vitals", "tracking: Server-Side CAPI", "scope: SEO + Growth"],
     matchKeywords: ["seo", "marketing"],
-    image: "/images/service-previews/responsive-platforms.png",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85",
     caption: "High-Converting Growth Funnels & Technical SEO",
   },
 ];
@@ -304,268 +304,274 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
 
         {/* "Describe what you are building" Interactive Solution Finder & Services Showcase */}
         <div className="mt-20 sm:mt-28 border-t border-[#dce8ec] pt-14 sm:pt-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.12fr_0.88fr] gap-10 lg:gap-14 items-start">
-            
-            {/* Left Column: Solution Finder Controls & Interactive Command Palette */}
-            <div>
-              <div className="mb-6 text-left">
-                <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm mb-4">
-                  <span className="h-2 w-2 bg-[#008da4]" />
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
-                    INTERACTIVE SOLUTION FINDER
-                  </span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-[#0d2a4a]">
-                  Describe what you are building
-                </h3>
-                <p className="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-[#586d82]">
-                  Pick a common project scenario or type your requirements in plain words—see how our capabilities combine into one delivery plan.
-                </p>
-              </div>
-
-              {/* Sharp Boxy Scenario Buttons */}
-              <div className="flex flex-wrap items-center gap-2 mb-6">
-                {COMMAND_PRESETS.map((preset, idx) => {
-                  const isSelected = (!hasUserEdited && presetIndex === idx) || customQuery === preset.query;
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => {
-                        setPresetIndex(idx);
-                        setCustomQuery(preset.query);
-                        setHasUserEdited(true);
-                      }}
-                      className={`rounded-none border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
-                        isSelected
-                          ? "border-[#0d2a4a] bg-[#0d2a4a] text-white shadow-[2px_2px_0px_0px_#008da4]"
-                          : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#008da4] hover:text-[#0d2a4a]"
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Sharp Boxy Interactive Command Palette */}
-              <div className="overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
-                <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-5 py-4 sm:px-6 sm:py-4.5">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5 shrink-0 text-[#008da4]"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    aria-hidden="true"
-                  >
-                    <circle cx="11" cy="11" r="6.5" />
-                    <path d="m16 16 4.5 4.5" />
-                  </svg>
-                  <div className="relative min-w-0 flex-1 flex items-center overflow-hidden">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={hasUserEdited ? customQuery : typedText}
-                      onChange={(e) => {
-                        setHasUserEdited(true);
-                        setCustomQuery(e.target.value);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Backspace" || e.key === "Delete") {
-                          if (!hasUserEdited) {
-                            setHasUserEdited(true);
-                            setCustomQuery(typedText.slice(0, -1));
-                          }
-                        }
-                      }}
-                      onFocus={() => setIsFocused(true)}
-                      onBlur={() => {
-                        setIsFocused(false);
-                      }}
-                      placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
-                      aria-label="Describe your project requirements"
-                      className={`w-full bg-transparent text-sm sm:text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none ${
-                        !isFocused && !hasUserEdited && !customQuery ? "caret-transparent" : "caret-[#008da4]"
-                      }`}
-                    />
-
-                    {/* Inline Blinking Cursor attached immediately to the end of the sentence */}
-                    {!isFocused && !hasUserEdited && !customQuery && typedText && (
-                      <div
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 flex items-center text-sm sm:text-base font-semibold text-transparent whitespace-pre overflow-hidden"
-                      >
-                        <span>{typedText}</span>
-                        <span
-                          className={`inline-block h-4 sm:h-5 w-[2.5px] bg-[#008da4] ml-0.5 shrink-0 ${
-                            isTyping ? "opacity-100" : "animate-pulse"
-                          }`}
-                          style={{ animationDuration: "0.85s" }}
-                        />
-                      </div>
-                    )}
+          <div className="mx-auto max-w-[1380px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+              
+              {/* Left Column: Solution Finder Controls & Interactive Command Palette (7 cols - Generous Width) */}
+              <div className="lg:col-span-7 flex flex-col justify-between">
+                <div>
+                  <div className="mb-5 text-left">
+                    <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm mb-3">
+                      <span className="h-2 w-2 bg-[#008da4]" />
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
+                        INTERACTIVE SOLUTION FINDER
+                      </span>
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-[#0d2a4a]">
+                      Describe what you are building
+                    </h3>
+                    <p className="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-[#586d82]">
+                      Pick a common project scenario or type your requirements in plain words—see how our capabilities combine into one delivery plan.
+                    </p>
                   </div>
-                  {hasUserEdited && customQuery && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCustomQuery("");
-                        setHasUserEdited(true);
-                        inputRef.current?.focus();
-                      }}
-                      className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
-                    >
-                      Clear
-                    </button>
-                  )}
+
+                  {/* Sharp Boxy Scenario Buttons — Spacious Single-Row / Balanced Layout */}
+                  <div className="flex flex-wrap items-center gap-2 mb-5">
+                    {COMMAND_PRESETS.map((preset, idx) => {
+                      const isSelected = (!hasUserEdited && presetIndex === idx) || customQuery === preset.query;
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => {
+                            setPresetIndex(idx);
+                            setCustomQuery(preset.query);
+                            setHasUserEdited(true);
+                          }}
+                          className={`rounded-none border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                            isSelected
+                              ? "border-[#0d2a4a] bg-[#0d2a4a] text-white shadow-[2px_2px_0px_0px_#008da4]"
+                              : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#008da4] hover:text-[#0d2a4a]"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Sharp Boxy Filter Chips Row */}
-                <div className="flex flex-wrap items-center gap-2 border-b border-[#f1f5f9] bg-[#fafcfd] px-5 py-2.5 sm:px-6">
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
-                    Filters:
-                  </span>
-                  {(customQuery.trim()
-                    ? [
-                        `query: "${customQuery.trim().slice(0, 20)}"`,
-                        `matched: ${matchedServices.length} modules`,
-                        "delivery: Full-Stack",
-                      ]
-                    : activePreset.tags
-                  ).map((chip, idx) => (
-                    <span
-                      key={chip}
-                      className={`rounded-none px-2 py-0.5 font-mono text-[11px] font-medium ${
-                        idx === 2
-                          ? "bg-[#0d2a4a] text-white"
-                          : "border border-[#dce8ec] bg-white text-[#475569]"
-                      }`}
-                    >
-                      {chip}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Matched Services Results List (Minimal & Realistic Search Engine Layout) */}
-                <div className="divide-y divide-[#f1f5f9] px-5 py-2 sm:px-6">
-                  {matchedServices.map(({ service, info }) => {
-                    const slug = service.slug || service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
-                    return (
-                      <div
-                        key={service.id}
-                        className="group py-3.5 sm:py-4 transition-colors rounded-none hover:bg-[#fafcfd] px-2 sm:px-2.5 -mx-2 sm:-mx-2.5"
+                {/* Sharp Boxy Interactive Command Palette */}
+                <div className="overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)] flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-5 py-4 sm:px-6 sm:py-4.5">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="h-5 w-5 shrink-0 text-[#008da4]"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        aria-hidden="true"
                       >
-                        {/* 1. Realistic URL Breadcrumb with Official Everacy Logo */}
-                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#586d82] mb-1">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src="/logo/everacy_wo_bg.png"
-                            alt="Everacy"
-                            className="h-3 w-auto object-contain shrink-0"
-                          />
-                          <span className="truncate">everacy.com › services › {slug}</span>
-                        </div>
+                        <circle cx="11" cy="11" r="6.5" />
+                        <path d="m16 16 4.5 4.5" />
+                      </svg>
+                      <div className="relative min-w-0 flex-1 flex items-center overflow-hidden">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={hasUserEdited ? customQuery : typedText}
+                          onChange={(e) => {
+                            setHasUserEdited(true);
+                            setCustomQuery(e.target.value);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Backspace" || e.key === "Delete") {
+                              if (!hasUserEdited) {
+                                setHasUserEdited(true);
+                                setCustomQuery(typedText.slice(0, -1));
+                              }
+                            }
+                          }}
+                          onFocus={() => setIsFocused(true)}
+                          onBlur={() => {
+                            setIsFocused(false);
+                          }}
+                          placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
+                          aria-label="Describe your project requirements"
+                          className={`w-full bg-transparent text-sm sm:text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none ${
+                            !isFocused && !hasUserEdited && !customQuery ? "caret-transparent" : "caret-[#008da4]"
+                          }`}
+                        />
 
-                        {/* 2. Headline & View Action */}
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              href={serviceHref(service)}
-                              className="text-base font-bold text-[#0d2a4a] hover:text-[#008da4] hover:underline transition-colors leading-snug"
-                            >
-                              {service.title}
-                            </Link>
-                            {/* 3. Snippet Excerpt */}
-                            <p className="mt-1 text-xs leading-relaxed text-[#586d82]">
-                              {info.summary}
-                            </p>
-                          </div>
-
-                          <Link
-                            href={serviceHref(service)}
-                            className="hidden sm:inline-flex items-center gap-1 text-xs font-mono font-bold text-[#008da4] hover:underline shrink-0 mt-0.5"
+                        {/* Inline Blinking Cursor attached immediately to the end of the sentence */}
+                        {!isFocused && !hasUserEdited && !customQuery && typedText && (
+                          <div
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-0 flex items-center text-sm sm:text-base font-semibold text-transparent whitespace-pre overflow-hidden"
                           >
-                            <span>View spec</span>
-                            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                          </Link>
-                        </div>
-
-                        {/* 4. Minimal Sitelinks / Modular Tags */}
-                        {info.capabilities && info.capabilities.length > 0 && (
-                          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] font-mono text-[#7a8f9f]">
-                            {info.capabilities.slice(0, 3).map((cap, i) => (
-                              <span key={cap} className="inline-flex items-center gap-2">
-                                {i > 0 && <span className="text-[#cbd5e1]">·</span>}
-                                <span className="text-[#586d82] hover:text-[#008da4] transition-colors">{cap}</span>
-                              </span>
-                            ))}
+                            <span>{typedText}</span>
+                            <span
+                              className={`inline-block h-4 sm:h-5 w-[2.5px] bg-[#008da4] ml-0.5 shrink-0 ${
+                                isTyping ? "opacity-100" : "animate-pulse"
+                              }`}
+                              style={{ animationDuration: "0.85s" }}
+                            />
                           </div>
                         )}
                       </div>
-                    );
-                  })}
-                </div>
+                      {hasUserEdited && customQuery && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomQuery("");
+                            setHasUserEdited(true);
+                            inputRef.current?.focus();
+                          }}
+                          className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
 
-                {/* Palette Footer Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e4ecef] bg-[#f8fafb] px-5 py-3 text-xs text-[#64748b] sm:px-6">
-                  <div className="flex items-center gap-3">
-                    <span>Click scenario tab to test</span>
-                    <span className="hidden sm:inline">·</span>
-                    <span className="hidden sm:inline">Type custom keywords</span>
+                    {/* Sharp Boxy Filter Chips Row */}
+                    <div className="flex flex-wrap items-center gap-2 border-b border-[#f1f5f9] bg-[#fafcfd] px-5 py-2.5 sm:px-6">
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
+                        Filters:
+                      </span>
+                      {(customQuery.trim()
+                        ? [
+                            `query: "${customQuery.trim().slice(0, 20)}"`,
+                            `matched: ${matchedServices.length} modules`,
+                            "delivery: Full-Stack",
+                          ]
+                        : activePreset.tags
+                      ).map((chip, idx) => (
+                        <span
+                          key={chip}
+                          className={`rounded-none px-2 py-0.5 font-mono text-[11px] font-medium ${
+                            idx === 2
+                              ? "bg-[#0d2a4a] text-white"
+                              : "border border-[#dce8ec] bg-white text-[#475569]"
+                          }`}
+                        >
+                          {chip}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Matched Services Results List (Steady min-height prevents layout shifts) */}
+                    <div className="divide-y divide-[#f1f5f9] px-5 py-1 sm:px-6 min-h-[200px]">
+                      {matchedServices.map(({ service, info }) => {
+                        const slug = service.slug || service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+                        return (
+                          <div
+                            key={service.id}
+                            className="group py-3.5 transition-colors rounded-none hover:bg-[#fafcfd] px-2 sm:px-2.5 -mx-2 sm:-mx-2.5"
+                          >
+                            {/* 1. Realistic URL Breadcrumb with Official Everacy Logo */}
+                            <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#586d82] mb-1">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src="/logo/everacy_wo_bg.png"
+                                alt="Everacy"
+                                className="h-3 w-auto object-contain shrink-0"
+                              />
+                              <span className="truncate">everacy.com › services › {slug}</span>
+                            </div>
+
+                            {/* 2. Headline & View Action */}
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <Link
+                                  href={serviceHref(service)}
+                                  className="text-base font-bold text-[#0d2a4a] hover:text-[#008da4] hover:underline transition-colors leading-snug"
+                                >
+                                  {service.title}
+                                </Link>
+                                {/* 3. Snippet Excerpt */}
+                                <p className="mt-1 text-xs leading-relaxed text-[#586d82]">
+                                  {info.summary}
+                                </p>
+                              </div>
+
+                              <Link
+                                href={serviceHref(service)}
+                                className="hidden sm:inline-flex items-center gap-1 text-xs font-mono font-bold text-[#008da4] hover:underline shrink-0 mt-0.5"
+                              >
+                                <span>View spec</span>
+                                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                              </Link>
+                            </div>
+
+                            {/* 4. Minimal Sitelinks / Modular Tags */}
+                            {info.capabilities && info.capabilities.length > 0 && (
+                              <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] font-mono text-[#7a8f9f]">
+                                {info.capabilities.slice(0, 3).map((cap, i) => (
+                                  <span key={cap} className="inline-flex items-center gap-2">
+                                    {i > 0 && <span className="text-[#cbd5e1]">·</span>}
+                                    <span className="text-[#586d82] hover:text-[#008da4] transition-colors">{cap}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <Link
-                    href="/services"
-                    className="font-bold text-[#0d2a4a] hover:text-[#008da4]"
-                  >
-                    All capabilities →
-                  </Link>
+
+                  {/* Palette Footer Bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#e4ecef] bg-[#f8fafb] px-5 py-3 text-xs text-[#64748b] sm:px-6">
+                    <div className="flex items-center gap-3">
+                      <span>Click scenario tab to test</span>
+                      <span className="hidden sm:inline">·</span>
+                      <span className="hidden sm:inline">Type custom keywords</span>
+                    </div>
+                    <Link
+                      href="/services"
+                      className="font-bold text-[#0d2a4a] hover:text-[#008da4]"
+                    >
+                      All capabilities →
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Right Column: Clean Editorial Portrait Image Section (Matching Services Page Styling) */}
-            <div className="lg:sticky lg:top-28">
-              <figure className="relative mx-auto w-full max-w-[480px] lg:max-w-none">
-                {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) */}
-                <div className="relative aspect-[4/4.6] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_24px_54px_-28px_rgba(13,42,74,0.32)] border border-[#dce8ec]">
-                  <Image
-                    key={activePreset.id}
-                    src={activePreset.image}
-                    alt={activePreset.caption || "Everacy engineering team collaborating on software architecture"}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 42vw"
-                    className="object-cover object-center transition-all duration-700 hover:scale-[1.03]"
-                    priority
-                  />
+              {/* Right Column: Perfectly Fitting Full-Bleed Editorial Image (5 cols - Same Area & Height) */}
+              <div className="lg:col-span-5 flex flex-col justify-between">
+                <figure className="relative w-full h-full flex flex-col justify-between">
+                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) */}
+                  <div className="relative w-full h-full min-h-[460px] lg:min-h-[500px] overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
+                    <Image
+                      key={activePreset.id}
+                      src={activePreset.image}
+                      alt={activePreset.caption || "Everacy engineering team collaborating on software architecture"}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 42vw"
+                      className="object-cover object-center w-full h-full transition-all duration-700 hover:scale-[1.03]"
+                      priority
+                    />
 
-                  {/* Gradient architectural caption overlay */}
-                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0d2a4a]/95 via-[#0d2a4a]/70 to-transparent p-6 pt-14 text-white">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 bg-[#008da4] animate-pulse" />
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#00a6cb]">
-                        DEPLOYMENT BLUEPRINT
-                      </span>
+                    {/* Gradient architectural caption overlay */}
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0d2a4a]/95 via-[#0d2a4a]/75 to-transparent p-6 pt-16 text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 bg-[#008da4] animate-pulse" />
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#00a6cb]">
+                          DEPLOYMENT BLUEPRINT
+                        </span>
+                      </div>
+                      <p className="mt-1.5 text-base sm:text-lg font-bold text-white tracking-tight">
+                        {activePreset.caption}
+                      </p>
+                      <p className="mt-1 text-xs text-[#b8d1dc] leading-relaxed">
+                        Enterprise-grade squads, sub-second latency, and production architectures built to scale.
+                      </p>
                     </div>
-                    <p className="mt-1.5 text-base sm:text-lg font-bold text-white tracking-tight">
-                      {activePreset.caption}
-                    </p>
-                    <p className="mt-1 text-xs text-[#b8d1dc] leading-relaxed">
-                      Enterprise-grade squads, sub-second latency, and production architectures built to scale.
-                    </p>
                   </div>
-                </div>
 
-                {/* Sub-label technical specs indicator */}
-                <div className="mt-4 flex items-center justify-between border-t border-[#dce8ec] pt-3 font-mono text-[11px] text-[#7a8f9f]">
-                  <span>ACTIVE SCENARIO: <strong className="text-[#0d2a4a] uppercase">{activePreset.label}</strong></span>
-                  <span className="text-[#008da4] font-bold">EVERACY ENGINEERING</span>
-                </div>
-              </figure>
+                  {/* Sub-label technical specs indicator */}
+                  <div className="mt-3 flex items-center justify-between border-t border-[#dce8ec] pt-2.5 font-mono text-[11px] text-[#7a8f9f]">
+                    <span>SCENARIO: <strong className="text-[#0d2a4a] uppercase">{activePreset.label}</strong></span>
+                    <span className="text-[#008da4] font-bold">EVERACY ENGINEERING</span>
+                  </div>
+                </figure>
+              </div>
+
             </div>
-
           </div>
         </div>
       </div>

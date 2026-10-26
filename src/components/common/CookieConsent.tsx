@@ -160,7 +160,6 @@ export function CookieConsent({ analyticsId }: CookieConsentProps) {
             </div>
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
               <button
-                autoFocus
                 type="button"
                 onClick={() => setPreferencesOpen(false)}
                 className="min-h-11 rounded-md border border-[#27446e]/15 px-4 py-2.5 text-sm font-semibold text-[#27446e] hover:bg-[#e8f6fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00a6cb] sm:border-transparent"
