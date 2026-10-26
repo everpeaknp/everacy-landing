@@ -42,6 +42,9 @@ export default async function ServicesPage() {
         eyebrow={pageData?.hero?.eyebrow}
         title={pageData?.hero?.title}
         description={pageData?.hero?.subtitle}
+        ctaLabel={pageData?.hero?.cta_label}
+        image={pageData?.hero?.background_image}
+        stats={pageData?.stats}
       />
 
       {/* 2. Practice Areas & Service Directory (Primary focus of /services) */}
@@ -145,13 +148,13 @@ export default async function ServicesPage() {
       )}
 
       {/* 3. Cross-Discipline Skills & Stack Matrix */}
-      <ServicesSkillsTabs />
+      <ServicesSkillsTabs tabs={pageData?.skill_tabs} />
 
       {/* 4. Agency-Wide Engineering Standard */}
-      <ServicesDifferentiator />
+      <ServicesDifferentiator pillars={pageData?.differentiators} />
 
       {/* 5. Dual Action Cards */}
-      <ServicesCta />
+      <ServicesCta ctaSection={pageData?.cta_section} />
     </main>
   );
 }

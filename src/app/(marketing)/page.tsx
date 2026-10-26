@@ -62,13 +62,14 @@ export default async function HomePage() {
       </div>
 
       {/* 2. Software Built For Real-World Action (Engineering in Motion Video Showcase) */}
-      <EngineeringMotionSection />
+      <EngineeringMotionSection data={homeData?.motion_section} />
       
       {/* 3. Capabilities & Engineering (Our Services + Continuous Scenario Palette) */}
       <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
         <ArchSection
           data={homeData?.services}
           sectionTitle={homeData?.services_section?.title}
+          presets={homeData?.solution_presets}
         />
       </div>
 

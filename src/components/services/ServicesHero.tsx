@@ -6,6 +6,7 @@ import Link from "next/link";
 import { animate, useInView } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useReducedMotion } from "@/hooks";
+import type { ServicesHeroStatData } from "@/lib/api";
 import { servicesStats } from "./servicesContent";
 
 function CountUp({ value, suffix }: { value: number; suffix: string }) {
@@ -42,9 +43,24 @@ interface ServicesHeroProps {
   eyebrow?: string;
   title?: string;
   description?: string | null;
+  ctaLabel?: string;
+  image?: string | null;
+  stats?: ServicesHeroStatData[] | null;
 }
 
-export function ServicesHero({ eyebrow, title, description }: ServicesHeroProps) {
+export function ServicesHero({
+  eyebrow,
+  title,
+  description,
+  ctaLabel,
+  image,
+  stats,
+}: ServicesHeroProps) {
+  const activeStats = stats && stats.length > 0 ? stats : servicesStats;
+  const heroImage =
+    image ||
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85";
+
   return (
     <section
       data-service-hero
@@ -86,7 +102,7 @@ export function ServicesHero({ eyebrow, title, description }: ServicesHeroProps)
               href="/contact"
               className="group inline-flex min-h-12 items-center gap-3 bg-[#00a6cb] px-6 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#078eaa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d2a4a] focus-visible:ring-offset-2"
             >
-              Build with us
+              {ctaLabel || "Build with us"}
               <ArrowUpRight
                 aria-hidden="true"
                 className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -106,7 +122,7 @@ export function ServicesHero({ eyebrow, title, description }: ServicesHeroProps)
         <figure className="relative mx-auto w-full max-w-[470px] lg:ml-auto lg:mr-0">
           <div className="relative aspect-[4/4.5] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_24px_54px_-28px_rgba(13,42,74,0.32)]">
             <Image
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85"
+              src={heroImage}
               alt="Everacy engineering team collaborating on software architecture"
               fill
               priority
@@ -120,7 +136,7 @@ export function ServicesHero({ eyebrow, title, description }: ServicesHeroProps)
       {/* Boxy Architectural Stats Strip */}
       <div className="mx-auto max-w-7xl border-t border-[#d5e4e8] bg-white">
         <dl className="grid grid-cols-2 divide-x divide-y divide-[#e1ebee] lg:grid-cols-4 lg:divide-y-0">
-          {servicesStats.map((stat) => (
+          {activeStats.map((stat) => (
             <div key={stat.label} className="flex flex-col px-6 py-6 text-left">
               <dt className="order-2 mt-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[#687e93]">
                 {stat.label}

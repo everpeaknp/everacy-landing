@@ -1,18 +1,47 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { ServicesCtaSectionData } from "@/lib/api";
+
+interface ServicesCtaProps {
+  ctaSection?: ServicesCtaSectionData | null;
+  ctaHref?: string;
+  serviceTitle?: string;
+}
 
 /**
  * Dual-card photographic closing CTA matching the Leapfrog "Ready to get started?" section:
  * Uses Everacy's sharp boxy aesthetic with a single signature top-right architectural curve.
+ * Fully dynamic via Django Admin CMS.
  */
 export function ServicesCta({
+  ctaSection,
   ctaHref = "/contact",
   serviceTitle,
-}: {
-  ctaHref?: string;
-  serviceTitle?: string;
-}) {
+}: ServicesCtaProps) {
+  const eyebrow = ctaSection?.eyebrow || "Next steps";
+  const title = ctaSection?.title || "Ready to get started?";
+
+  const card1Badge = ctaSection?.card1_badge || "Product & Engineering Partnership";
+  const card1BadgeColor = ctaSection?.card1_badge_color || "#7fdcf0";
+  const card1Title = ctaSection?.card1_title || "Build with us";
+  const card1Description =
+    ctaSection?.card1_description ||
+    (serviceTitle
+      ? `Have a ${serviceTitle.toLowerCase()} initiative on your roadmap? Let’s scope the fastest, safest path from concept to production.`
+      : "Partner with a dedicated squad of senior engineers and product designers to turn your roadmap into shipped software.");
+  const card1CtaLabel = ctaSection?.card1_cta_label || "Start a project";
+  const card1CtaHref = ctaSection?.card1_cta_href || ctaHref;
+
+  const card2Badge = ctaSection?.card2_badge || "Careers at Everacy";
+  const card2BadgeColor = ctaSection?.card2_badge_color || "#7fdcf0";
+  const card2Title = ctaSection?.card2_title || "Join us";
+  const card2Description =
+    ctaSection?.card2_description ||
+    "Looking to solve meaningful engineering and product design problems alongside curious, low-ego teammates?";
+  const card2CtaLabel = ctaSection?.card2_cta_label || "Explore careers";
+  const card2CtaHref = ctaSection?.card2_cta_href || "/careers";
+
   return (
     <section
       className="relative isolate overflow-hidden bg-[#06182c] px-5 py-20 text-white sm:px-8 sm:py-28"
@@ -20,9 +49,9 @@ export function ServicesCta({
     >
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#7fdcf0]">Next steps</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#7fdcf0]">{eyebrow}</p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#00a6cb] sm:text-5xl">
-            Ready to get started?
+            {title}
           </h2>
         </div>
 
@@ -42,14 +71,15 @@ export function ServicesCta({
             />
 
             <div className="relative z-10">
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#7fdcf0]">
-                Product & Engineering Partnership
+              <p
+                className="text-xs font-extrabold uppercase tracking-[0.2em]"
+                style={{ color: card1BadgeColor }}
+              >
+                {card1Badge}
               </p>
-              <h3 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">Build with us</h3>
+              <h3 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">{card1Title}</h3>
               <p className="mt-3 max-w-md text-sm leading-7 text-white/80 sm:text-base">
-                {serviceTitle
-                  ? `Have a ${serviceTitle.toLowerCase()} initiative on your roadmap? Let’s scope the fastest, safest path from concept to production.`
-                  : "Partner with a dedicated squad of senior engineers and product designers to turn your roadmap into shipped software."}
+                {card1Description}
               </p>
               <p className="mt-2 text-sm leading-6 text-white/65">
                 We reply within one business day with honest architectural feedback and a clear delivery plan.
@@ -57,10 +87,10 @@ export function ServicesCta({
 
               <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-white/15 pt-5">
                 <Link
-                  href={ctaHref}
+                  href={card1CtaHref}
                   className="inline-flex items-center gap-2.5 bg-[#00a6cb] px-5 py-3 text-sm font-extrabold text-white transition hover:bg-[#078fae] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 >
-                  Start a project
+                  {card1CtaLabel}
                   <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link
@@ -89,13 +119,15 @@ export function ServicesCta({
             />
 
             <div className="relative z-10">
-              <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#7fdcf0]">
-                Careers at Everacy
+              <p
+                className="text-xs font-extrabold uppercase tracking-[0.2em]"
+                style={{ color: card2BadgeColor }}
+              >
+                {card2Badge}
               </p>
-              <h3 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">Join us</h3>
+              <h3 className="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">{card2Title}</h3>
               <p className="mt-3 max-w-md text-sm leading-7 text-white/80 sm:text-base">
-                Looking to solve meaningful engineering and product design problems alongside curious, low-ego
-                teammates?
+                {card2Description}
               </p>
               <p className="mt-2 text-sm leading-6 text-white/65">
                 Explore open roles across frontend, backend, mobile, and product design and grow your craft with us.
@@ -103,10 +135,10 @@ export function ServicesCta({
 
               <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-white/15 pt-5">
                 <Link
-                  href="/careers"
+                  href={card2CtaHref}
                   className="inline-flex items-center gap-2.5 border border-white/30 bg-white/10 px-5 py-3 text-sm font-extrabold text-white backdrop-blur-sm transition hover:border-[#00a6cb] hover:bg-[#00a6cb] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7fdcf0]"
                 >
-                  Explore careers
+                  {card2CtaLabel}
                   <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
                 <Link

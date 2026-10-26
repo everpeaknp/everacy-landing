@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { useReducedMotion } from "@/hooks";
+import type { ServiceDifferentiatorPillarData } from "@/lib/api";
 
-const pillars = [
+const defaultPillars = [
   {
     id: "ownership",
     label: "End-to-End Ownership",
@@ -16,6 +17,7 @@ const pillars = [
       "We don’t just close tickets. We question unclear requirements, flag edge cases early, and measure success by how reliably your product performs in the hands of real users.",
     image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85",
     imageCaption: "Senior engineering & architectural reviews on every sprint",
+    captionColor: "#ffffff",
     highlights: [
       "Direct Slack & GitHub collaboration with senior engineers",
       "Architecture decision records (ADRs) for every major choice",
@@ -30,6 +32,7 @@ const pillars = [
       "Every service we ship includes typed contracts, automated CI checks, structured observability, and clean documentation so your team can scale confidently.",
     image: "/images/saas.jpg",
     imageCaption: "Typed contracts, automated testing, and peer-reviewed pull requests",
+    captionColor: "#ffffff",
     highlights: [
       "Automated test suites and staging previews on every branch",
       "Security-first dependency and secrets management",
@@ -44,6 +47,7 @@ const pillars = [
       "You never have to guess where your project stands. Every Friday you see working software in a live staging environment, backed by clear burn-up metrics.",
     image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=85",
     imageCaption: "Live Friday staging demonstrations with product stakeholders",
+    captionColor: "#ffffff",
     highlights: [
       "Sprint goals tied directly to business milestones",
       "Proactive risk flagging before timelines slip",
@@ -52,16 +56,39 @@ const pillars = [
   },
 ];
 
-export function ServicesDifferentiator({
-  serviceTitle,
-  ctaHref = "/contact",
-}: {
+interface ServicesDifferentiatorProps {
+  pillars?: ServiceDifferentiatorPillarData[] | null;
   serviceTitle?: string;
   ctaHref?: string;
-}) {
+}
+
+export function ServicesDifferentiator({
+  pillars,
+  serviceTitle,
+  ctaHref = "/contact",
+}: ServicesDifferentiatorProps) {
   const reduced = useReducedMotion();
+
+  const formattedPillars = useMemo(() => {
+    if (pillars && pillars.length > 0) {
+      return pillars.map((p) => ({
+        id: String(p.id),
+        label: p.label,
+        title: p.title,
+        description: p.description,
+        image: p.image || "/images/saas.jpg",
+        imageCaption: p.image_caption || "",
+        captionColor: p.caption_color || "#ffffff",
+        highlights: p.highlights || [],
+      }));
+    }
+    return defaultPillars;
+  }, [pillars]);
+
   const [activePillar, setActivePillar] = useState(0);
-  const current = pillars[activePillar];
+  const current = formattedPillars[activePillar] || formattedPillars[0];
+
+  if (!current) return null;
 
   return (
     <section
@@ -85,7 +112,7 @@ export function ServicesDifferentiator({
                 >
                   <Image
                     src={current.image}
-                    alt={current.imageCaption}
+                    alt={current.imageCaption || "Everacy delivery standard"}
                     fill
                     sizes="(max-width: 1024px) 100vw, 44vw"
                     className="object-cover object-center"
@@ -94,9 +121,16 @@ export function ServicesDifferentiator({
                 </motion.div>
               </AnimatePresence>
 
-              <div className="absolute bottom-5 left-5 right-8 text-white">
-                <p className="text-xs font-bold leading-5 text-white/90">{current.imageCaption}</p>
-              </div>
+              {current.imageCaption && (
+                <div className="absolute bottom-5 left-5 right-8 text-white">
+                  <p
+                    className="text-xs font-bold leading-5"
+                    style={{ color: current.captionColor }}
+                  >
+                    {current.imageCaption}
+                  </p>
+                </div>
+              )}
             </div>
           </figure>
 
@@ -115,7 +149,7 @@ export function ServicesDifferentiator({
               role="tablist"
               aria-label="What sets Everacy apart"
             >
-              {pillars.map((pillar, idx) => {
+              {formattedPillars.map((pillar, idx) => {
                 const selected = idx === activePillar;
                 return (
                   <button

@@ -1,20 +1,21 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useReducedMotion } from "@/hooks";
 import { ServiceContentIcon, TechnologyMark } from "@/components/sections/ServiceContentIcon";
-import { skillTabs } from "./servicesContent";
+import type { ServiceSkillTabData } from "@/lib/api";
+import { skillTabs as defaultSkillTabs } from "./servicesContent";
 
-const tabIcons: Record<string, string> = {
+const fallbackTabIcons: Record<string, string> = {
   engineering: "Code2",
   design: "PenTool",
   cloud: "Cloud",
   growth: "BarChart3",
 };
 
-const itemIcons = [
+const defaultItemIcons = [
   "AppWindow",
   "Smartphone",
   "Server",
@@ -23,16 +24,49 @@ const itemIcons = [
   "Workflow",
 ];
 
-export function ServicesSkillsTabs() {
+interface ServicesSkillsTabsProps {
+  tabs?: ServiceSkillTabData[] | null;
+}
+
+export function ServicesSkillsTabs({ tabs }: ServicesSkillsTabsProps) {
   const reduced = useReducedMotion();
-  const [activeId, setActiveId] = useState(skillTabs[0].id);
+
+  const formattedTabs = useMemo(() => {
+    if (tabs && tabs.length > 0) {
+      return tabs.map((t) => ({
+        id: t.slug,
+        label: t.label,
+        icon: t.icon || fallbackTabIcons[t.slug] || "Blocks",
+        iconColor: t.icon_color || "#00a6cb",
+        items: t.items.map((item, idx) => ({
+          title: item.title,
+          text: item.description,
+          icon: item.icon || defaultItemIcons[idx % defaultItemIcons.length],
+        })),
+        tech: t.tech_stack || [],
+      }));
+    }
+    return defaultSkillTabs.map((t) => ({
+      ...t,
+      icon: fallbackTabIcons[t.id] || "Blocks",
+      iconColor: "#00a6cb",
+      items: t.items.map((item, idx) => ({
+        ...item,
+        icon: defaultItemIcons[idx % defaultItemIcons.length],
+      })),
+    }));
+  }, [tabs]);
+
+  const [activeId, setActiveId] = useState(formattedTabs[0]?.id || "engineering");
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  const active = skillTabs.find((tab) => tab.id === activeId) ?? skillTabs[0];
+  const active = formattedTabs.find((tab) => tab.id === activeId) ?? formattedTabs[0];
 
   const focusTab = (index: number) => {
-    const next = skillTabs[(index + skillTabs.length) % skillTabs.length];
-    setActiveId(next.id);
-    tabRefs.current[next.id]?.focus();
+    const next = formattedTabs[(index + formattedTabs.length) % formattedTabs.length];
+    if (next) {
+      setActiveId(next.id);
+      tabRefs.current[next.id]?.focus();
+    }
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -47,9 +81,11 @@ export function ServicesSkillsTabs() {
       focusTab(0);
     } else if (event.key === "End") {
       event.preventDefault();
-      focusTab(skillTabs.length - 1);
+      focusTab(formattedTabs.length - 1);
     }
   };
+
+  if (!active) return null;
 
   return (
     <section
@@ -74,7 +110,7 @@ export function ServicesSkillsTabs() {
           aria-label="Service areas"
           className="mx-auto mt-12 grid max-w-4xl grid-cols-2 border-l border-t border-[#dce8ec] bg-[#f4f9fa] sm:grid-cols-4"
         >
-          {skillTabs.map((tab, index) => {
+          {formattedTabs.map((tab, index) => {
             const selected = tab.id === activeId;
             return (
               <button
@@ -97,8 +133,9 @@ export function ServicesSkillsTabs() {
                 }`}
               >
                 <ServiceContentIcon
-                  name={tabIcons[tab.id] || "Blocks"}
-                  className={`h-4 w-4 ${selected ? "text-[#00a6cb]" : "text-[#7a90a2]"}`}
+                  name={tab.icon}
+                  className="h-4 w-4"
+                  style={{ color: selected ? tab.iconColor : "#7a90a2" }}
                 />
                 <span>{tab.label}</span>
               </button>
@@ -129,7 +166,7 @@ export function ServicesSkillsTabs() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="grid h-10 w-10 place-items-center bg-[#eaf6f8] text-[#008da4] transition-colors group-hover:bg-[#00a6cb] group-hover:text-white">
-                        <ServiceContentIcon name={itemIcons[index % itemIcons.length]} className="h-5 w-5" />
+                        <ServiceContentIcon name={item.icon || "AppWindow"} className="h-5 w-5" />
                       </span>
                       <span className="text-xs font-extrabold tracking-[0.14em] text-[#9aabb6]">
                         {String(index + 1).padStart(2, "0")}
@@ -148,23 +185,25 @@ export function ServicesSkillsTabs() {
               </ul>
 
               {/* Sharp Technology Strip */}
-              <div
-                className="mt-8 flex flex-wrap items-center justify-center gap-2.5"
-                aria-label="Technologies we use"
-              >
-                <span className="mr-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6d8296]">
-                  Core stack:
-                </span>
-                {active.tech.map((name) => (
-                  <span
-                    key={name}
-                    className="inline-flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3.5 py-2 text-xs font-extrabold text-[#142e4c] transition hover:border-[#00a6cb] hover:bg-white sm:text-sm"
-                  >
-                    <TechnologyMark name={name} className="h-4 w-4" />
-                    {name}
+              {active.tech && active.tech.length > 0 && (
+                <div
+                  className="mt-8 flex flex-wrap items-center justify-center gap-2.5"
+                  aria-label="Technologies we use"
+                >
+                  <span className="mr-2 text-xs font-extrabold uppercase tracking-[0.18em] text-[#6d8296]">
+                    Core stack:
                   </span>
-                ))}
-              </div>
+                  {active.tech.map((name) => (
+                    <span
+                      key={name}
+                      className="inline-flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3.5 py-2 text-xs font-extrabold text-[#142e4c] transition hover:border-[#00a6cb] hover:bg-white sm:text-sm"
+                    >
+                      <TechnologyMark name={name} className="h-4 w-4" />
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

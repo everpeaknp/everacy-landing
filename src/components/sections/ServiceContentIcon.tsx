@@ -182,9 +182,17 @@ const technologyIconsByNormalizedName = Object.fromEntries(
   Object.entries(technologyIcons).map(([name, icon]) => [name.replace(/[^a-z0-9]+/gi, "").toLowerCase(), icon]),
 ) as Record<string, SimpleIcon>;
 
-export function ServiceContentIcon({ name, className = "h-6 w-6" }: { name?: string | null; className?: string }) {
+export function ServiceContentIcon({
+  name,
+  className = "h-6 w-6",
+  style,
+}: {
+  name?: string | null;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   const Icon = serviceIcons[name || ""] || Blocks;
-  return <Icon aria-hidden="true" className={className} strokeWidth={1.7} />;
+  return <Icon aria-hidden="true" className={className} style={style} strokeWidth={1.7} />;
 }
 
 export function TechnologyMark({ name, logoUrl, className = "h-8 w-8" }: { name: string; logoUrl?: string | null; className?: string }) {

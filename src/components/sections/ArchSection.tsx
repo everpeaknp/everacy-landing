@@ -4,13 +4,14 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import type { ServiceCardData } from "@/lib/api";
+import type { ServiceCardData, SolutionFinderPresetData } from "@/lib/api";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 interface ArchSectionProps {
   data?: ServiceCardData[];
   sectionTitle?: string;
+  presets?: SolutionFinderPresetData[] | null;
 }
 
 function serviceHref(service: ServiceCardData): string {
@@ -116,8 +117,36 @@ const COMMAND_PRESETS = [
   },
 ];
 
-export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
+export function ArchSection({ data, sectionTitle, presets }: ArchSectionProps) {
   const cards = data ?? [];
+
+  const activePresets = useMemo(() => {
+    if (presets && presets.length > 0) {
+      return presets.map((p) => ({
+        id: p.id,
+        label: p.label,
+        query: p.query,
+        tags: p.tags,
+        matchKeywords: p.match_keywords || [],
+        image: p.image,
+        image_alt: p.image_alt,
+        badge_text: p.badge_text,
+        badge_color: p.badge_color,
+        caption: p.caption,
+        caption_color: p.caption_color,
+        caption_subtext: p.caption_subtext,
+        caption_subtext_color: p.caption_subtext_color,
+      }));
+    }
+    return COMMAND_PRESETS.map((p) => ({
+      ...p,
+      badge_text: "DEPLOYMENT BLUEPRINT",
+      badge_color: "#00a6cb",
+      caption_color: "#ffffff",
+      caption_subtext: "Enterprise squads, sub-second latency, and production architectures built to scale.",
+      caption_subtext_color: "#b8d1dc",
+    }));
+  }, [presets]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [presetIndex, setPresetIndex] = useState<number>(0);
@@ -127,15 +156,15 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   const [isTyping, setIsTyping] = useState<boolean>(true);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
-  const activePreset = COMMAND_PRESETS[presetIndex];
+  const activePreset = activePresets[presetIndex] || activePresets[0];
 
   // Continuous infinite typewriter loop: types, pauses when full, backspaces, advances to next preset, and restarts
   // Stops completely once the user edits or deletes letters until page refresh
   useEffect(() => {
-    if (hasUserEdited || isFocused) return;
+    if (hasUserEdited || isFocused || !activePreset) return;
 
     let timeoutId: NodeJS.Timeout;
-    const target = COMMAND_PRESETS[presetIndex].query;
+    const target = activePreset.query;
 
     let mode: "typing" | "pause_full" | "deleting" | "pause_empty" = "typing";
     let charIndex = 0;
@@ -167,14 +196,14 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
           timeoutId = setTimeout(tick, 14); // Quick, natural backspace speed
         }
       } else if (mode === "pause_empty") {
-        setPresetIndex((prev) => (prev + 1) % COMMAND_PRESETS.length);
+        setPresetIndex((prev) => (prev + 1) % activePresets.length);
       }
     };
 
     timeoutId = setTimeout(tick, 60);
 
     return () => clearTimeout(timeoutId);
-  }, [presetIndex, isFocused, hasUserEdited]);
+  }, [presetIndex, isFocused, hasUserEdited, activePreset, activePresets.length]);
 
   const matchedServices = useMemo(() => {
     const q = (hasUserEdited ? customQuery.trim() : (customQuery.trim() || activePreset.query)).toLowerCase();
@@ -327,7 +356,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
 
                   {/* Sharp Boxy Scenario Buttons — Wide Single-Row Inline Layout */}
                   <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 mb-5 overflow-x-auto no-scrollbar lg:overflow-visible">
-                    {COMMAND_PRESETS.map((preset, idx) => {
+                    {activePresets.map((preset, idx) => {
                       const isSelected = (!hasUserEdited && presetIndex === idx) || customQuery === preset.query;
                       return (
                         <button
@@ -532,16 +561,28 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                     {/* Gradient architectural caption overlay */}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0d2a4a]/95 via-[#0d2a4a]/75 to-transparent p-5 sm:p-6 pt-16 text-white">
                       <div className="flex items-center gap-2">
-                        <span className="h-2 w-2 bg-[#008da4] animate-pulse" />
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#00a6cb]">
-                          DEPLOYMENT BLUEPRINT
+                        <span
+                          className="h-2 w-2 animate-pulse"
+                          style={{ backgroundColor: activePreset.badge_color || "#008da4" }}
+                        />
+                        <span
+                          className="font-mono text-[10px] font-bold uppercase tracking-[0.2em]"
+                          style={{ color: activePreset.badge_color || "#00a6cb" }}
+                        >
+                          {activePreset.badge_text || "DEPLOYMENT BLUEPRINT"}
                         </span>
                       </div>
-                      <p className="mt-1.5 text-sm sm:text-base font-bold text-white tracking-tight">
+                      <p
+                        className="mt-1.5 text-sm sm:text-base font-bold tracking-tight"
+                        style={{ color: activePreset.caption_color || "#ffffff" }}
+                      >
                         {activePreset.caption}
                       </p>
-                      <p className="mt-1 text-xs text-[#b8d1dc] leading-relaxed">
-                        Enterprise squads, sub-second latency, and production architectures built to scale.
+                      <p
+                        className="mt-1 text-xs leading-relaxed"
+                        style={{ color: activePreset.caption_subtext_color || "#b8d1dc" }}
+                      >
+                        {activePreset.caption_subtext || "Enterprise squads, sub-second latency, and production architectures built to scale."}
                       </p>
                     </div>
                   </div>

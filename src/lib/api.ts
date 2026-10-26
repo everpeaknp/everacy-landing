@@ -354,9 +354,72 @@ export interface ServicesPageHeroData {
   seo?: SEOFieldData | null;
 }
 
+
+export interface ServicesHeroStatData {
+  id: number;
+  value: number;
+  suffix: string;
+  label: string;
+  order: number;
+}
+
+export interface ServiceSkillItemData {
+  id: number;
+  title: string;
+  description: string;
+  icon?: string;
+  order: number;
+}
+
+export interface ServiceSkillTabData {
+  id: number;
+  slug: string;
+  label: string;
+  intro: string;
+  icon: string;
+  icon_color?: string;
+  tech_stack: string[];
+  order: number;
+  items: ServiceSkillItemData[];
+}
+
+export interface ServiceDifferentiatorPillarData {
+  id: number;
+  label: string;
+  title: string;
+  description: string;
+  image: string;
+  image_caption: string;
+  caption_color?: string;
+  highlights: string[];
+  order: number;
+}
+
+export interface ServicesCtaSectionData {
+  id: number;
+  eyebrow?: string;
+  title?: string;
+  card1_badge: string;
+  card1_badge_color?: string;
+  card1_title: string;
+  card1_description: string;
+  card1_cta_label: string;
+  card1_cta_href: string;
+  card2_badge: string;
+  card2_badge_color?: string;
+  card2_title: string;
+  card2_description: string;
+  card2_cta_label: string;
+  card2_cta_href: string;
+}
+
 export interface ServicesPageData {
   hero: ServicesPageHeroData | null;
   services: ServiceCardData[];
+  stats?: ServicesHeroStatData[] | null;
+  skill_tabs?: ServiceSkillTabData[] | null;
+  differentiators?: ServiceDifferentiatorPillarData[] | null;
+  cta_section?: ServicesCtaSectionData | null;
   seo?: SEOFieldData | null;
 }
 
@@ -376,6 +439,7 @@ export interface TestimonialData {
   company_logo_is_decorative?: boolean;
   rating: number;
   accent_color: string;
+  is_featured_logo?: boolean;
   order: number;
 }
 
@@ -496,8 +560,52 @@ export interface CTASectionData {
   background_image: string | null;
 }
 
+
+export interface HomeMotionSectionData {
+  id: number;
+  eyebrow: string;
+  eyebrow_color?: string;
+  title: string;
+  description: string;
+  checkpoints: string[];
+  primary_cta_label: string;
+  primary_cta_href: string;
+  secondary_cta_label: string;
+  secondary_cta_href: string;
+  video: string;
+  poster_image?: string | null;
+  top_badge_text: string;
+  top_badge_text_color?: string;
+  top_badge_bg_color?: string;
+  live_badge_text: string;
+  bottom_left_text: string;
+  bottom_right_text: string;
+  bottom_right_color?: string;
+  accent_color?: string;
+}
+
+export interface SolutionFinderPresetData {
+  id: number;
+  slug: string;
+  label: string;
+  query: string;
+  badge_text: string;
+  badge_color?: string;
+  caption: string;
+  caption_color?: string;
+  caption_subtext: string;
+  caption_subtext_color?: string;
+  image: string;
+  image_alt?: string;
+  tags: string[];
+  match_keywords: string[];
+  order: number;
+}
+
 export interface HomeData {
   hero: HeroData | null;
+  motion_section?: HomeMotionSectionData | null;
+  solution_presets?: SolutionFinderPresetData[] | null;
   technology_section?: HomeTechnologySectionData | null;
   process_section?: { title: string; subtitle: string } | null;
   services_section?: { title: string } | null;
