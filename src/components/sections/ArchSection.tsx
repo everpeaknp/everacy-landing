@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ServiceCardData } from "@/lib/api";
@@ -110,6 +110,7 @@ const COMMAND_PRESETS = [
 export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   const cards = data ?? [];
 
+  const inputRef = useRef<HTMLInputElement>(null);
   const [presetIndex, setPresetIndex] = useState<number>(0);
   const [customQuery, setCustomQuery] = useState<string>("");
   const [typedText, setTypedText] = useState<string>("");
@@ -345,22 +346,39 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 <circle cx="11" cy="11" r="6.5" />
                 <path d="m16 16 4.5 4.5" />
               </svg>
-              <input
-                type="text"
-                value={customQuery ? customQuery : typedText}
-                onChange={(e) => setCustomQuery(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => {
-                  if (!customQuery.trim()) setIsFocused(false);
-                }}
-                placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
-                aria-label="Describe your project requirements"
-                className="min-w-0 flex-1 bg-transparent text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-[18px]"
-              />
-              <span
-                className={`inline-block h-5 w-0.5 bg-[#008da4] ${isTyping ? "opacity-100" : "animate-pulse"}`}
-                aria-hidden="true"
-              />
+              <div className="relative min-w-0 flex-1 flex items-center overflow-hidden">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={customQuery ? customQuery : typedText}
+                  onChange={(e) => setCustomQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => {
+                    if (!customQuery.trim()) setIsFocused(false);
+                  }}
+                  placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
+                  aria-label="Describe your project requirements"
+                  className={`w-full bg-transparent text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-[18px] ${
+                    !isFocused && !customQuery ? "caret-transparent" : "caret-[#008da4]"
+                  }`}
+                />
+
+                {/* Inline Blinking Cursor attached immediately to the end of the sentence */}
+                {!isFocused && !customQuery && typedText && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 flex items-center text-base font-semibold text-transparent sm:text-[18px] whitespace-pre overflow-hidden"
+                  >
+                    <span>{typedText}</span>
+                    <span
+                      className={`inline-block h-5 w-[2.5px] bg-[#008da4] ml-0.5 shrink-0 ${
+                        isTyping ? "opacity-100" : "animate-pulse"
+                      }`}
+                      style={{ animationDuration: "0.85s" }}
+                    />
+                  </div>
+                )}
+              </div>
               {customQuery && (
                 <button
                   type="button"
