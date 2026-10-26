@@ -116,6 +116,7 @@ export function ServicesDifferentiator({
                     fill
                     sizes="(max-width: 1024px) 100vw, 44vw"
                     className="object-cover object-center"
+                    unoptimized={Boolean(current.image && (current.image.startsWith("http") || current.image.startsWith("/media")))}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#06182c]/70 via-transparent to-transparent" />
                 </motion.div>

@@ -23,17 +23,17 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
-      { protocol: "https", hostname: "ik.imagekit.io" },
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "i.pinimg.com" },
-      { protocol: "https", hostname: "assets.codepen.io" },
-      { protocol: "https", hostname: "everacylanding.everacy.com" },
-      { protocol: "https", hostname: "www.yummyever.com" },
+      { protocol: "https", hostname: "ik.imagekit.io", pathname: "/**" },
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
+      { protocol: "https", hostname: "i.pinimg.com", pathname: "/**" },
+      { protocol: "https", hostname: "assets.codepen.io", pathname: "/**" },
+      { protocol: "https", hostname: "everacylanding.everacy.com", pathname: "/**" },
+      { protocol: "https", hostname: "www.yummyever.com", pathname: "/**" },
       // Django backend media files (local dev)
-      { protocol: "http", hostname: "127.0.0.1", port: "8000" },
-      { protocol: "http", hostname: "localhost", port: "8000" },
-      { protocol: "http", hostname: "127.0.0.1", port: "8002" },
-      { protocol: "http", hostname: "localhost", port: "8002" },
+      { protocol: "http", hostname: "127.0.0.1", port: "8000", pathname: "/**" },
+      { protocol: "http", hostname: "localhost", port: "8000", pathname: "/**" },
+      { protocol: "http", hostname: "127.0.0.1", port: "8002", pathname: "/**" },
+      { protocol: "http", hostname: "localhost", port: "8002", pathname: "/**" },
     ],
   },
 

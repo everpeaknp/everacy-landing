@@ -556,6 +556,7 @@ export function ArchSection({ data, sectionTitle, presets }: ArchSectionProps) {
                       sizes="(max-width: 1024px) 100vw, 480px"
                       className="object-cover object-center w-full h-full transition-all duration-700 hover:scale-[1.03]"
                       priority
+                      unoptimized={Boolean(activePreset.image && (activePreset.image.startsWith("http") || activePreset.image.startsWith("/media")))}
                     />
 
                     {/* Gradient architectural caption overlay */}

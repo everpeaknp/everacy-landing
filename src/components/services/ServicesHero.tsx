@@ -128,6 +128,7 @@ export function ServicesHero({
               priority
               sizes="(max-width: 1024px) 100vw, 44vw"
               className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+              unoptimized={Boolean(heroImage && (heroImage.startsWith("http") || heroImage.startsWith("/media")))}
             />
           </div>
         </figure>
