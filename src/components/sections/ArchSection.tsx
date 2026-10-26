@@ -85,13 +85,6 @@ const COMMAND_PRESETS = [
     tags: ["focus: Core Web Vitals", "tracking: Server-Side CAPI", "scope: SEO + Growth"],
     matchKeywords: ["seo", "marketing"],
   },
-  {
-    id: "all-services",
-    label: "All Capabilities",
-    query: "Show our full end-to-end engineering, mobile, and growth capabilities",
-    tags: ["scope: Full Ecosystem", "delivery: In-House Team", "modules: All 06"],
-    matchKeywords: ["website", "seo", "software", "marketing", "app", "sms"],
-  },
 ];
 
 export function ArchSection({ data }: ArchSectionProps) {
@@ -129,15 +122,6 @@ export function ArchSection({ data }: ArchSectionProps) {
   }, [activePreset, customQuery]);
 
   const matchedServices = useMemo(() => {
-    if (!customQuery.trim() && activePreset.id === "all-services") {
-      return cards.map((s, idx) => ({
-        service: s,
-        summary: getServiceKeywordsAndSummary(s.title).summary,
-        score: 10,
-        idx,
-      }));
-    }
-
     const q = (customQuery.trim() || activePreset.query).toLowerCase();
     const scored = cards.map((s, idx) => {
       const meta = getServiceKeywordsAndSummary(s.title);
@@ -165,7 +149,7 @@ export function ArchSection({ data }: ArchSectionProps) {
 
   return (
     <section
-      className="border-b border-[#e2ecee] bg-white py-20 sm:py-28"
+      className="border-b border-[#e2ecee] bg-[#f6fafb] py-20 sm:py-28"
       style={{ fontFamily: "'Montserrat', sans-serif" }}
     >
       <div className="mx-auto max-w-4xl px-5 sm:px-8">
@@ -174,15 +158,15 @@ export function ArchSection({ data }: ArchSectionProps) {
             className="mx-auto block h-20 w-px bg-gradient-to-b from-transparent via-[#cbd5e1] to-[#64748b]"
             aria-hidden="true"
           />
-          <h2 className="mt-6 text-3xl font-black tracking-[-0.025em] text-[#0d2a4a] sm:text-5xl">
+          <h2 className="mt-6 text-3xl font-black tracking-[-0.025em] text-[#0d2a4a] sm:text-4xl">
             Describe what you are building
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#586d82] sm:text-base">
+          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#586d82]">
             Pick a common project scenario or type your requirements in plain words—see how our capabilities combine into one delivery plan.
           </p>
         </div>
 
-        {/* Preset Scenario Pills */}
+        {/* Sharp Boxy Scenario Buttons */}
         <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
           {COMMAND_PRESETS.map((preset) => {
             const isSelected = customQuery.trim() === "" && selectedPresetId === preset.id;
@@ -194,10 +178,10 @@ export function ArchSection({ data }: ArchSectionProps) {
                   setCustomQuery("");
                   setSelectedPresetId(preset.id);
                 }}
-                className={`rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all ${
+                className={`rounded-none border px-4 py-2.5 text-xs font-semibold transition-all ${
                   isSelected
                     ? "border-[#0d2a4a] bg-[#0d2a4a] text-white"
-                    : "border-[#dce8ec] bg-[#f8fafb] text-[#475569] hover:border-[#00a6cb] hover:text-[#0d2a4a]"
+                    : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#00a6cb] hover:text-[#0d2a4a]"
                 }`}
               >
                 {preset.label}
@@ -206,8 +190,8 @@ export function ArchSection({ data }: ArchSectionProps) {
           })}
         </div>
 
-        {/* Interactive Command Palette Box */}
-        <div className="mt-6 overflow-hidden rounded-[1.25rem] border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
+        {/* Sharp Boxy Interactive Command Palette */}
+        <div className="mt-6 overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
           <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-6 py-4 sm:px-7 sm:py-5">
             <svg
               viewBox="0 0 24 24"
@@ -236,14 +220,14 @@ export function ArchSection({ data }: ArchSectionProps) {
               <button
                 type="button"
                 onClick={() => setCustomQuery("")}
-                className="rounded bg-[#f1f5f9] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:text-[#0d2a4a]"
+                className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
               >
                 Reset
               </button>
             )}
           </div>
 
-          {/* Filter Chips Row */}
+          {/* Sharp Boxy Filter Chips Row */}
           <div className="flex flex-wrap items-center gap-2.5 border-b border-[#f1f5f9] bg-[#fafcfd] px-6 py-3 sm:px-7">
             <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#64748b]">
               Architecture Filters
@@ -258,10 +242,10 @@ export function ArchSection({ data }: ArchSectionProps) {
             ).map((chip, idx) => (
               <span
                 key={chip}
-                className={`rounded-md px-2.5 py-1 font-mono text-xs font-medium ${
+                className={`rounded-none px-2.5 py-1 font-mono text-xs font-medium ${
                   idx === 2
                     ? "bg-[#0d2a4a] text-white"
-                    : "border border-[#e2e8f0] bg-white text-[#475569]"
+                    : "border border-[#dce8ec] bg-white text-[#475569]"
                 }`}
               >
                 {chip}
@@ -269,7 +253,7 @@ export function ArchSection({ data }: ArchSectionProps) {
             ))}
           </div>
 
-          {/* Matched Services Results List */}
+          {/* Matched Services Results List (Sharp Boxy Index & Action Button) */}
           <div className="divide-y divide-[#f1f5f9] px-6 py-2 sm:px-7">
             {matchedServices.map(({ service, summary, idx }) => (
               <div
@@ -277,7 +261,7 @@ export function ArchSection({ data }: ArchSectionProps) {
                 className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
               >
                 <div className="flex items-start gap-4">
-                  <span className="mt-0.5 flex h-9 w-12 shrink-0 items-center justify-center rounded-md border border-[#dce8ec] bg-[#f8fafb] font-mono text-xs font-bold text-[#008da4]">
+                  <span className="mt-0.5 flex h-9 w-12 shrink-0 items-center justify-center rounded-none border border-[#dce8ec] bg-[#f8fafb] font-mono text-xs font-bold text-[#008da4]">
                     {String(idx + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -294,7 +278,7 @@ export function ArchSection({ data }: ArchSectionProps) {
                 <div className="flex shrink-0 items-center gap-3 self-end sm:self-center">
                   <Link
                     href={serviceHref(service)}
-                    className="rounded-lg border border-[#dce8ec] bg-[#f8fafb] px-3.5 py-1.5 text-xs font-bold text-[#0d2a4a] transition-colors hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
+                    className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-3.5 py-1.5 text-xs font-bold text-[#0d2a4a] transition-colors hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
                   >
                     Open spec →
                   </Link>
@@ -306,7 +290,7 @@ export function ArchSection({ data }: ArchSectionProps) {
           {/* Palette Footer Bar */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#e4ecef] bg-[#f8fafb] px-6 py-3.5 text-xs text-[#64748b] sm:px-7">
             <div className="flex items-center gap-5">
-              <span>Click any scenario pill to test</span>
+              <span>Click any scenario tab to test</span>
               <span className="hidden sm:inline">·</span>
               <span className="hidden sm:inline">Type custom keywords to filter</span>
             </div>
