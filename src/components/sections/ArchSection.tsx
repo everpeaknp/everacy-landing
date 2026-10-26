@@ -20,7 +20,16 @@ function serviceHref(service: ServiceCardData): string {
   return service.link_href && service.link_href !== "/services" ? service.link_href : "/services";
 }
 
-function getServiceCapabilities(title: string): { category: string; summary: string; capabilities: string[]; keywords: string[] } {
+interface CapabilityMetadata {
+  category: string;
+  summary: string;
+  capabilities: string[];
+  keywords: string[];
+  previewImage: string;
+  badge: string;
+}
+
+function getServiceCapabilities(title: string): CapabilityMetadata {
   const value = title.toLowerCase();
 
   if (value.includes("website") || value.includes("web")) {
@@ -29,6 +38,8 @@ function getServiceCapabilities(title: string): { category: string; summary: str
       summary: "High-speed marketing sites and web applications with sub-second page loads and seamless CMS control.",
       capabilities: ["Next.js & React Core", "Responsive Viewport Systems", "Headless CMS Integration", "Core Web Vitals Lock"],
       keywords: ["web", "website", "frontend", "nextjs", "react", "landing", "redesign", "ui", "cms", "e-commerce", "portal"],
+      previewImage: "/images/service-previews/responsive-platforms.png",
+      badge: "RESPONSIVE VIEWPORT",
     };
   }
 
@@ -38,6 +49,8 @@ function getServiceCapabilities(title: string): { category: string; summary: str
       summary: "Custom internal portals, distributed backends, and multi-tenant software shaped around your business operations.",
       capabilities: ["Role-Based Access (RBAC)", "High-Throughput APIs", "Relational ACID Integrity", "Third-Party ERP Sync"],
       keywords: ["software", "system", "erp", "crm", "saas", "backend", "api", "automation", "dashboard", "internal", "database", "workflow"],
+      previewImage: "/images/service-previews/saas-dashboard.svg",
+      badge: "SAAS & BACKEND",
     };
   }
 
@@ -47,6 +60,8 @@ function getServiceCapabilities(title: string): { category: string; summary: str
       summary: "Single-codebase cross-platform mobile products for iOS and Android with smooth 60fps gesture response.",
       capabilities: ["Flutter & React Native", "Offline-First Data Sync", "Push Notification Routing", "App Store & Play Store CI/CD"],
       keywords: ["mobile", "app", "ios", "android", "flutter", "react native", "phone", "tablet", "push", "offline"],
+      previewImage: "/images/appdevelopment.png",
+      badge: "60FPS CROSS-PLATFORM",
     };
   }
 
@@ -56,6 +71,8 @@ function getServiceCapabilities(title: string): { category: string; summary: str
       summary: "Technical and content-led search engineering that earns high-intent organic rankings on Google.",
       capabilities: ["Technical Web Audits", "Programmatic JSON-LD Schema", "Intent Keyword Mapping", "Crawl Budget Optimization"],
       keywords: ["seo", "search", "google", "ranking", "traffic", "organic", "schema", "vitals", "speed", "keywords"],
+      previewImage: "/images/service-previews/service-workflow.png",
+      badge: "SERP & SCHEMA",
     };
   }
 
@@ -65,6 +82,8 @@ function getServiceCapabilities(title: string): { category: string; summary: str
       summary: "Data-driven performance campaigns, server-side conversion tracking, and high-converting acquisition funnels.",
       capabilities: ["Server-Side Conversion APIs", "Targeted Paid Campaigns", "Funnel A/B Optimization", "Attribution Dashboards"],
       keywords: ["marketing", "growth", "ads", "campaigns", "social", "conversion", "funnel", "analytics", "leads", "brand"],
+      previewImage: "/images/service-previews/service-outcomes.png",
+      badge: "GROWTH ATTRIBUTION",
     };
   }
 
@@ -73,6 +92,8 @@ function getServiceCapabilities(title: string): { category: string; summary: str
     summary: "Reliable transactional and promotional SMS dispatch pipelines with direct carrier routing and delivery webhooks.",
     capabilities: ["Sub-Second SMS Dispatch", "Direct Carrier Binds", "Automated Webhook Callbacks", "Delivery Analytics"],
     keywords: ["sms", "bulk", "messaging", "otp", "alerts", "notifications", "telecom", "dispatch", "api"],
+    previewImage: "/images/service-previews/service-interface-systems.png",
+    badge: "CARRIER GATEWAY",
   };
 }
 
@@ -110,10 +131,11 @@ const COMMAND_PRESETS = [
 export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   const cards = data ?? [];
 
+  const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
   const [selectedPresetId, setSelectedPresetId] = useState<string>(COMMAND_PRESETS[0].id);
   const [customQuery, setCustomQuery] = useState<string>("");
   const [typedText, setTypedText] = useState<string>(COMMAND_PRESETS[0].query);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [, setIsTyping] = useState<boolean>(false);
 
   const activePreset = useMemo(
     () => COMMAND_PRESETS.find((p) => p.id === selectedPresetId) ?? COMMAND_PRESETS[0],
@@ -163,9 +185,27 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
     return matches.length > 0 ? matches.slice(0, 3) : scored.slice(0, 3);
   }, [cards, customQuery, activePreset]);
 
+  const filteredCards = useMemo(() => {
+    if (selectedFilter === "ALL") return cards;
+    return cards.filter((s) => {
+      const info = getServiceCapabilities(s.title);
+      return info.category.toLowerCase().includes(selectedFilter.toLowerCase());
+    });
+  }, [cards, selectedFilter]);
+
   if (cards.length === 0) {
     return <EmptyState title="No services published yet" />;
   }
+
+  const categoryFilters = [
+    { label: "ALL SERVICES", value: "ALL" },
+    { label: "WEB PLATFORMS", value: "WEB" },
+    { label: "SYSTEMS & BACKEND", value: "SYSTEMS" },
+    { label: "MOBILE NATIVE", value: "MOBILE" },
+    { label: "SEARCH ARCHITECTURE", value: "SEARCH" },
+    { label: "GROWTH & ADS", value: "GROWTH" },
+    { label: "TELECOM & SMS", value: "TELECOM" },
+  ];
 
   return (
     <section
@@ -175,7 +215,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* Clean, Sharp Header */}
         <FadeIn direction="up" duration={0.45}>
-          <header className="mb-14 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <header className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
               <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#008da4]">
                 Capabilities &amp; Engineering
@@ -201,11 +241,33 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
           </header>
         </FadeIn>
 
-        {/* Sharp Boxy Architectural Services Grid (Uniform 3-Column Ledger, Zero Round Squircles, Zero Mismatches) */}
+        {/* Interactive Category Filter Bar */}
+        <div className="mb-8 flex flex-wrap items-center gap-2">
+          {categoryFilters.map((f) => {
+            const isActive = selectedFilter === f.value;
+            return (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => setSelectedFilter(f.value)}
+                className={`rounded-none border px-3.5 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  isActive
+                    ? "border-[#008da4] bg-[#008da4] text-white shadow-[2px_2px_0px_0px_#0d2a4a]"
+                    : "border-[#dce8ec] bg-white text-[#5c7288] hover:border-[#008da4] hover:text-[#0d2a4a]"
+                }`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sharp Boxy Architectural Services Grid with Visual Preview Frames */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {cards.map((service, index) => {
+          {filteredCards.map((service, index) => {
             const info = getServiceCapabilities(service.title);
             const num = String(index + 1).padStart(2, "0");
+            const imageSrc = service.image || info.previewImage;
 
             return (
               <FadeIn
@@ -216,11 +278,11 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
               >
                 <Link
                   href={serviceHref(service)}
-                  className="group relative flex h-full flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-7 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[4px_4px_0px_0px_#008da4,0_14px_28px_-12px_rgba(13,42,74,0.12)] sm:p-8"
+                  className="group relative flex h-full flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[4px_4px_0px_0px_#008da4,0_14px_28px_-12px_rgba(13,42,74,0.12)] sm:p-7"
                 >
                   <div>
                     {/* Sharp Header: Tabular Index + Category Label */}
-                    <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-4">
+                    <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-3.5">
                       <span className="font-mono text-xs font-black text-[#008da4]">
                         {num}
                       </span>
@@ -229,18 +291,42 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                       </span>
                     </div>
 
+                    {/* Sharp Minimal Image Preview Frame */}
+                    <div className="relative mt-4 aspect-[16/10] w-full overflow-hidden rounded-none border border-[#e2ecee] bg-[#f4f8fa]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imageSrc}
+                        alt={service.image_alt || service.title}
+                        title={service.image_title || service.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
+                      />
+
+                      {/* Monospace Architectural Corner Badge */}
+                      <div className="absolute top-2.5 right-2.5 z-10 border border-[#dce8ec] bg-white/95 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-widest text-[#008da4] backdrop-blur-xs shadow-xs">
+                        {info.badge}
+                      </div>
+
+                      {/* Subtle hover overlay prompt */}
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#0d2a4a]/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                        <span className="border border-[#0d2a4a] bg-white px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#0d2a4a] shadow-sm">
+                          Explore Architecture &rarr;
+                        </span>
+                      </div>
+                    </div>
+
                     {/* Title */}
                     <h3 className="mt-5 text-xl font-extrabold leading-snug tracking-tight text-[#0d2a4a] transition-colors group-hover:text-[#008da4]">
                       {service.title}
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-2.5 text-sm leading-relaxed text-[#586d82]">
+                    <p className="mt-2 text-sm leading-relaxed text-[#586d82]">
                       {service.description || info.summary}
                     </p>
 
                     {/* Concrete Capabilities Checklist */}
-                    <ul className="mt-6 space-y-2 border-t border-[#f0f4f6] pt-5">
+                    <ul className="mt-5 space-y-2 border-t border-[#f0f4f6] pt-4">
                       {info.capabilities.map((cap) => (
                         <li
                           key={cap}
@@ -254,7 +340,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                   </div>
 
                   {/* Sharp Action Link */}
-                  <div className="mt-8 flex items-center justify-between border-t border-[#f0f4f6] pt-4 text-xs font-black text-[#008da4] transition-colors group-hover:text-[#0d2a4a]">
+                  <div className="mt-7 flex items-center justify-between border-t border-[#f0f4f6] pt-4 text-xs font-black text-[#008da4] transition-colors group-hover:text-[#0d2a4a]">
                     <span>Learn more</span>
                     <ArrowRight
                       aria-hidden="true"
@@ -318,104 +404,100 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 strokeLinecap="round"
                 aria-hidden="true"
               >
-                <circle cx="11" cy="11" r="6.5" />
-                <path d="m16 16 4.5 4.5" />
+                <path d="M21 21l-4.35-4.35" />
+                <circle cx="11" cy="11" r="7" />
               </svg>
+
               <input
                 type="text"
                 value={customQuery ? customQuery : typedText}
-                onChange={(e) => setCustomQuery(e.target.value)}
-                placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
-                aria-label="Describe your project requirements"
-                className="min-w-0 flex-1 bg-transparent text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-[18px]"
+                onChange={(e) => {
+                  setCustomQuery(e.target.value);
+                }}
+                placeholder="e.g. Next.js SaaS portal with role-based auth and automated invoicing..."
+                className="w-full bg-transparent font-mono text-sm font-medium text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-base"
               />
-              {isTyping && (
-                <span className="inline-block h-5 w-0.5 animate-pulse bg-[#008da4]" aria-hidden="true" />
-              )}
+
               {customQuery && (
                 <button
                   type="button"
-                  onClick={() => setCustomQuery("")}
-                  className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
+                  onClick={() => {
+                    setCustomQuery("");
+                  }}
+                  className="rounded-none border border-[#dce8ec] px-2 py-1 font-mono text-[11px] font-bold text-[#64748b] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
                 >
-                  Reset
+                  CLEAR
                 </button>
               )}
             </div>
 
-            {/* Sharp Boxy Filter Chips Row */}
-            <div className="flex flex-wrap items-center gap-2.5 border-b border-[#f1f5f9] bg-[#fafcfd] px-6 py-3 sm:px-7">
-              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
-                Architecture Filters
-              </span>
-              {(customQuery.trim()
-                ? [
-                    `query: "${customQuery.trim().slice(0, 24)}"`,
-                    `matched: ${matchedServices.length} modules`,
-                    "delivery: Full-Stack",
-                  ]
-                : activePreset.tags
-              ).map((chip, idx) => (
-                <span
-                  key={chip}
-                  className={`rounded-none px-2.5 py-1 font-mono text-xs font-medium ${
-                    idx === 2
-                      ? "bg-[#0d2a4a] text-white"
-                      : "border border-[#dce8ec] bg-white text-[#475569]"
-                  }`}
-                >
-                  {chip}
+            {/* Tags / Meta Row */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#eef4f6] bg-[#f8fbfc] px-6 py-3 text-xs text-[#586d82] sm:px-7">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#008da4]">
+                  ENGINEERING SCOPE:
                 </span>
-              ))}
-            </div>
-
-            {/* Matched Services Results List (Sharp Boxy Index & Action Button) */}
-            <div className="divide-y divide-[#f1f5f9] px-6 py-2 sm:px-7">
-              {matchedServices.map(({ service, info, idx }) => (
-                <div
-                  key={service.id}
-                  className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
-                >
-                  <div className="flex items-start gap-4">
-                    <span className="mt-0.5 flex h-9 w-12 shrink-0 items-center justify-center rounded-none border border-[#dce8ec] bg-[#f8fafb] font-mono text-xs font-bold text-[#008da4]">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <Link
-                        href={serviceHref(service)}
-                        className="text-[15px] font-bold text-[#0d2a4a] hover:text-[#008da4]"
-                      >
-                        {service.title}
-                      </Link>
-                      <p className="mt-0.5 text-xs text-[#586d82]">{info.summary}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-3 self-end sm:self-center">
-                    <Link
-                      href={serviceHref(service)}
-                      className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-3.5 py-1.5 text-xs font-bold text-[#0d2a4a] transition-colors hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
-                    >
-                      Open spec →
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Palette Footer Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#e4ecef] bg-[#f8fafb] px-6 py-3.5 text-xs text-[#64748b] sm:px-7">
-              <div className="flex items-center gap-5">
-                <span>Click any scenario tab to test</span>
-                <span className="hidden sm:inline">·</span>
-                <span className="hidden sm:inline">Type custom keywords to filter</span>
+                {activePreset.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-none border border-[#dce8ec] bg-white px-2 py-0.5 font-mono text-[11px] font-semibold text-[#0d2a4a]"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-              <Link
-                href="/services"
-                className="font-bold text-[#0d2a4a] hover:text-[#008da4]"
-              >
-                Browse all {cards.length} capabilities →
-              </Link>
+
+              <span className="font-mono text-[11px] font-bold text-[#008da4]">
+                {matchedServices.length} CAPABILITIES MATCHED
+              </span>
+            </div>
+
+            {/* Matched Delivery Plan Result */}
+            <div className="p-6 sm:p-7">
+              <div className="grid gap-3 sm:grid-cols-3">
+                {matchedServices.map(({ service, info, idx }) => (
+                  <Link
+                    key={`match-${service.id}-${idx}`}
+                    href={serviceHref(service)}
+                    className="group flex flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#008da4] hover:shadow-[3px_3px_0px_0px_#008da4]"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#008da4]">
+                          MATCH {idx + 1}
+                        </span>
+                        <span className="font-mono text-[10px] font-semibold text-[#7a8f9f]">
+                          {info.category}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm font-black text-[#0d2a4a] group-hover:text-[#008da4] transition-colors">
+                        {service.title}
+                      </p>
+                      <p className="mt-1 line-clamp-2 text-xs font-medium text-[#586d82]">
+                        {service.description || info.summary}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between border-t border-[#f0f4f6] pt-2 text-[11px] font-black text-[#008da4]">
+                      <span>Scope Details</span>
+                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-5 flex flex-col items-center justify-between gap-3 border-t border-[#f0f4f6] pt-4 sm:flex-row">
+                <p className="text-xs font-medium text-[#586d82]">
+                  Need a tailored quote or multi-discipline team? We can assemble a custom sprint squad in 48 hours.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex shrink-0 items-center gap-2 rounded-none border border-[#0d2a4a] bg-[#0d2a4a] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition-all hover:bg-[#008da4] hover:border-[#008da4]"
+                >
+                  <span>Request Project Scope</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
