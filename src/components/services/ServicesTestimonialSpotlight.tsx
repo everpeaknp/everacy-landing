@@ -81,6 +81,7 @@ export function ServicesTestimonialSpotlight({
                   fill
                   sizes="184px"
                   className="object-cover object-top"
+                  unoptimized={Boolean(current.avatar && (current.avatar.startsWith("http") || current.avatar.startsWith("/media")))}
                 />
               </div>
             </div>

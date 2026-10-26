@@ -52,9 +52,10 @@ export function ServiceDetailHero({
 }: ServiceDetailHeroProps) {
   const description = service.tagline || service.description;
   const secondaryDescription =
-    service.tagline && service.description && service.tagline !== service.description
+    service.secondary_description ||
+    (service.tagline && service.description && service.tagline !== service.description
       ? service.description
-      : "We pair senior engineering with research-led product design to ship resilient, high-performing software tailored to your business goals.";
+      : "We pair senior engineering with research-led product design to ship resilient, high-performing software tailored to your business goals.");
   const internalCta = ctaHref.startsWith("/");
   const seoServiceImage = resolveMetadataImageUrl(service.seo?.og_image, siteConfig.url);
   const cmsImage = service.image || seoServiceImage || null;
@@ -158,10 +159,10 @@ export function ServiceDetailHero({
                 </a>
               )}
               <a
-                href="#service-solutions"
+                href={service.secondary_cta_url || "#service-solutions"}
                 className="inline-flex items-center gap-2 px-1 py-3 text-sm font-bold text-[#31536c] transition hover:text-[#008da4]"
               >
-                Explore capabilities
+                {service.secondary_cta_label || "Explore capabilities"}
                 <ArrowDownRight aria-hidden="true" className="h-4 w-4 text-[#008da4]" />
               </a>
             </div>
@@ -178,6 +179,7 @@ export function ServiceDetailHero({
                 priority
                 sizes="(max-width: 1024px) 100vw, 44vw"
                 className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+                unoptimized={Boolean(heroImageSrc && (heroImageSrc.startsWith("http") || heroImageSrc.startsWith("/media")))}
               />
             </div>
             {service.image && service.image_title ? (

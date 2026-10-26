@@ -17,6 +17,8 @@ import {
   fetchProjects,
   fetchServiceBySlug,
   fetchServiceCategory,
+  fetchServicesPage,
+  fetchTestimonials,
 } from "@/lib/api";
 import { ServicesTestimonialSpotlight } from "@/components/services/ServicesTestimonialSpotlight";
 import { ServicesWorkTogether } from "@/components/services/ServicesWorkTogether";
@@ -55,7 +57,12 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   const data = await getData(params);
   if (!data) notFound();
   const { service, category } = data;
-  const [projectsData, blogsData] = await Promise.all([fetchProjects(), fetchBlogsPageData()]);
+  const [projectsData, blogsData, testimonials, servicesPage] = await Promise.all([
+    fetchProjects(),
+    fetchBlogsPageData(),
+    fetchTestimonials(),
+    fetchServicesPage(),
+  ]);
   const projects = (projectsData?.projects ?? [])
     .filter((project) => project.is_active && project.is_featured)
     .slice(0, 3);
@@ -111,7 +118,20 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       <ServiceSectionNav items={sectionNavItems} />
 
       {/* 2. Client Testimonial Spotlight */}
-      <ServicesTestimonialSpotlight serviceTitle={service.title} />
+      <ServicesTestimonialSpotlight
+        serviceTitle={service.title}
+        items={
+          testimonials && testimonials.length > 0
+            ? testimonials.map((t) => ({
+                quote: t.quote,
+                author: t.name,
+                role: t.designation || "",
+                company: t.company || "",
+                avatar: resolveMetadataImageUrl(t.image, siteConfig.url) || t.image || "/images/person.png",
+              }))
+            : undefined
+        }
+      />
 
       {/* 3. What We Can Build (2x2 Architectural Capability Cards) */}
       {service.show_capabilities !== false && service.capabilities && service.capabilities.length > 0 && (
@@ -212,6 +232,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                     fill
                     sizes="(max-width: 1024px) 100vw, 42vw"
                     className="object-cover object-center"
+                    unoptimized={Boolean(service.benefits_image && (service.benefits_image.startsWith("http") || service.benefits_image.startsWith("/media")))}
                   />
                 </div>
               </figure>
@@ -318,6 +339,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                      unoptimized={Boolean(study.image && (study.image.startsWith("http") || study.image.startsWith("/media")))}
                     />
                     {service.case_study_card_label && (
                       <span className="absolute left-4 top-4 bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#31536c]">
@@ -476,7 +498,22 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       )}
 
       {/* 12. Dual Action Cards ("Ready to get started?") */}
-      <ServicesCta serviceTitle={service.title} ctaHref={ctaHref} />
+      <ServicesCta
+        serviceTitle={service.title}
+        ctaHref={ctaHref}
+        ctaSection={
+          servicesPage?.cta_section
+            ? {
+                ...servicesPage.cta_section,
+                eyebrow: sectionCopy("cta", "eyebrow") || servicesPage.cta_section.eyebrow,
+                title: sectionCopy("cta", "title") || servicesPage.cta_section.title,
+                card1_description:
+                  sectionCopy("cta", "description") ||
+                  servicesPage.cta_section.card1_description,
+              }
+            : undefined
+        }
+      />
     </main>
   );
 }

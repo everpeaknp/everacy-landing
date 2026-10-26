@@ -13,6 +13,7 @@ interface ServicesWorkTogetherProps {
   title?: string;
   description?: string;
   pipelineSteps?: ServicePipelineStepData[] | null;
+  engagementModels?: Array<{ title: string; text: string; icon?: string }> | null;
 }
 
 export function ServicesWorkTogether({
@@ -20,12 +21,18 @@ export function ServicesWorkTogether({
   title,
   description,
   pipelineSteps,
+  engagementModels: customEngagementModels,
 }: ServicesWorkTogetherProps) {
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start 85%", "center 35%"] });
   const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.4 });
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
+
+  const models =
+    customEngagementModels && customEngagementModels.length > 0
+      ? customEngagementModels
+      : engagementModels;
 
   const milestones =
     pipelineSteps && pipelineSteps.length > 0
@@ -206,7 +213,7 @@ export function ServicesWorkTogether({
 
         {/* 3 Clean White Editorial Engagement Cards */}
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {engagementModels.map((model, index) => (
+          {models.map((model, index) => (
             <motion.article
               key={model.title}
               initial={reduced ? false : { opacity: 0, y: 20 }}
@@ -219,7 +226,7 @@ export function ServicesWorkTogether({
                 {index === 0 ? (
                   <Sparkles aria-hidden="true" className="h-5 w-5" />
                 ) : index === 1 ? (
-                  <ServicesIcon name={model.icon} className="h-5 w-5" />
+                  <ServicesIcon name={model.icon || "target"} className="h-5 w-5" />
                 ) : (
                   <Layers aria-hidden="true" className="h-5 w-5" />
                 )}

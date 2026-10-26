@@ -208,6 +208,9 @@ export interface ServiceCapabilityData {
   title: string;
   description: string;
   icon?: string;
+  image?: string | null;
+  category_label?: string | null;
+  highlights?: string[] | null;
 }
 
 export interface ServicePipelineStepData {
@@ -273,7 +276,10 @@ export interface ServiceCardData {
   order: number;
   // Dynamic drawer fields
   tagline: string | null;
+  secondary_description?: string | null;
   cta_label: string | null;
+  secondary_cta_label?: string | null;
+  secondary_cta_url?: string | null;
   capabilities: ServiceCapabilityData[] | null;
   tech_stack: string[] | null;
   tech_stack_groups?: { label: string; technologies: string[] }[] | null;

@@ -118,6 +118,12 @@ export function ServiceCapabilityExplorer({
         <div className="grid gap-8 md:grid-cols-2">
           {capabilities.map((capability, index) => {
             const showcase = getCapabilityShowcase(capability.title, index);
+            const photoSrc = capability.image || showcase.photoSrc;
+            const categoryLabel = capability.category_label || showcase.categoryLabel;
+            const highlights =
+              capability.highlights && capability.highlights.length > 0
+                ? capability.highlights
+                : showcase.highlights;
 
             return (
               <article
@@ -127,11 +133,12 @@ export function ServiceCapabilityExplorer({
                 {/* Single Clean Full-Bleed Photograph (No double layering) */}
                 <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-[#dce8ec] bg-[#06182c]">
                   <Image
-                    src={showcase.photoSrc}
+                    src={photoSrc}
                     alt={capability.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    unoptimized={Boolean(photoSrc && (photoSrc.startsWith("http") || photoSrc.startsWith("/media")))}
                   />
                   <div
                     aria-hidden="true"
@@ -140,7 +147,7 @@ export function ServiceCapabilityExplorer({
 
                   <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
                     <span className="bg-[#06182c]/85 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#7fdcf0] backdrop-blur-sm">
-                      {showcase.categoryLabel}
+                      {categoryLabel}
                     </span>
                     <span className="grid h-8 w-8 place-items-center bg-white/95 text-xs font-black tabular-nums text-[#0d2a4a]">
                       {String(index + 1).padStart(2, "0")}
@@ -162,7 +169,7 @@ export function ServiceCapabilityExplorer({
                   {/* Clean Deliverable Spec Chips */}
                   <div className="mt-6 border-t border-[#e5eef1] pt-5">
                     <div className="flex flex-wrap items-center gap-2">
-                      {showcase.highlights.map((item) => (
+                      {highlights.map((item) => (
                         <span
                           key={item}
                           className="border border-[#dce8ec] bg-[#f4f9fa] px-3 py-1.5 text-xs font-extrabold text-[#142e4c] transition-colors group-hover:border-[#00a6cb]/40 group-hover:bg-[#eaf6f8]"
