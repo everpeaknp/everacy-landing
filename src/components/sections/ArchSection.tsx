@@ -110,36 +110,59 @@ const COMMAND_PRESETS = [
 export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   const cards = data ?? [];
 
-  const [selectedPresetId, setSelectedPresetId] = useState<string>(COMMAND_PRESETS[0].id);
+  const [presetIndex, setPresetIndex] = useState<number>(0);
   const [customQuery, setCustomQuery] = useState<string>("");
-  const [typedText, setTypedText] = useState<string>(COMMAND_PRESETS[0].query);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [typedText, setTypedText] = useState<string>("");
+  const [isTyping, setIsTyping] = useState<boolean>(true);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
 
-  const activePreset = useMemo(
-    () => COMMAND_PRESETS.find((p) => p.id === selectedPresetId) ?? COMMAND_PRESETS[0],
-    [selectedPresetId]
-  );
+  const activePreset = COMMAND_PRESETS[presetIndex];
 
+  // Continuous infinite typewriter loop: types, pauses when full, backspaces, advances to next preset, and restarts
   useEffect(() => {
-    if (customQuery.trim().length > 0) return;
-    let frame = 0;
-    const target = activePreset.query;
+    if (customQuery.trim().length > 0 || isFocused) return;
+
+    let timeoutId: NodeJS.Timeout;
+    const target = COMMAND_PRESETS[presetIndex].query;
+
+    let mode: "typing" | "pause_full" | "deleting" | "pause_empty" = "typing";
+    let charIndex = 0;
     setIsTyping(true);
-    setTypedText("");
 
-    const interval = setInterval(() => {
-      frame += 2;
-      if (frame >= target.length) {
-        setTypedText(target);
-        setIsTyping(false);
-        clearInterval(interval);
-      } else {
-        setTypedText(target.slice(0, frame));
+    const tick = () => {
+      if (mode === "typing") {
+        charIndex += 1;
+        setTypedText(target.slice(0, charIndex));
+        if (charIndex >= target.length) {
+          mode = "pause_full";
+          setIsTyping(false);
+          timeoutId = setTimeout(tick, 2800); // Pause for 2.8s when fully typed so user can read
+        } else {
+          timeoutId = setTimeout(tick, 24); // Smooth typing cadence
+        }
+      } else if (mode === "pause_full") {
+        mode = "deleting";
+        setIsTyping(true);
+        timeoutId = setTimeout(tick, 18);
+      } else if (mode === "deleting") {
+        charIndex = Math.max(0, charIndex - 2);
+        setTypedText(target.slice(0, charIndex));
+        if (charIndex <= 0) {
+          mode = "pause_empty";
+          setIsTyping(false);
+          timeoutId = setTimeout(tick, 400); // Brief pause before starting next preset
+        } else {
+          timeoutId = setTimeout(tick, 14); // Quick, natural backspace speed
+        }
+      } else if (mode === "pause_empty") {
+        setPresetIndex((prev) => (prev + 1) % COMMAND_PRESETS.length);
       }
-    }, 18);
+    };
 
-    return () => clearInterval(interval);
-  }, [activePreset, customQuery]);
+    timeoutId = setTimeout(tick, 60);
+
+    return () => clearTimeout(timeoutId);
+  }, [presetIndex, customQuery, isFocused]);
 
   const matchedServices = useMemo(() => {
     const q = (customQuery.trim() || activePreset.query).toLowerCase();
@@ -284,19 +307,20 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
 
           {/* Sharp Boxy Scenario Buttons */}
           <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
-            {COMMAND_PRESETS.map((preset) => {
-              const isSelected = customQuery.trim() === "" && selectedPresetId === preset.id;
+            {COMMAND_PRESETS.map((preset, idx) => {
+              const isSelected = customQuery.trim() === "" && presetIndex === idx;
               return (
                 <button
                   key={preset.id}
                   type="button"
                   onClick={() => {
                     setCustomQuery("");
-                    setSelectedPresetId(preset.id);
+                    setIsFocused(false);
+                    setPresetIndex(idx);
                   }}
-                  className={`rounded-none border px-4 py-2.5 text-xs font-bold transition-all ${
+                  className={`rounded-none border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
                     isSelected
-                      ? "border-[#0d2a4a] bg-[#0d2a4a] text-white"
+                      ? "border-[#0d2a4a] bg-[#0d2a4a] text-white shadow-[2px_2px_0px_0px_#008da4]"
                       : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#008da4] hover:text-[#0d2a4a]"
                   }`}
                 >
@@ -325,17 +349,25 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 type="text"
                 value={customQuery ? customQuery : typedText}
                 onChange={(e) => setCustomQuery(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => {
+                  if (!customQuery.trim()) setIsFocused(false);
+                }}
                 placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
                 aria-label="Describe your project requirements"
                 className="min-w-0 flex-1 bg-transparent text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-[18px]"
               />
-              {isTyping && (
-                <span className="inline-block h-5 w-0.5 animate-pulse bg-[#008da4]" aria-hidden="true" />
-              )}
+              <span
+                className={`inline-block h-5 w-0.5 bg-[#008da4] ${isTyping ? "opacity-100" : "animate-pulse"}`}
+                aria-hidden="true"
+              />
               {customQuery && (
                 <button
                   type="button"
-                  onClick={() => setCustomQuery("")}
+                  onClick={() => {
+                    setCustomQuery("");
+                    setIsFocused(false);
+                  }}
                   className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
                 >
                   Reset
