@@ -4,6 +4,7 @@ import { Hero } from "@/components/sections/Hero";
 import { ArchSection } from "@/components/sections/ArchSection";
 import { HomeTechnologySection } from "@/components/sections/HomeTechnologySection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
+import { EngineeringMotionSection } from "@/components/sections/EngineeringMotionSection";
 import { HomeProjectsSection } from "@/components/sections/HomeProjectsSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
@@ -81,7 +82,10 @@ export default async function HomePage() {
         sectionSubtitle={homeData?.process_section?.subtitle}
       />
 
-      {/* 5. Systems Built For Impact & Scale (Featured Case Studies: YummyEver & SajiloWork) */}
+      {/* 5. Production in Motion (Autoplayed Looping Video & Interactive Play/Pause) */}
+      <EngineeringMotionSection />
+
+      {/* 6. Systems Built For Impact & Scale (Featured Case Studies: YummyEver & SajiloWork) */}
       <HomeProjectsSection projects={projectsData?.projects} />
 
       {/* 6. Wall of Trust (Testimonials & Client Logos) */}
