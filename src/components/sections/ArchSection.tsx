@@ -305,10 +305,10 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
         {/* "Describe what you are building" Interactive Solution Finder & Services Showcase */}
         <div className="mt-20 sm:mt-28 border-t border-[#dce8ec] pt-14 sm:pt-20">
           <div className="mx-auto max-w-[1400px]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
               
-              {/* Left Column: Solution Finder & Interactive Command Palette (7 cols) */}
-              <div className="lg:col-span-7">
+              {/* Left Column: Solution Finder & Interactive Command Palette */}
+              <div className="lg:col-span-8 xl:col-span-7 flex flex-col">
                 <div>
                   <div className="mb-5 text-left">
                     <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm mb-3">
@@ -326,7 +326,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                   </div>
 
                   {/* Sharp Boxy Scenario Buttons — Wide Single-Row Inline Layout */}
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-5">
+                  <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 mb-5 overflow-x-auto no-scrollbar">
                     {COMMAND_PRESETS.map((preset, idx) => {
                       const isSelected = (!hasUserEdited && presetIndex === idx) || customQuery === preset.query;
                       return (
@@ -338,7 +338,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                             setCustomQuery(preset.query);
                             setHasUserEdited(true);
                           }}
-                          className={`rounded-none border px-3 py-1.5 text-[11.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                          className={`rounded-none border px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-[11.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                             isSelected
                               ? "border-[#0d2a4a] bg-[#0d2a4a] text-white shadow-[2px_2px_0px_0px_#008da4]"
                               : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#008da4] hover:text-[#0d2a4a]"
@@ -351,8 +351,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                   </div>
                 </div>
 
-                {/* Sharp Boxy Interactive Command Palette (Wider Browser Layout) */}
-                <div className="overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
+                {/* Sharp Boxy Interactive Command Palette (Browser Card) */}
+                <div className="overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)] flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-5 py-4 sm:px-6 sm:py-4.5">
                       <svg
@@ -531,11 +531,11 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 </div>
               </div>
 
-              {/* Right Column: Editorial Image Frame (5 cols - Wider, Fuller Proportions) */}
-              <div className="lg:col-span-5 lg:ml-auto w-full max-w-[480px]">
-                <figure className="relative w-full">
+              {/* Right Column: Editorial Image Frame (Full Height & Bottom-Aligned Straight) */}
+              <div className="lg:col-span-4 xl:col-span-5 lg:ml-auto w-full max-w-[480px] h-full flex flex-col">
+                <figure className="relative w-full h-full flex-1 flex flex-col">
                   {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) */}
-                  <div className="relative aspect-[4/4.65] lg:min-h-[550px] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
+                  <div className="relative w-full h-full min-h-[460px] lg:min-h-0 flex-1 overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
                     <Image
                       key={activePreset.id}
                       src={activePreset.image}
