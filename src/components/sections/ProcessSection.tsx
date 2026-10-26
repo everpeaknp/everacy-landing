@@ -207,13 +207,13 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
     };
   });
 
-  // Stable, consistent auto-advancing pipeline: guarantees equal 3.2s display for every phase
+  // Fast & snappy auto-advancing pipeline (~2.0s per phase)
   useEffect(() => {
     if (steps.length === 0) return;
 
     setProgress(0);
     const startTime = Date.now();
-    const durationMs = 3200; // 3.2s per phase
+    const durationMs = 2000; // 2.0s per phase (faster flow)
 
     const timer = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -224,7 +224,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
         clearInterval(timer);
         setActiveIdx((curr) => (curr + 1) % steps.length);
       }
-    }, 35);
+    }, 30);
 
     return () => clearInterval(timer);
   }, [steps.length, activeIdx]);
@@ -317,7 +317,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                     {i < steps.length - 1 && (
                       <div className="relative mx-3 flex-1 h-[2px] bg-[#e2ecee] overflow-hidden min-w-[24px]">
                         <div
-                          className="h-full bg-[#008da4] transition-all ease-linear"
+                          className="h-full bg-[#008da4] transition-[width] duration-75 ease-linear"
                           style={{
                             width: isPast ? "100%" : isActive ? `${progress}%` : "0%",
                           }}
