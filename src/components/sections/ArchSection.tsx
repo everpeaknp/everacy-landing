@@ -196,32 +196,72 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
       style={{ fontFamily: "'Montserrat', sans-serif" }}
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        {/* Clean, Sharp Header */}
+        {/* Split Architectural Header with Side Visual Preview */}
         <FadeIn direction="up" duration={0.45}>
-          <header className="mb-14 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#008da4]">
-                Capabilities &amp; Engineering
-              </p>
-              <h2 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#0d2a4a] sm:text-5xl">
+          <div className="mb-14 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
+            {/* Left 7 cols: Title, description, highlights, action */}
+            <div className="lg:col-span-7">
+              <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm">
+                <span className="h-2 w-2 bg-[#008da4]" />
+                <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
+                  Capabilities &amp; Engineering
+                </span>
+              </div>
+              <h2 className="mt-4 text-3xl font-black tracking-[-0.03em] text-[#0d2a4a] sm:text-4xl lg:text-5xl uppercase">
                 {sectionTitle || "Our Services"}
               </h2>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-[#586d82]">
+              <p className="mt-3 max-w-xl text-base leading-7 text-[#586d82]">
                 Web, mobile, custom software, and digital growth — designed, built, and maintained under one roof.
               </p>
+
+              <div className="mt-6 flex flex-wrap gap-2 text-xs font-mono font-medium text-[#405669]">
+                <span className="border border-[#dce8ec] bg-white px-2.5 py-1">
+                  • 60fps Native Mobile Apps
+                </span>
+                <span className="border border-[#dce8ec] bg-white px-2.5 py-1">
+                  • Sub-Second Next.js Web
+                </span>
+                <span className="border border-[#dce8ec] bg-white px-2.5 py-1">
+                  • ACID-Compliant Backends
+                </span>
+              </div>
+
+              <div className="mt-6">
+                <Link
+                  href="/services"
+                  className="group inline-flex shrink-0 items-center gap-2 rounded-none border border-[#0d2a4a] bg-[#0d2a4a] px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-[#008da4] hover:border-[#008da4]"
+                >
+                  <span>View all services</span>
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                  />
+                </Link>
+              </div>
             </div>
 
-            <Link
-              href="/services"
-              className="group inline-flex shrink-0 items-center gap-2 rounded-none border border-[#0d2a4a] bg-white px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#0d2a4a] transition-all hover:bg-[#0d2a4a] hover:text-white"
-            >
-              <span>View all services</span>
-              <ArrowRight
-                aria-hidden="true"
-                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
-              />
-            </Link>
-          </header>
+            {/* Right 5 cols: Sharp Side Image Preview Section */}
+            <div className="lg:col-span-5">
+              <div className="group relative rounded-none border border-[#dce8ec] bg-white p-3.5 shadow-[4px_4px_0px_0px_#008da4] transition-all hover:-translate-y-1">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-none border border-[#e2ecee] bg-[#f8fbfc]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/service-previews/responsive-platforms.png"
+                    alt="Everacy Full-Stack Production Architecture"
+                    loading="lazy"
+                    className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2.5 right-2.5 border border-[#dce8ec] bg-white/95 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-[#008da4] shadow-xs">
+                    PRODUCTION ARCHITECTURE
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between font-mono text-[11px] text-[#586d82]">
+                  <span className="font-bold text-[#0d2a4a]">MULTI-DEVICE ECOSYSTEM</span>
+                  <span className="text-[#008da4]">VERIFIED BUILDS</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </FadeIn>
 
         {/* Sharp Boxy Architectural Services Grid (Uniform 3-Column Ledger, Zero Round Squircles, Zero Mismatches) */}

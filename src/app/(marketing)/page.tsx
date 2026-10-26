@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { generateMetadata as genMeta, buildOrganizationSchema } from "@/lib/seo";
 import { Hero } from "@/components/sections/Hero";
 import { ArchSection } from "@/components/sections/ArchSection";
+import { HomeProjectsSection } from "@/components/sections/HomeProjectsSection";
+import { HomeTechnologySection } from "@/components/sections/HomeTechnologySection";
+import { HomeTeamSection } from "@/components/sections/HomeTeamSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { FeaturedBlogs } from "@/components/sections/FeaturedBlogs";
 import { CTASectionComponent } from "@/components/sections/CTASectionComponent";
-import { HomeTechnologySection } from "@/components/sections/HomeTechnologySection";
-import { fetchHomeData, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
+import { fetchHomeData, fetchProjects, fetchGlobalSEO, fetchPageSEO } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -30,8 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [homeData, pageSeo] = await Promise.all([
+  const [homeData, projectsData, pageSeo] = await Promise.all([
     fetchHomeData(),
+    fetchProjects(),
     fetchPageSEO("home"),
   ]);
 
@@ -63,7 +66,11 @@ export default async function HomePage() {
         />
       </div>
 
+      <HomeProjectsSection projects={projectsData?.projects} />
+
       <HomeTechnologySection services={homeData?.services} technologySection={homeData?.technology_section} />
+
+      <HomeTeamSection teamSections={homeData?.team} />
 
       <TestimonialsSection 
         data={homeData?.testimonials} 
