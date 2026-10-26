@@ -1,44 +1,76 @@
 /* ─────────────────────────────────────────────────────────
    EngineeringMotionSection — Autoplayed Video / Production in Motion
    Inspired by Leapfrog's real-device mobile/software video showcase:
-   - Autoplaying, looping, muted video showing software & engineering in motion
+   - Ultra-smooth GPU-accelerated playback with IntersectionObserver
+   - Pauses decoding automatically when scrolled out of view (0 scroll lag)
    - Sharp, boxy architectural frame (rounded-none, no rounded squircles)
-   - Interactive Play/Pause button in the bottom corner
-   - Real-world production impact copy and verified engineering points
+   - Interactive Play/Pause button with tactile feedback
    ───────────────────────────────────────────────────────── */
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Play, Pause } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function EngineeringMotionSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isUserPaused, setIsUserPaused] = useState<boolean>(false);
+
+  // IntersectionObserver to auto-play only when in view and pause off-screen (eliminates scroll lag)
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video || !container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isUserPaused) {
+            video.play().catch(() => {});
+            setIsPlaying(true);
+          } else if (!entry.isIntersecting) {
+            video.pause();
+            setIsPlaying(false);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [isUserPaused]);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
     if (isPlaying) {
       videoRef.current.pause();
       setIsPlaying(false);
+      setIsUserPaused(true);
     } else {
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {});
       setIsPlaying(true);
+      setIsUserPaused(false);
     }
   };
 
   return (
-    <section className="relative z-[2] overflow-hidden border-t border-[#dce8ec] bg-white py-20 sm:py-28">
+    <section
+      ref={containerRef}
+      className="relative z-[2] overflow-hidden border-t border-[#dce8ec] bg-white py-20 sm:py-28"
+    >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           {/* Left: Engineering in Motion Context (6 cols) */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.45 }}
-            className="lg:col-span-6"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: "-30px" }}
+            transition={{ duration: 0.4 }}
+            className="lg:col-span-6 transform-gpu"
           >
             <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3 py-1 shadow-sm">
               <span className="h-2 w-2 bg-[#008da4]" />
@@ -85,13 +117,7 @@ export function EngineeringMotionSection() {
           </motion.div>
 
           {/* Right: Sharp Boxy Autoplaying Video Frame (6 cols) */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.45 }}
-            className="lg:col-span-6"
-          >
+          <div className="lg:col-span-6 transform-gpu">
             <div className="group relative rounded-none border-2 border-[#0d2a4a] bg-[#0a1829] shadow-[6px_6px_0px_0px_#008da4] overflow-hidden">
               {/* Autoplaying Loop Video */}
               <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#091524]">
@@ -103,7 +129,9 @@ export function EngineeringMotionSection() {
                   loop
                   muted
                   playsInline
-                  className="h-full w-full object-cover"
+                  preload="metadata"
+                  disablePictureInPicture
+                  className="h-full w-full object-cover transform-gpu"
                 />
 
                 {/* Top Status Overlay */}
@@ -137,7 +165,7 @@ export function EngineeringMotionSection() {
                 <span className="text-[#008da4]">ACTIVE DEPLOYMENT</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

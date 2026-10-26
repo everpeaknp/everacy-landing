@@ -1,10 +1,10 @@
 /* ─────────────────────────────────────────────────────────
-   TechnologyStack — Enterprise 4-Pillar Architectural Matrix
-   Eliminates awkward empty gaps and half-blank rows:
-   - 4 balanced engineering pillars visible simultaneously
-   - Uniform height and structured density
-   - Official SVG tech marks + verified 1-line engineering roles
-   - Tactile hover highlights and clean architectural borders
+   TechnologyStack — Enterprise Architectural Matrix
+   - Responsive & spacious: dynamically adapts to the tools passed
+   - No congested columns: on service pages, displays only the relevant
+     engineering pillars or a balanced, spacious grid
+   - Concise, crisp roles with zero truncation or ugly ".." ellipses
+   - Sharp, boxy architectural geometry (rounded-none throughout)
    ───────────────────────────────────────────────────────── */
 "use client";
 
@@ -33,12 +33,12 @@ const DEFAULT_PILLARS: PillarDefinition[] = [
     title: "FRONTEND & WEB",
     summary: "Sub-second edge rendering, accessible UI, and type-safe component design.",
     tools: [
-      { name: "Next.js", role: "SSR & Edge React Framework" },
-      { name: "React", role: "Component UI Architecture" },
-      { name: "TypeScript", role: "Static End-to-End Type Safety" },
-      { name: "Tailwind CSS", role: "Utility Styling & Design Tokens" },
-      { name: "Redux", role: "Predictable Client State Flow" },
-      { name: "HTML5", role: "Semantic Accessible Standards" },
+      { name: "Next.js", role: "SSR & Edge React" },
+      { name: "React", role: "Component Architecture" },
+      { name: "TypeScript", role: "Static Type Safety" },
+      { name: "Tailwind CSS", role: "Design System Tokens" },
+      { name: "Redux", role: "Predictable State Flow" },
+      { name: "HTML5", role: "Semantic Web Standards" },
     ],
   },
   {
@@ -47,12 +47,12 @@ const DEFAULT_PILLARS: PillarDefinition[] = [
     title: "MOBILE NATIVE",
     summary: "Hardware-accelerated iOS & Android applications from a single codebase.",
     tools: [
-      { name: "Flutter", role: "60fps Native iOS & Android Engine" },
-      { name: "React Native", role: "Native Mobile Powered by React" },
-      { name: "Android", role: "Native Material & Device APIs" },
-      { name: "iOS", role: "Swift & Apple Platform Standards" },
-      { name: "Firebase", role: "Realtime Sync & Push Routing" },
-      { name: "Socket.IO", role: "Low-Latency WebSocket Streaming" },
+      { name: "Flutter", role: "60fps Multi-Platform" },
+      { name: "React Native", role: "Native Mobile UI" },
+      { name: "Android", role: "Kotlin & Android APIs" },
+      { name: "iOS", role: "Swift & Apple Platform" },
+      { name: "Firebase", role: "Realtime Data & Push" },
+      { name: "Socket.IO", role: "Low-Latency WebSockets" },
     ],
   },
   {
@@ -61,12 +61,12 @@ const DEFAULT_PILLARS: PillarDefinition[] = [
     title: "BACKEND & APIS",
     summary: "Typed, high-throughput microservices, background queues, and domain logic.",
     tools: [
-      { name: "FastAPI", role: "Async Python OpenAPI Backend" },
-      { name: "Django", role: "Enterprise Python Web Framework" },
-      { name: "Python", role: "Core Backend & Data Runtime" },
-      { name: "Node.js", role: "Event-Driven Network Runtime" },
-      { name: "Express.js", role: "Lightweight Middleware API Engine" },
-      { name: "Go", role: "High-Concurrency Microservices" },
+      { name: "FastAPI", role: "Async OpenAPI REST" },
+      { name: "Django", role: "Enterprise Python" },
+      { name: "Python", role: "Core Backend Runtime" },
+      { name: "Node.js", role: "Event-Driven Network" },
+      { name: "Express.js", role: "Lightweight API Engine" },
+      { name: "Go", role: "High-Concurrency Core" },
     ],
   },
   {
@@ -75,84 +75,177 @@ const DEFAULT_PILLARS: PillarDefinition[] = [
     title: "DATA & CLOUD INFRA",
     summary: "ACID relational storage, distributed caching, and zero-downtime CI/CD.",
     tools: [
-      { name: "PostgreSQL", role: "ACID Relational Storage Engine" },
-      { name: "Redis", role: "Sub-Millisecond In-Memory Cache" },
-      { name: "Docker", role: "Deterministic Container Packaging" },
-      { name: "Kubernetes", role: "Container Cluster Orchestration" },
-      { name: "GitHub Actions", role: "Automated Test & Deploy CI/CD" },
-      { name: "Vercel", role: "Global Edge Edge Delivery Network" },
+      { name: "PostgreSQL", role: "ACID Relational DB" },
+      { name: "Redis", role: "In-Memory Cache" },
+      { name: "Docker", role: "Container Packaging" },
+      { name: "Kubernetes", role: "Cluster Orchestration" },
+      { name: "GitHub Actions", role: "Automated CI/CD" },
+      { name: "Vercel", role: "Global Edge Network" },
     ],
   },
 ];
 
-const COMPACT_TOOL_ROLES: Record<string, string> = {
-  nextjs: "SSR & Edge React Framework",
-  react: "Component UI Architecture",
-  typescript: "Static End-to-End Type Safety",
-  tailwindcss: "Utility Styling & Design Tokens",
-  html5: "Semantic Accessible Standards",
-  redux: "Predictable Client State Flow",
-  flutter: "60fps Native iOS & Android Engine",
-  reactnative: "Native Mobile Powered by React",
-  fastapi: "Async Python OpenAPI Backend",
-  python: "Core Backend & Data Runtime",
-  nodejs: "Event-Driven Network Runtime",
-  django: "Enterprise Python Web Framework",
-  postgresql: "ACID Relational Storage Engine",
-  mongodb: "Flexible Document Persistence",
-  redis: "Sub-Millisecond In-Memory Cache",
-  docker: "Deterministic Container Packaging",
-  kubernetes: "Container Cluster Orchestration",
-  vercel: "Global Edge Edge Delivery",
-  githubactions: "Automated Test & Deploy CI/CD",
-  aws: "Global Cloud Infrastructure",
-  android: "Native Material & Device APIs",
-  ios: "Swift & Apple Platform Standards",
-  firebase: "Realtime Sync & Push Routing",
-  socketio: "Low-Latency WebSocket Streaming",
-  go: "High-Concurrency Microservices",
-  rust: "Memory-Safe Systems Programming",
+const KNOWN_ROLES: Record<string, string> = {
+  nextjs: "SSR & Edge React",
+  react: "Component Architecture",
+  typescript: "Static Type Safety",
+  tailwindcss: "Design System Tokens",
+  tailwind: "Design System Tokens",
+  html5: "Semantic Web Standards",
+  redux: "Predictable State Flow",
+  flutter: "60fps Multi-Platform",
+  reactnative: "Native Mobile UI",
+  fastapi: "Async OpenAPI REST",
+  python: "Core Backend Runtime",
+  nodejs: "Event-Driven Network",
+  django: "Enterprise Python",
+  postgresql: "ACID Relational DB",
+  mongodb: "Document Persistence",
+  redis: "In-Memory Cache",
+  docker: "Container Packaging",
+  kubernetes: "Cluster Orchestration",
+  vercel: "Global Edge Network",
+  githubactions: "Automated CI/CD",
+  aws: "Global Cloud Infra",
+  android: "Kotlin & Android APIs",
+  ios: "Swift & Apple Platform",
+  firebase: "Realtime Data & Push",
+  socketio: "Low-Latency WebSockets",
+  go: "High-Concurrency Core",
+  rust: "Memory-Safe Systems",
+  figma: "UI/UX & Design Systems",
+  figjam: "Collaborative Whiteboarding",
+  googleanalytics: "User Behavior Telemetry",
+  googlesearchconsole: "Indexing & Search Insights",
+  metacapi: "Conversions & Tracking API",
+  dockercompose: "Local Multi-Container Dev",
 };
+
+function normalizeKey(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
 
 export function TechnologyStack({
   items,
+  technologies,
 }: {
   items?: TechnologyItem[] | null;
   technologies?: string[] | null;
   compact?: boolean;
   idPrefix?: string;
 }) {
-  // Map any backend logo URLs to populate the pillars if available
-  const pillars = useMemo<PillarDefinition[]>(() => {
-    if (!items || items.length === 0) return DEFAULT_PILLARS;
+  // Determine if specific technologies were passed for a service / project
+  const requestedNames = useMemo<string[]>(() => {
+    const list: string[] = [];
+    if (technologies && technologies.length > 0) {
+      list.push(...technologies);
+    }
+    if (items && items.length > 0) {
+      list.push(...items.map((i) => i.name));
+    }
+    return Array.from(new Set(list));
+  }, [items, technologies]);
 
-    const logoMap = new Map<string, string | null>();
-    items.forEach((item) => {
-      const key = item.name.toLowerCase().replace(/[^a-z0-9]+/g, "");
-      if (item.logo_url) logoMap.set(key, item.logo_url);
+  const logoMap = useMemo(() => {
+    const map = new Map<string, string | null>();
+    (items ?? []).forEach((item) => {
+      const key = normalizeKey(item.name);
+      if (item.logo_url) map.set(key, item.logo_url);
     });
-
-    return DEFAULT_PILLARS.map((p) => ({
-      ...p,
-      tools: p.tools.map((t) => {
-        const key = t.name.toLowerCase().replace(/[^a-z0-9]+/g, "");
-        return {
-          ...t,
-          role: COMPACT_TOOL_ROLES[key] ?? t.role,
-          logoUrl: logoMap.get(key) ?? null,
-        };
-      }),
-    }));
+    return map;
   }, [items]);
 
+  // Compute active pillars
+  const pillars = useMemo<PillarDefinition[]>(() => {
+    // If no specific tools were filtered (e.g. general homepage view), show full 4 pillars
+    if (requestedNames.length === 0) {
+      return DEFAULT_PILLARS.map((p) => ({
+        ...p,
+        tools: p.tools.map((t) => {
+          const key = normalizeKey(t.name);
+          return {
+            ...t,
+            role: KNOWN_ROLES[key] ?? t.role,
+            logoUrl: logoMap.get(key) ?? null,
+          };
+        }),
+      }));
+    }
+
+    const requestedKeys = new Set(requestedNames.map(normalizeKey));
+
+    // Filter default pillars to only include pillars that have matching tools
+    const matchedPillars: PillarDefinition[] = [];
+    const matchedKeys = new Set<string>();
+
+    DEFAULT_PILLARS.forEach((p) => {
+      const matchingTools = p.tools.filter((t) => {
+        const key = normalizeKey(t.name);
+        const match = requestedKeys.has(key);
+        if (match) matchedKeys.add(key);
+        return match;
+      });
+
+      if (matchingTools.length > 0) {
+        matchedPillars.push({
+          ...p,
+          number: String(matchedPillars.length + 1).padStart(2, "0"),
+          tools: matchingTools.map((t) => {
+            const key = normalizeKey(t.name);
+            return {
+              ...t,
+              role: KNOWN_ROLES[key] ?? t.role,
+              logoUrl: logoMap.get(key) ?? null,
+            };
+          }),
+        });
+      }
+    });
+
+    // Check for any requested tools not in the default 4 pillars (e.g. SEO, Analytics, Figma)
+    const extraTools = requestedNames.filter((name) => !matchedKeys.has(normalizeKey(name)));
+    if (extraTools.length > 0) {
+      matchedPillars.push({
+        id: "specialized",
+        number: String(matchedPillars.length + 1).padStart(2, "0"),
+        title: "SPECIALIZED TOOLING & APIS",
+        summary: "Targeted platforms and integrations configured for this service domain.",
+        tools: extraTools.map((name) => {
+          const key = normalizeKey(name);
+          return {
+            name,
+            role: KNOWN_ROLES[key] ?? "Domain Platform & Tooling",
+            logoUrl: logoMap.get(key) ?? null,
+          };
+        }),
+      });
+    }
+
+    return matchedPillars.length > 0 ? matchedPillars : DEFAULT_PILLARS;
+  }, [requestedNames, logoMap]);
+
+  // Responsive grid class depending on pillar count so service page never feels congested
+  const gridClass = useMemo(() => {
+    switch (pillars.length) {
+      case 1:
+        return "grid grid-cols-1 max-w-2xl mx-auto";
+      case 2:
+        return "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto";
+      case 3:
+        return "grid grid-cols-1 md:grid-cols-3 gap-6";
+      default:
+        return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6";
+    }
+  }, [pillars.length]);
+
   return (
-    <div className="w-full" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-      {/* 4-Pillar Architectural Matrix Grid (Balanced, Dense, Zero Empty Gaps) */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="w-full text-left" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+      {/* Dynamic Architectural Matrix Grid (Spacious, Balanced, Zero Cramped Rows) */}
+      <div className={gridClass}>
         {pillars.map((pillar) => (
           <div
             key={pillar.id}
-            className="group flex flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[4px_4px_0px_0px_#008da4] sm:p-6"
+            className="group flex flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[5px_5px_0px_0px_#008da4] sm:p-6"
           >
             <div>
               {/* Pillar Header */}
@@ -161,7 +254,7 @@ export function TechnologyStack({
                   [ {pillar.number} ]
                 </span>
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#7a8f9f]">
-                  {pillar.tools.length} CORE TOOLS
+                  {pillar.tools.length} CORE {pillar.tools.length === 1 ? "TOOL" : "TOOLS"}
                 </span>
               </div>
 
@@ -175,7 +268,7 @@ export function TechnologyStack({
                 </p>
               </div>
 
-              {/* Vertical Stack of Clean Tool Rows */}
+              {/* Vertical Stack of Clean Tool Rows with Generous Breathing Room */}
               <div className="mt-5 space-y-2.5">
                 {pillar.tools.map((tool) => (
                   <div
@@ -191,12 +284,12 @@ export function TechnologyStack({
                       />
                     </span>
 
-                    {/* Tool Info */}
+                    {/* Tool Info - No Ellipsis Truncation, Clean and Legible */}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-bold text-[#0d2a4a]">
+                      <p className="text-xs font-bold text-[#0d2a4a] leading-tight">
                         {tool.name}
                       </p>
-                      <p className="truncate text-[10px] font-mono text-[#7a8f9f]">
+                      <p className="text-[10px] font-mono font-medium text-[#7a8f9f] leading-tight mt-0.5">
                         {tool.role}
                       </p>
                     </div>
@@ -214,26 +307,28 @@ export function TechnologyStack({
         ))}
       </div>
 
-      {/* Auxiliary Design, Analytics & Growth Ecosystem Strip */}
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border border-[#dce8ec] bg-[#f8fbfc] px-5 py-3.5 text-xs text-[#5c7288]">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#008da4]">
-            DESIGN &amp; GROWTH ECOSYSTEM:
-          </span>
-          {["Figma", "FigJam", "Google Analytics", "Google Search Console", "Meta CAPI", "Docker Compose"].map((tool) => (
-            <span
-              key={tool}
-              className="border border-[#dce8ec] bg-white px-2 py-0.5 font-mono text-[11px] font-medium text-[#405669]"
-            >
-              {tool}
+      {/* Auxiliary Ecosystem Strip (Shown when 4 pillars or general view) */}
+      {pillars.length >= 3 && (
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border border-[#dce8ec] bg-[#f8fbfc] px-5 py-3.5 text-xs text-[#5c7288]">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#008da4]">
+              DESIGN &amp; GROWTH ECOSYSTEM:
             </span>
-          ))}
-        </div>
+            {["Figma", "FigJam", "Google Analytics", "Google Search Console", "Meta CAPI", "Docker Compose"].map((tool) => (
+              <span
+                key={tool}
+                className="border border-[#dce8ec] bg-white px-2 py-0.5 font-mono text-[11px] font-medium text-[#405669]"
+              >
+                {tool}
+              </span>
+            ))}
+          </div>
 
-        <span className="font-mono text-[11px] font-bold text-[#008da4]">
-          ENTERPRISE ARCHITECTURE
-        </span>
-      </div>
+          <span className="font-mono text-[11px] font-bold text-[#008da4]">
+            ENTERPRISE ARCHITECTURE
+          </span>
+        </div>
+      )}
     </div>
   );
 }

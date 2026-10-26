@@ -254,25 +254,27 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           id="service-stack"
           className="scroll-mt-28 border-b border-[#dce8ec] bg-white px-5 py-20 sm:px-8 sm:py-24"
         >
-          <FadeIn className="mx-auto max-w-6xl text-center" duration={0.5}>
-            <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">
-              {sectionCopy("technology", "eyebrow") || "Technology Stack"}
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
-              {sectionCopy("technology", "title") || `Tools powering ${service.title}`}
-            </h2>
-            {sectionCopy("technology", "description") && (
-              <p className="mx-auto mt-4 max-w-2xl leading-7 text-[#586d82]">
-                {sectionCopy("technology", "description")}
+          <div className="mx-auto max-w-7xl">
+            <FadeIn className="mx-auto max-w-3xl text-center mb-12 sm:mb-16" duration={0.5}>
+              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">
+                {sectionCopy("technology", "eyebrow") || "Technology Stack"}
               </p>
-            )}
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
+                {sectionCopy("technology", "title") || `Tools powering ${service.title}`}
+              </h2>
+              {sectionCopy("technology", "description") && (
+                <p className="mx-auto mt-4 max-w-2xl leading-7 text-[#586d82]">
+                  {sectionCopy("technology", "description")}
+                </p>
+              )}
+            </FadeIn>
             <ServiceTechnologyStack
               technologies={
                 service.tech_stack || service.tech_stack_groups?.flatMap((group) => group.technologies) || []
               }
               items={service.tech_stack_items}
             />
-          </FadeIn>
+          </div>
         </section>
       )}
 
