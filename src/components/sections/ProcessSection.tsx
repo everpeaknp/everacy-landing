@@ -192,7 +192,7 @@ interface ProcessSectionProps {
   sectionSubtitle?: string;
 }
 
-const AUTO_CHANGE_INTERVAL_MS = 5500; // 5.5 seconds per phase
+const AUTO_CHANGE_INTERVAL_MS = 2800; // 2.8 seconds snappy quick-flow
 
 export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessSectionProps) {
   const [activeIdx, setActiveIdx] = useState<number>(0);
@@ -212,14 +212,14 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
     };
   });
 
-  // Continuous auto-advancing pipeline with smooth progress filling
+  // Snappy auto-advancing pipeline with smooth step flow
   useEffect(() => {
     if (!isAutoPlay || steps.length === 0) {
       setProgress(0);
       return;
     }
 
-    const tickMs = 50;
+    const tickMs = 30;
     const increment = (tickMs / AUTO_CHANGE_INTERVAL_MS) * 100;
 
     const timer = setInterval(() => {
@@ -284,10 +284,10 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
           </p>
         </div>
 
-        {/* Animated Architectural Timeline Bar (Interactive Stepper with Live Auto-Change & Conduits) */}
+        {/* Clean Architectural Pipeline Stepper (Snappy Quick-Flow & Solid Connectors) */}
         <div className="mb-8 hidden sm:block">
-          <div className="flex items-center justify-between border border-[#dce8ec] bg-[#f8fbfc] px-5 py-3 font-mono text-xs shadow-xs">
-            <div className="flex items-center gap-1 lg:gap-2 flex-1">
+          <div className="flex items-center justify-between border border-[#dce8ec] bg-[#f8fbfc] px-6 py-3.5 font-mono text-xs shadow-xs">
+            <div className="flex items-center flex-1">
               {steps.map((st, i) => {
                 const isActive = i === activeIdx;
                 const isPast = i < activeIdx;
@@ -298,60 +298,41 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                     <button
                       type="button"
                       onClick={() => selectPhase(i)}
-                      className={`relative flex items-center gap-2 py-1 px-2.5 transition-all cursor-pointer ${
+                      className={`relative flex items-center gap-2.5 py-1 px-2 transition-colors cursor-pointer ${
                         isActive
-                          ? "text-[#008da4] font-black"
+                          ? "text-[#008da4] font-bold"
                           : isPast
-                          ? "text-[#0d2a4a] hover:text-[#008da4]"
+                          ? "text-[#0d2a4a] hover:text-[#008da4] font-medium"
                           : "text-[#8ea2b3] hover:text-[#0d2a4a]"
                       }`}
                     >
                       {/* Step Number Badge */}
                       <span
-                        className={`relative grid h-6 w-6 place-items-center rounded-none text-[10px] font-bold border transition-all ${
+                        className={`grid h-6 w-6 place-items-center rounded-none text-[10px] font-bold border transition-colors ${
                           isActive
-                            ? "border-[#008da4] bg-[#008da4] text-white shadow-[0_0_8px_rgba(0,141,164,0.4)]"
+                            ? "border-[#008da4] bg-[#008da4] text-white"
                             : isPast
                             ? "border-[#0d2a4a] bg-[#0d2a4a] text-white"
                             : "border-[#dce8ec] bg-white text-[#7a8f9f]"
                         }`}
                       >
                         {st.stepNumber}
-                        {isActive && isAutoPlay && (
-                          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-[#008da4] animate-ping" />
-                        )}
                       </span>
 
                       <span className="hidden md:inline uppercase tracking-wider text-[11px]">
                         {st.title}
                       </span>
-
-                      {/* Smooth Active Progress Fill Bar */}
-                      {isActive && isAutoPlay && (
-                        <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#dce8ec] overflow-hidden">
-                          <span
-                            className="block h-full bg-[#008da4] transition-all ease-linear"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </span>
-                      )}
                     </button>
 
-                    {/* Animated Conduit Connector between steps */}
+                    {/* Functional Clean Pipeline Connector Track */}
                     {i < steps.length - 1 && (
-                      <div className="relative mx-1.5 flex-1 h-[2px] bg-[#e2ecee] overflow-hidden min-w-[20px] max-w-[60px]">
-                        {(isActive || isPast) && (
-                          <motion.div
-                            initial={{ x: "-100%" }}
-                            animate={{ x: "100%" }}
-                            transition={{
-                              duration: 1.6,
-                              repeat: Infinity,
-                              ease: "linear",
-                            }}
-                            className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-[#008da4] to-transparent"
-                          />
-                        )}
+                      <div className="relative mx-3 flex-1 h-[2px] bg-[#e2ecee] overflow-hidden min-w-[24px]">
+                        <div
+                          className="h-full bg-[#008da4] transition-all ease-linear"
+                          style={{
+                            width: isPast ? "100%" : isActive && isAutoPlay ? `${progress}%` : "0%",
+                          }}
+                        />
                       </div>
                     )}
                   </div>
@@ -385,7 +366,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                     isAutoPlay ? "bg-[#008da4] animate-pulse" : "bg-[#94a3b8]"
                   }`}
                 />
-                <span className="hidden lg:inline">{isAutoPlay ? "LIVE PIPELINE" : "MANUAL"}</span>
+                <span className="hidden lg:inline">{isAutoPlay ? "QUICK FLOW" : "MANUAL"}</span>
               </span>
             </div>
           </div>
@@ -401,21 +382,12 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                 type="button"
                 key={`process-step-${idx}`}
                 onClick={() => selectPhase(idx)}
-                className={`group relative flex flex-col justify-between text-left rounded-none transition-all duration-300 cursor-pointer p-5 ${
+                className={`group relative flex flex-col justify-between text-left rounded-none transition-all duration-200 cursor-pointer p-5 ${
                   isActive
                     ? "border-2 border-[#008da4] bg-white shadow-[6px_6px_0px_0px_#008da4] -translate-y-1.5 z-10"
                     : "border border-[#dce8ec] bg-white hover:-translate-y-1 hover:border-[#008da4]/60 hover:shadow-[3px_3px_0px_0px_#008da4]"
                 }`}
               >
-                {/* Active Card Progress Top Strip */}
-                {isActive && isAutoPlay && (
-                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#eef4f6] overflow-hidden">
-                    <div
-                      className="h-full bg-[#008da4] transition-all ease-linear"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                )}
 
                 <div>
                   {/* Header: Step Number & Phase Name */}
