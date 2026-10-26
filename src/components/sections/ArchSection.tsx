@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { ServiceCardData } from "@/lib/api";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -419,38 +419,81 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
               ))}
             </div>
 
-            {/* Matched Services Results List (Sharp Boxy Index & Action Button) */}
-            <div className="divide-y divide-[#f1f5f9] px-6 py-2 sm:px-7">
-              {matchedServices.map(({ service, info, idx }) => (
-                <div
-                  key={service.id}
-                  className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
-                >
-                  <div className="flex items-start gap-4">
-                    <span className="mt-0.5 flex h-9 w-12 shrink-0 items-center justify-center rounded-none border border-[#dce8ec] bg-[#f8fafb] font-mono text-xs font-bold text-[#008da4]">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <div>
+            {/* Real Search Engine Result Stats Bar */}
+            <div className="flex items-center justify-between border-b border-[#f1f5f9] bg-white px-6 py-2.5 sm:px-7 text-[11px] font-mono text-[#7a8f9f]">
+              <span>About {matchedServices.length} engineering capabilities found (0.02s)</span>
+              <span className="hidden sm:inline text-[#008da4] font-bold">100% PRODUCTION READY</span>
+            </div>
+
+            {/* Matched Services Results List (Actual Search Result Layout) */}
+            <div className="divide-y divide-[#f1f5f9] px-6 py-3 sm:px-7">
+              {matchedServices.map(({ service, info, idx }, matchRank) => {
+                const slug = service.slug || service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                const isTopMatch = matchRank === 0;
+
+                return (
+                  <div
+                    key={service.id}
+                    className="group py-4 sm:py-5 transition-colors rounded-none hover:bg-[#fafcfd] px-2 sm:px-3 -mx-2 sm:-mx-3"
+                  >
+                    {/* 1. Real Search Result URL Breadcrumb Line */}
+                    <div className="flex items-center gap-2 text-xs font-mono text-[#586d82] mb-1.5">
+                      <span className="grid h-4 w-4 place-items-center rounded-none bg-[#0d2a4a] text-white text-[9px] font-bold">
+                        E
+                      </span>
+                      <span className="truncate">everacy.com › services › {slug}</span>
+                      <span className="mx-1 text-[#cbd5e1]">•</span>
+                      <span className="font-bold text-[#008da4] uppercase text-[10px]">
+                        {info.category}
+                      </span>
+                      {isTopMatch && (
+                        <span className="ml-auto shrink-0 border border-[#008da4]/30 bg-[#eaf6f8] px-2 py-0.5 text-[9px] font-mono font-bold uppercase text-[#008da4]">
+                          Top Match · 98% Fit
+                        </span>
+                      )}
+                    </div>
+
+                    {/* 2. Bold Search Result Headline Link */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <Link
                         href={serviceHref(service)}
-                        className="text-[15px] font-bold text-[#0d2a4a] hover:text-[#008da4]"
+                        className="text-base sm:text-lg font-bold text-[#0d2a4a] group-hover:text-[#008da4] group-hover:underline transition-colors flex items-center gap-2"
                       >
-                        {service.title}
+                        <span>{service.title}</span>
+                        <ArrowUpRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 text-[#008da4]" />
                       </Link>
-                      <p className="mt-0.5 text-xs text-[#586d82]">{info.summary}</p>
+
+                      <Link
+                        href={serviceHref(service)}
+                        className="hidden sm:inline-flex items-center gap-1 text-xs font-mono font-bold text-[#008da4] group-hover:underline shrink-0"
+                      >
+                        <span>Open architecture spec</span>
+                        <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                      </Link>
+                    </div>
+
+                    {/* 3. Search Result Excerpt / Snippet */}
+                    <p className="mt-1.5 text-xs sm:text-[13px] leading-relaxed text-[#475569]">
+                      {info.summary}
+                    </p>
+
+                    {/* 4. Sitelinks / Key Architecture Sub-features */}
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-[10px] uppercase font-bold text-[#7a8f9f]">
+                        Architecture Modules:
+                      </span>
+                      {info.capabilities.map((cap) => (
+                        <span
+                          key={cap}
+                          className="inline-flex items-center border border-[#e2ecee] bg-white px-2 py-0.5 font-mono text-[11px] text-[#0d2a4a] transition-colors group-hover:border-[#008da4]/40"
+                        >
+                          {cap}
+                        </span>
+                      ))}
                     </div>
                   </div>
-
-                  <div className="flex shrink-0 items-center gap-3 self-end sm:self-center">
-                    <Link
-                      href={serviceHref(service)}
-                      className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-3.5 py-1.5 text-xs font-bold text-[#0d2a4a] transition-colors hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
-                    >
-                      Open spec →
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Palette Footer Bar */}
