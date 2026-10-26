@@ -84,7 +84,7 @@ const COMMAND_PRESETS = [
     query: "We need a fast Next.js web platform with custom CMS and high SEO scores",
     tags: ["stack: Next.js + Django", "goal: Sub-second LCP", "scope: Web + SEO"],
     matchKeywords: ["website", "seo"],
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85",
+    image: "/images/solution-finder/web.jpg",
     caption: "Full-Stack Web Architecture & Performance Squads",
   },
   {
@@ -93,7 +93,7 @@ const COMMAND_PRESETS = [
     query: "Build a custom internal operations & inventory software system with API sync",
     tags: ["stack: Python + PostgreSQL", "security: Role-Based Access", "scope: Custom Software"],
     matchKeywords: ["software", "system"],
-    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=85",
+    image: "/images/solution-finder/erp.jpg",
     caption: "Enterprise Operations & Internal Process Automation",
   },
   {
@@ -102,7 +102,7 @@ const COMMAND_PRESETS = [
     query: "Launch an iOS and Android mobile app with offline mode and SMS OTP login",
     tags: ["stack: Flutter + REST API", "feature: Offline Sync + OTP", "scope: Mobile + SMS"],
     matchKeywords: ["app", "mobile", "sms"],
-    image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1200&q=85",
+    image: "/images/solution-finder/mobile.jpg",
     caption: "Cross-Platform iOS & Android Native Applications",
   },
   {
@@ -111,7 +111,7 @@ const COMMAND_PRESETS = [
     query: "Scale qualified inbound leads through technical SEO and conversion funnels",
     tags: ["focus: Core Web Vitals", "tracking: Server-Side CAPI", "scope: SEO + Growth"],
     matchKeywords: ["seo", "marketing"],
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85",
+    image: "/images/solution-finder/seo.jpg",
     caption: "High-Converting Growth Funnels & Technical SEO",
   },
 ];
@@ -304,11 +304,11 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
 
         {/* "Describe what you are building" Interactive Solution Finder & Services Showcase */}
         <div className="mt-20 sm:mt-28 border-t border-[#dce8ec] pt-14 sm:pt-20">
-          <div className="mx-auto max-w-[1380px]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+          <div className="mx-auto max-w-[1400px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
               
-              {/* Left Column: Solution Finder Controls & Interactive Command Palette (7 cols - Generous Width) */}
-              <div className="lg:col-span-7 flex flex-col justify-between">
+              {/* Left Column: Wider Solution Finder & Interactive Command Palette (8 cols) */}
+              <div className="lg:col-span-8">
                 <div>
                   <div className="mb-5 text-left">
                     <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm mb-3">
@@ -325,8 +325,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                     </p>
                   </div>
 
-                  {/* Sharp Boxy Scenario Buttons — Spacious Single-Row / Balanced Layout */}
-                  <div className="flex flex-wrap items-center gap-2 mb-5">
+                  {/* Sharp Boxy Scenario Buttons — Wide Single-Row Inline Layout */}
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-5">
                     {COMMAND_PRESETS.map((preset, idx) => {
                       const isSelected = (!hasUserEdited && presetIndex === idx) || customQuery === preset.query;
                       return (
@@ -351,8 +351,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                   </div>
                 </div>
 
-                {/* Sharp Boxy Interactive Command Palette */}
-                <div className="overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)] flex flex-col justify-between">
+                {/* Sharp Boxy Interactive Command Palette (Wider Browser Layout) */}
+                <div className="overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
                   <div>
                     <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-5 py-4 sm:px-6 sm:py-4.5">
                       <svg
@@ -433,7 +433,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                       </span>
                       {(customQuery.trim()
                         ? [
-                            `query: "${customQuery.trim().slice(0, 20)}"`,
+                            `query: "${customQuery.trim().slice(0, 24)}"`,
                             `matched: ${matchedServices.length} modules`,
                             "delivery: Full-Stack",
                           ]
@@ -441,7 +441,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                       ).map((chip, idx) => (
                         <span
                           key={chip}
-                          className={`rounded-none px-2 py-0.5 font-mono text-[11px] font-medium ${
+                          className={`rounded-none px-2.5 py-0.5 font-mono text-[11px] font-medium ${
                             idx === 2
                               ? "bg-[#0d2a4a] text-white"
                               : "border border-[#dce8ec] bg-white text-[#475569]"
@@ -452,8 +452,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                       ))}
                     </div>
 
-                    {/* Matched Services Results List (Steady min-height prevents layout shifts) */}
-                    <div className="divide-y divide-[#f1f5f9] px-5 py-1 sm:px-6 min-h-[200px]">
+                    {/* Matched Services Results List */}
+                    <div className="divide-y divide-[#f1f5f9] px-5 py-1 sm:px-6">
                       {matchedServices.map(({ service, info }) => {
                         const slug = service.slug || service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
@@ -531,34 +531,34 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 </div>
               </div>
 
-              {/* Right Column: Perfectly Fitting Full-Bleed Editorial Image (5 cols - Same Area & Height) */}
-              <div className="lg:col-span-5 flex flex-col justify-between">
-                <figure className="relative w-full h-full flex flex-col justify-between">
-                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) */}
-                  <div className="relative w-full h-full min-h-[460px] lg:min-h-[500px] overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
+              {/* Right Column: Consistent Aspect-Ratio Image Frame (4 cols - Moved Rightwards) */}
+              <div className="lg:col-span-4 lg:ml-auto w-full max-w-[390px]">
+                <figure className="relative w-full">
+                  {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) with Consistent Proportions */}
+                  <div className="relative aspect-[4/4.7] w-full overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
                     <Image
                       key={activePreset.id}
                       src={activePreset.image}
                       alt={activePreset.caption || "Everacy engineering team collaborating on software architecture"}
                       fill
-                      sizes="(max-width: 1024px) 100vw, 42vw"
+                      sizes="(max-width: 1024px) 100vw, 390px"
                       className="object-cover object-center w-full h-full transition-all duration-700 hover:scale-[1.03]"
                       priority
                     />
 
                     {/* Gradient architectural caption overlay */}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0d2a4a]/95 via-[#0d2a4a]/75 to-transparent p-6 pt-16 text-white">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0d2a4a]/95 via-[#0d2a4a]/75 to-transparent p-5 sm:p-6 pt-16 text-white">
                       <div className="flex items-center gap-2">
                         <span className="h-2 w-2 bg-[#008da4] animate-pulse" />
                         <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#00a6cb]">
                           DEPLOYMENT BLUEPRINT
                         </span>
                       </div>
-                      <p className="mt-1.5 text-base sm:text-lg font-bold text-white tracking-tight">
+                      <p className="mt-1.5 text-sm sm:text-base font-bold text-white tracking-tight">
                         {activePreset.caption}
                       </p>
                       <p className="mt-1 text-xs text-[#b8d1dc] leading-relaxed">
-                        Enterprise-grade squads, sub-second latency, and production architectures built to scale.
+                        Enterprise squads, sub-second latency, and production architectures built to scale.
                       </p>
                     </div>
                   </div>
