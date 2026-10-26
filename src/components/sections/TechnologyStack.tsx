@@ -1,8 +1,9 @@
 /* ─────────────────────────────────────────────────────────
    TechnologyStack — Enterprise Architectural Matrix
    - Responsive & spacious: dynamically adapts to the tools passed
-   - No congested columns: on service pages, displays only the relevant
-     engineering pillars or a balanced, spacious grid
+   - Accurate categorization: maps technologies to their correct
+     engineering pillars (Backend, Infrastructure, Mobile, Frontend, Specialized)
+     using CMS category slugs or authoritative key lookups
    - Concise, crisp roles with zero truncation or ugly ".." ellipses
    - Sharp, boxy architectural geometry (rounded-none throughout)
    ───────────────────────────────────────────────────────── */
@@ -25,6 +26,41 @@ interface PillarDefinition {
     logoUrl?: string | null;
   }[];
 }
+
+const PILLAR_METADATA: Record<
+  string,
+  {
+    id: string;
+    title: string;
+    summary: string;
+  }
+> = {
+  frontend: {
+    id: "frontend",
+    title: "FRONTEND & WEB",
+    summary: "Sub-second edge rendering, accessible UI, and type-safe component design.",
+  },
+  mobile: {
+    id: "mobile",
+    title: "MOBILE NATIVE",
+    summary: "Hardware-accelerated iOS & Android applications from a single codebase.",
+  },
+  backend: {
+    id: "backend",
+    title: "BACKEND & APIS",
+    summary: "Typed, high-throughput microservices, background queues, and domain logic.",
+  },
+  infrastructure: {
+    id: "infrastructure",
+    title: "DATA & CLOUD INFRA",
+    summary: "ACID relational storage, distributed caching, and zero-downtime CI/CD.",
+  },
+  specialized: {
+    id: "specialized",
+    title: "SPECIALIZED TOOLING & APIS",
+    summary: "Targeted platforms and integrations configured for this service domain.",
+  },
+};
 
 const DEFAULT_PILLARS: PillarDefinition[] = [
   {
@@ -65,8 +101,8 @@ const DEFAULT_PILLARS: PillarDefinition[] = [
       { name: "Django", role: "Enterprise Python" },
       { name: "Python", role: "Core Backend Runtime" },
       { name: "Node.js", role: "Event-Driven Network" },
-      { name: "Express.js", role: "Lightweight API Engine" },
       { name: "Go", role: "High-Concurrency Core" },
+      { name: "Rust", role: "Memory-Safe Systems" },
     ],
   },
   {
@@ -76,14 +112,87 @@ const DEFAULT_PILLARS: PillarDefinition[] = [
     summary: "ACID relational storage, distributed caching, and zero-downtime CI/CD.",
     tools: [
       { name: "PostgreSQL", role: "ACID Relational DB" },
+      { name: "MongoDB", role: "Document Persistence" },
       { name: "Redis", role: "In-Memory Cache" },
       { name: "Docker", role: "Container Packaging" },
       { name: "Kubernetes", role: "Cluster Orchestration" },
       { name: "GitHub Actions", role: "Automated CI/CD" },
-      { name: "Vercel", role: "Global Edge Network" },
     ],
   },
 ];
+
+const KNOWN_PILLAR_MAP: Record<string, "frontend" | "mobile" | "backend" | "infrastructure" | "specialized"> = {
+  // Frontend
+  nextjs: "frontend",
+  react: "frontend",
+  typescript: "frontend",
+  tailwindcss: "frontend",
+  tailwind: "frontend",
+  html5: "frontend",
+  css: "frontend",
+  javascript: "frontend",
+  redux: "frontend",
+  vue: "frontend",
+  angular: "frontend",
+  bootstrap: "frontend",
+
+  // Mobile
+  flutter: "mobile",
+  reactnative: "mobile",
+  android: "mobile",
+  ios: "mobile",
+  swift: "mobile",
+  kotlin: "mobile",
+
+  // Backend & APIs
+  fastapi: "backend",
+  django: "backend",
+  python: "backend",
+  nodejs: "backend",
+  expressjs: "backend",
+  php: "backend",
+  java: "backend",
+  go: "backend",
+  ruby: "backend",
+  rust: "backend",
+  firebase: "backend",
+  socketio: "backend",
+  restapi: "backend",
+  graphql: "backend",
+
+  // Data & Cloud Infra (Databases + Cloud / DevOps)
+  postgresql: "infrastructure",
+  mysql: "infrastructure",
+  mongodb: "infrastructure",
+  redis: "infrastructure",
+  sqlite: "infrastructure",
+  mariadb: "infrastructure",
+  docker: "infrastructure",
+  dockercompose: "infrastructure",
+  kubernetes: "infrastructure",
+  githubactions: "infrastructure",
+  vercel: "infrastructure",
+  aws: "infrastructure",
+  azure: "infrastructure",
+  googlecloud: "infrastructure",
+  terraform: "infrastructure",
+
+  // Specialized / Other Tools
+  cloudinary: "specialized",
+  googlesearchconsole: "specialized",
+  googleanalytics: "specialized",
+  googleads: "specialized",
+  metaads: "specialized",
+  metabusinesssuite: "specialized",
+  facebook: "specialized",
+  instagram: "specialized",
+  figma: "specialized",
+  figjam: "specialized",
+  adobeillustrator: "specialized",
+  googledocs: "specialized",
+  lookerstudio: "specialized",
+  metacapi: "specialized",
+};
 
 const KNOWN_ROLES: Record<string, string> = {
   nextjs: "SSR & Edge React",
@@ -92,37 +201,89 @@ const KNOWN_ROLES: Record<string, string> = {
   tailwindcss: "Design System Tokens",
   tailwind: "Design System Tokens",
   html5: "Semantic Web Standards",
+  css: "Modern Cascading Styles",
+  javascript: "Dynamic Client Scripting",
   redux: "Predictable State Flow",
+  vue: "Progressive Framework",
+  angular: "Enterprise Frontend",
+  bootstrap: "Rapid UI Components",
   flutter: "60fps Multi-Platform",
   reactnative: "Native Mobile UI",
+  android: "Kotlin & Android APIs",
+  ios: "Swift & Apple Platform",
+  swift: "Swift & Apple Platform",
+  kotlin: "Kotlin & Android APIs",
   fastapi: "Async OpenAPI REST",
   python: "Core Backend Runtime",
   nodejs: "Event-Driven Network",
   django: "Enterprise Python",
+  expressjs: "Lightweight API Engine",
+  php: "Server-Side Scripting",
+  java: "Enterprise JVM Runtime",
+  go: "High-Concurrency Core",
+  ruby: "Convention & Rapid Dev",
+  rust: "Memory-Safe Systems",
+  firebase: "Realtime Data & Push",
+  socketio: "Low-Latency WebSockets",
+  restapi: "RESTful Service Binds",
+  graphql: "Typed Schema Queries",
   postgresql: "ACID Relational DB",
+  mysql: "Relational Persistence",
   mongodb: "Document Persistence",
   redis: "In-Memory Cache",
+  sqlite: "Embedded Zero-Config DB",
+  mariadb: "High-Performance SQL",
   docker: "Container Packaging",
+  dockercompose: "Local Multi-Container Dev",
   kubernetes: "Cluster Orchestration",
   vercel: "Global Edge Network",
   githubactions: "Automated CI/CD",
   aws: "Global Cloud Infra",
-  android: "Kotlin & Android APIs",
-  ios: "Swift & Apple Platform",
-  firebase: "Realtime Data & Push",
-  socketio: "Low-Latency WebSockets",
-  go: "High-Concurrency Core",
-  rust: "Memory-Safe Systems",
+  azure: "Enterprise Cloud Infra",
+  googlecloud: "Google Cloud Platform",
+  terraform: "Declarative Infra as Code",
+  cloudinary: "Domain Platform & Tooling",
   figma: "UI/UX & Design Systems",
   figjam: "Collaborative Whiteboarding",
+  adobeillustrator: "Vector Asset Design",
+  googledocs: "Specifications & Collab",
   googleanalytics: "User Behavior Telemetry",
   googlesearchconsole: "Indexing & Search Insights",
+  googleads: "Domain Platform & Tooling",
+  metaads: "Paid Social Acquisition",
+  metabusinesssuite: "Cross-Platform Ads & Pages",
+  facebook: "Social Network Graph",
+  instagram: "Visual Brand Channels",
+  lookerstudio: "BI Analytics & Dashboards",
   metacapi: "Conversions & Tracking API",
-  dockercompose: "Local Multi-Container Dev",
 };
 
 function normalizeKey(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function resolvePillarId(
+  name: string,
+  categorySlug?: string
+): "frontend" | "mobile" | "backend" | "infrastructure" | "specialized" {
+  if (categorySlug) {
+    const slug = categorySlug.toLowerCase();
+    if (slug === "frontend") return "frontend";
+    if (slug === "mobile") return "mobile";
+    if (slug === "backend-apis" || slug === "backend") return "backend";
+    if (
+      slug === "databases" ||
+      slug === "cloud-devops" ||
+      slug === "devops" ||
+      slug === "infrastructure"
+    ) {
+      return "infrastructure";
+    }
+    if (slug === "other-tools" || slug === "specialized") return "specialized";
+  }
+
+  const key = normalizeKey(name);
+  return KNOWN_PILLAR_MAP[key] ?? "specialized";
 }
 
 export function TechnologyStack({
@@ -134,95 +295,98 @@ export function TechnologyStack({
   compact?: boolean;
   idPrefix?: string;
 }) {
-  // Determine if specific technologies were passed for a service / project
-  const requestedNames = useMemo<string[]>(() => {
-    const list: string[] = [];
-    if (technologies && technologies.length > 0) {
-      list.push(...technologies);
-    }
-    if (items && items.length > 0) {
-      list.push(...items.map((i) => i.name));
-    }
-    return Array.from(new Set(list));
-  }, [items, technologies]);
+  // Determine if specific technologies were passed for a service / project / home
+  const requestedTools = useMemo<{ name: string; categorySlug?: string; logoUrl?: string | null }[]>(() => {
+    const map = new Map<string, { name: string; categorySlug?: string; logoUrl?: string | null }>();
 
-  const logoMap = useMemo(() => {
-    const map = new Map<string, string | null>();
     (items ?? []).forEach((item) => {
       const key = normalizeKey(item.name);
-      if (item.logo_url) map.set(key, item.logo_url);
-    });
-    return map;
-  }, [items]);
-
-  // Compute active pillars
-  const pillars = useMemo<PillarDefinition[]>(() => {
-    // If no specific tools were filtered (e.g. general homepage view), show full 4 pillars
-    if (requestedNames.length === 0) {
-      return DEFAULT_PILLARS.map((p) => ({
-        ...p,
-        tools: p.tools.map((t) => {
-          const key = normalizeKey(t.name);
-          return {
-            ...t,
-            role: KNOWN_ROLES[key] ?? t.role,
-            logoUrl: logoMap.get(key) ?? null,
-          };
-        }),
-      }));
-    }
-
-    const requestedKeys = new Set(requestedNames.map(normalizeKey));
-
-    // Filter default pillars to only include pillars that have matching tools
-    const matchedPillars: PillarDefinition[] = [];
-    const matchedKeys = new Set<string>();
-
-    DEFAULT_PILLARS.forEach((p) => {
-      const matchingTools = p.tools.filter((t) => {
-        const key = normalizeKey(t.name);
-        const match = requestedKeys.has(key);
-        if (match) matchedKeys.add(key);
-        return match;
-      });
-
-      if (matchingTools.length > 0) {
-        matchedPillars.push({
-          ...p,
-          number: String(matchedPillars.length + 1).padStart(2, "0"),
-          tools: matchingTools.map((t) => {
-            const key = normalizeKey(t.name);
-            return {
-              ...t,
-              role: KNOWN_ROLES[key] ?? t.role,
-              logoUrl: logoMap.get(key) ?? null,
-            };
-          }),
+      if (!map.has(key)) {
+        map.set(key, {
+          name: item.name,
+          categorySlug: item.category?.slug,
+          logoUrl: item.logo_url ?? null,
         });
       }
     });
 
-    // Check for any requested tools not in the default 4 pillars (e.g. SEO, Analytics, Figma)
-    const extraTools = requestedNames.filter((name) => !matchedKeys.has(normalizeKey(name)));
-    if (extraTools.length > 0) {
-      matchedPillars.push({
-        id: "specialized",
-        number: String(matchedPillars.length + 1).padStart(2, "0"),
-        title: "SPECIALIZED TOOLING & APIS",
-        summary: "Targeted platforms and integrations configured for this service domain.",
-        tools: extraTools.map((name) => {
-          const key = normalizeKey(name);
-          return {
-            name,
-            role: KNOWN_ROLES[key] ?? "Domain Platform & Tooling",
-            logoUrl: logoMap.get(key) ?? null,
-          };
-        }),
-      });
+    (technologies ?? []).forEach((name) => {
+      const key = normalizeKey(name);
+      if (!map.has(key)) {
+        map.set(key, {
+          name,
+          categorySlug: undefined,
+          logoUrl: null,
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  }, [items, technologies]);
+
+  // Compute active pillars
+  const pillars = useMemo<PillarDefinition[]>(() => {
+    // If no specific tools were filtered, show full default 4 pillars
+    if (requestedTools.length === 0) {
+      return DEFAULT_PILLARS;
     }
 
-    return matchedPillars.length > 0 ? matchedPillars : DEFAULT_PILLARS;
-  }, [requestedNames, logoMap]);
+    // Group requested tools by pillar
+    const groups: Record<
+      "frontend" | "mobile" | "backend" | "infrastructure" | "specialized",
+      { name: string; role: string; logoUrl?: string | null }[]
+    > = {
+      frontend: [],
+      mobile: [],
+      backend: [],
+      infrastructure: [],
+      specialized: [],
+    };
+
+    const seenInPillar = new Set<string>();
+
+    requestedTools.forEach((tool) => {
+      const pillarId = resolvePillarId(tool.name, tool.categorySlug);
+      const key = normalizeKey(tool.name);
+      const dedupKey = `${pillarId}:${key}`;
+
+      if (!seenInPillar.has(dedupKey)) {
+        seenInPillar.add(dedupKey);
+        groups[pillarId].push({
+          name: tool.name,
+          role: KNOWN_ROLES[key] ?? "Domain Platform & Tooling",
+          logoUrl: tool.logoUrl ?? null,
+        });
+      }
+    });
+
+    // Build ordered list of active pillars that have tools
+    const pillarOrder: ("frontend" | "mobile" | "backend" | "infrastructure" | "specialized")[] = [
+      "frontend",
+      "mobile",
+      "backend",
+      "infrastructure",
+      "specialized",
+    ];
+
+    const result: PillarDefinition[] = [];
+
+    pillarOrder.forEach((pillarId) => {
+      const tools = groups[pillarId];
+      if (tools.length > 0) {
+        const meta = PILLAR_METADATA[pillarId];
+        result.push({
+          id: meta.id,
+          number: String(result.length + 1).padStart(2, "0"),
+          title: meta.title,
+          summary: meta.summary,
+          tools,
+        });
+      }
+    });
+
+    return result.length > 0 ? result : DEFAULT_PILLARS;
+  }, [requestedTools]);
 
   // Responsive card width class based on pillar count
   // When 5 pillars are present, 3 sit on top row, and 2 cards below are aligned in the center!
@@ -259,47 +423,40 @@ export function TechnologyStack({
             >
               <div>
                 {/* Pillar Header */}
-                <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-3">
-                  <span className="font-mono text-xs font-black text-[#008da4]">
+                <div className="mb-4 flex items-center justify-between border-b border-[#e4ecef] pb-3 sm:mb-5 sm:pb-3.5">
+                  <span className="font-mono text-xs font-bold text-[#008da4]">
                     [ {pillar.number} ]
                   </span>
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#7a8f9f]">
-                    {visibleTools.length} CORE {visibleTools.length === 1 ? "TOOL" : "TOOLS"}
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#64748b]">
+                    {visibleTools.length} CORE TOOLS
                   </span>
                 </div>
 
-                {/* Pillar Title & Summary */}
-                <div className="mt-4">
-                  <h3 className="text-base font-black tracking-tight text-[#0d2a4a] uppercase transition-colors group-hover:text-[#008da4]">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-1.5 text-xs font-medium leading-relaxed text-[#5c7288]">
-                    {pillar.summary}
-                  </p>
-                </div>
+                <h3 className="text-base font-extrabold uppercase tracking-tight text-[#0d2a4a] sm:text-lg">
+                  {pillar.title}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-[#586d82] sm:text-[13px]">
+                  {pillar.summary}
+                </p>
 
-                {/* Vertical Stack of Clean Tool Rows (Capped at 6 max) */}
-                <div className="mt-5 space-y-2.5">
+                {/* Tool List with Logo Marks & Explicit Sub-labels */}
+                <div className="mt-5 space-y-2.5 sm:mt-6 sm:space-y-3">
                   {visibleTools.map((tool) => (
                     <div
-                      key={`${pillar.id}-${tool.name}`}
-                      className="flex items-center gap-3 rounded-none border border-[#f0f4f6] bg-[#fbfdfd] p-2.5 transition-all duration-150 hover:border-[#008da4]/40 hover:bg-white hover:shadow-xs"
+                      key={tool.name}
+                      className="flex items-center gap-3.5 border border-[#e4ecef] bg-[#f8fafc] p-2.5 transition-colors group-hover:border-[#cde0e5] group-hover:bg-white"
                     >
-                      {/* Tool Logo Frame */}
-                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none border border-[#e2ecee] bg-white p-1.5">
-                        <TechnologyMark
-                          name={tool.name}
-                          logoUrl={tool.logoUrl}
-                          className="h-5 w-5 object-contain"
-                        />
-                      </span>
+                      {/* Logo Mark: uses logoUrl if provided, else fallback SVG */}
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center border border-[#e4ecef] bg-white text-[#0d2a4a]">
+                        <TechnologyMark name={tool.name} logoUrl={tool.logoUrl} />
+                      </div>
 
-                      {/* Tool Info - No Ellipsis Truncation, Clean and Legible */}
+                      {/* Tool Name & Clear Role Sub-label */}
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-bold text-[#0d2a4a] leading-tight">
+                        <p className="truncate text-xs font-bold text-[#0d2a4a] sm:text-sm">
                           {tool.name}
                         </p>
-                        <p className="text-[10px] font-mono font-medium text-[#7a8f9f] leading-tight mt-0.5">
+                        <p className="font-mono text-[10.5px] text-[#64748b] leading-tight sm:text-[11px]">
                           {tool.role}
                         </p>
                       </div>
@@ -308,8 +465,8 @@ export function TechnologyStack({
                 </div>
               </div>
 
-              {/* Pillar Footer */}
-              <div className="mt-6 border-t border-[#f0f4f6] pt-3 flex items-center justify-between text-[10px] font-mono text-[#7a8f9f]">
+              {/* Boxy Architectural Footer */}
+              <div className="mt-6 flex items-center justify-between border-t border-[#e4ecef] pt-3 text-[10px] font-mono text-[#64748b] uppercase tracking-wider">
                 <span>STANDARDS LOCK</span>
                 <span className="font-bold text-[#008da4]">PRODUCTION READY</span>
               </div>
@@ -317,29 +474,6 @@ export function TechnologyStack({
           );
         })}
       </div>
-
-      {/* Auxiliary Ecosystem Strip (Shown when 4 pillars or general view) */}
-      {pillars.length >= 3 && (
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border border-[#dce8ec] bg-[#f8fbfc] px-5 py-3.5 text-xs text-[#5c7288]">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#008da4]">
-              DESIGN &amp; GROWTH ECOSYSTEM:
-            </span>
-            {["Figma", "FigJam", "Google Analytics", "Google Search Console", "Meta CAPI", "Docker Compose"].map((tool) => (
-              <span
-                key={tool}
-                className="border border-[#dce8ec] bg-white px-2 py-0.5 font-mono text-[11px] font-medium text-[#405669]"
-              >
-                {tool}
-              </span>
-            ))}
-          </div>
-
-          <span className="font-mono text-[11px] font-bold text-[#008da4]">
-            ENTERPRISE ARCHITECTURE
-          </span>
-        </div>
-      )}
     </div>
   );
 }
