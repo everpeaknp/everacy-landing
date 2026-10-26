@@ -3,15 +3,16 @@
    Sharp, architectural, deeply interactive engineering experience:
    - Interactive 4-phase cards with tactile highlight & elevation
    - Connected pipeline progress tracker with active stage indicator
-   - Deep-dive phase cockpit with deliverables, squad roles, and
-     live simulated telemetry (ADRs, system topology, CI/CD, observability)
+   - Deep-dive phase cockpit with real-world deliverables, sprint milestones,
+     tangible handover artifacts, and high-fidelity visual preview
+   - Cohesive light architectural theme (no fake dark hacker terminals)
    - Razor-sharp geometry (rounded-none throughout, #008da4 accents)
    ───────────────────────────────────────────────────────── */
 "use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ChevronLeft, ChevronRight, Activity, Terminal, ShieldCheck, Cpu } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, FileText, ShieldCheck, Users, Check, Sparkles } from "lucide-react";
 import { processBg } from "@/lib/site-theme";
 import type { ProcessStepData } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -21,10 +22,10 @@ interface PhaseDetail {
   squad: string;
   activities: string[];
   deliverablesList: string[];
-  telemetryTitle: string;
-  telemetryBadge: string;
-  metrics: { label: string; value: string; status: "good" | "active" | "neutral" }[];
-  terminalLog: string[];
+  artifactLabel: string;
+  metricChips: { label: string; value: string }[];
+  milestones: { number: string; title: string; status: string }[];
+  artifactFiles: string[];
 }
 
 const PHASE_DETAILS: PhaseDetail[] = [
@@ -41,19 +42,18 @@ const PHASE_DETAILS: PhaseDetail[] = [
       "System Architecture Decision Records (ADR-001)",
       "High-Level Target State Blueprint & Milestone Spec",
     ],
-    telemetryTitle: "ARCHITECTURE AUDIT & RISK SCORECARD",
-    telemetryBadge: "AUDIT LOCK",
-    metrics: [
-      { label: "Architecture Health", value: "96.4%", status: "good" },
-      { label: "Technical Debt", value: "0% Critical", status: "good" },
-      { label: "Security Gaps", value: "Resolved", status: "good" },
+    artifactLabel: "TECHNICAL DISCOVERY ARTIFACT",
+    metricChips: [
+      { label: "Architecture Health", value: "96.4%" },
+      { label: "Critical Debt", value: "0% Found" },
+      { label: "Audit Review", value: "Verified" },
     ],
-    terminalLog: [
-      "audit: scanning repository dependencies & licenses...",
-      "audit: static analysis completed — 0 critical vulnerabilities found",
-      "spec: schema normalized to 3NF; latency bottlenecks identified",
-      "output: ADR-001 created — cloud-native target state ratified",
+    milestones: [
+      { number: "01", title: "Codebase & Security Audit", status: "COMPLETED" },
+      { number: "02", title: "Architecture Decision Records (ADR)", status: "RATIFIED" },
+      { number: "03", title: "Target-State Milestone Spec", status: "ACCEPTED" },
     ],
+    artifactFiles: ["audit-report-v1.pdf", "adr-001-microservices.md", "roadmap-spec.json"],
   },
   {
     duration: "Weeks 2–3",
@@ -68,19 +68,18 @@ const PHASE_DETAILS: PhaseDetail[] = [
       "Typed OpenAPI 3.1 & Schema Migration Contracts",
       "Infrastructure-as-Code (Terraform) Repository",
     ],
-    telemetryTitle: "SYSTEM TOPOLOGY & API CONTRACT SPEC",
-    telemetryBadge: "BLUEPRINT VERIFIED",
-    metrics: [
-      { label: "API Latency Target", value: "< 80ms p95", status: "good" },
-      { label: "Data Persistence", value: "ACID Multi-AZ", status: "good" },
-      { label: "Zero-Trust Mesh", value: "Enforced", status: "good" },
+    artifactLabel: "SYSTEM ARCHITECTURE BLUEPRINT",
+    metricChips: [
+      { label: "Target Latency", value: "< 80ms p95" },
+      { label: "Persistence", value: "Multi-AZ ACID" },
+      { label: "Network Topology", value: "Zero-Trust" },
     ],
-    terminalLog: [
-      "topology: provisioned isolated VPC with private subnets",
-      "schema: PostgreSQL 16 migration plan compiled with zero locks",
-      "contract: generated OpenAPI 3.1 TypeScript types for client & edge",
-      "cache: Redis sub-millisecond cluster connected to query gateway",
+    milestones: [
+      { number: "01", title: "VPC & Microservice Boundaries", status: "PROVISIONED" },
+      { number: "02", title: "OpenAPI 3.1 & DB Schema", status: "VALIDATED" },
+      { number: "03", title: "Terraform Infrastructure Modules", status: "COMPILED" },
     ],
+    artifactFiles: ["cloud-topology.pdf", "schema-migration-v1.sql", "main.tf"],
   },
   {
     duration: "Bi-Weekly Sprints",
@@ -95,19 +94,18 @@ const PHASE_DETAILS: PhaseDetail[] = [
       "Comprehensive Automated Test Suites (98%+ Coverage)",
       "Continuous Ephemeral PR Environments for Live QA",
     ],
-    telemetryTitle: "CONTINUOUS DELIVERY & TEST TELEMETRY",
-    telemetryBadge: "ACTIVE SPRINT",
-    metrics: [
-      { label: "Pipeline Duration", value: "1m 42s", status: "good" },
-      { label: "Automated Tests", value: "348 / 348 Passed", status: "good" },
-      { label: "Code Coverage", value: "98.2%", status: "good" },
+    artifactLabel: "PRODUCTION SPRINT PIPELINE",
+    metricChips: [
+      { label: "Sprint Duration", value: "14-Day Cycle" },
+      { label: "Automated Tests", value: "348 / 348 Green" },
+      { label: "Test Coverage", value: "98.2%" },
     ],
-    terminalLog: [
-      "ci: trigger build on branch 'release/sprint-14'...",
-      "test: unit test suite passed in 24.3s (348 assertions green)",
-      "preview: deployed ephemeral testing environment at pr-104.everacy.dev",
-      "status: release artifact packaged with zero blocking warnings",
+    milestones: [
+      { number: "01", title: "Test-Driven Sprint Features", status: "SHIPPED" },
+      { number: "02", title: "Ephemeral PR Previews for QA", status: "DEPLOYED" },
+      { number: "03", title: "Unit & E2E Test Suite", status: "100% PASSING" },
     ],
+    artifactFiles: ["sprint-release.tar.gz", "cypress-e2e-suite.ts", "preview-manifest.yml"],
   },
   {
     duration: "Continuous Lifecycle",
@@ -122,19 +120,18 @@ const PHASE_DETAILS: PhaseDetail[] = [
       "Real-Time Grafana & APM Observability Dashboards",
       "Horizontal Autoscaling Policy (0 to 100k Req/Sec)",
     ],
-    telemetryTitle: "LIVE OBSERVABILITY & ZERO-DOWNTIME SCALE",
-    telemetryBadge: "99.99% UPTIME",
-    metrics: [
-      { label: "Global Availability", value: "99.99% SLA", status: "good" },
-      { label: "P99 Edge Latency", value: "58ms", status: "good" },
-      { label: "Autoscale Nodes", value: "Dynamic 4/16", status: "active" },
+    artifactLabel: "OBSERVABILITY & SCALE ARTIFACT",
+    metricChips: [
+      { label: "Availability SLA", value: "99.99%" },
+      { label: "Global Edge Latency", value: "58ms p99" },
+      { label: "Zero-Downtime", value: "Enforced" },
     ],
-    terminalLog: [
-      "telemetry: 100k requests routed across edge nodes without dropped packets",
-      "monitor: error budget intact at 100% across all API microservices",
-      "hpa: auto-scaled pod count dynamically during traffic spike",
-      "deploy: rolling update completed with 0 seconds downtime recorded",
+    milestones: [
+      { number: "01", title: "Blue/Green Rolling Deploy", status: "VERIFIED" },
+      { number: "02", title: "Datadog / APM Telemetry Suite", status: "ACTIVE" },
+      { number: "03", title: "Auto-Scaling Pod Policies", status: "OPERATIONAL" },
     ],
+    artifactFiles: ["datadog-dashboard.json", "incident-playbook.pdf", "autoscaling-policy.yml"],
   },
 ];
 
@@ -184,7 +181,7 @@ interface ProcessSectionProps {
 }
 
 export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessSectionProps) {
-  // Default to Phase 3 (Index 2) as in the user's reference highlight
+  // Default to Phase 3 (Index 2)
   const [activeIdx, setActiveIdx] = useState<number>(2);
 
   const steps: NormalisedStep[] = (data ?? []).map((s, idx) => {
@@ -241,7 +238,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
 
         {/* Connected Architectural Timeline Bar (Interactive Stepper) */}
         <div className="mb-8 hidden sm:block">
-          <div className="flex items-center justify-between border-b border-[#dce8ec] bg-[#f8fbfc] px-6 py-3 font-mono text-xs">
+          <div className="flex items-center justify-between border border-[#dce8ec] bg-[#f8fbfc] px-6 py-3 font-mono text-xs shadow-xs">
             {steps.map((st, i) => {
               const isActive = i === activeIdx;
               const isPast = i < activeIdx;
@@ -368,7 +365,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
           })}
         </div>
 
-        {/* Immersive Phase Deep-Dive Cockpit (Interactive Telemetry & Deliverables Stage) */}
+        {/* Immersive Phase Deep-Dive Cockpit (Light, Architectural & Clean Deliverables Showcase) */}
         <div className="mt-10">
           <AnimatePresence mode="wait">
             <motion.div
@@ -387,7 +384,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                   </div>
                   <div>
                     <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#008da4]">
-                      {activeStep.step} DEEP DIVE &middot; {activeDetail.duration}
+                      {activeStep.step} DETAILED BREAKDOWN &middot; {activeDetail.duration}
                     </span>
                     <h4 className="text-xl font-black uppercase tracking-tight text-[#0d2a4a]">
                       {activeStep.title}
@@ -419,13 +416,13 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                 </div>
               </div>
 
-              {/* 2-Column Split Stage: Left Scope & Checklists, Right Simulated Telemetry Console */}
+              {/* 2-Column Split Stage: Left Scope & Checklists, Right Architectural Visual Artifact */}
               <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-12">
                 {/* Left: Engineering Scope & Concrete Deliverables (6 cols) */}
                 <div className="lg:col-span-6 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase text-[#7a8f9f]">
-                      <Cpu className="h-3.5 w-3.5 text-[#008da4]" />
+                      <Users className="h-3.5 w-3.5 text-[#008da4]" />
                       <span>Dedicated Squad: {activeDetail.squad}</span>
                     </div>
 
@@ -458,62 +455,96 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                   </div>
 
                   <div className="mt-6 border-t border-[#f0f4f6] pt-4 font-mono text-[11px] text-[#7a8f9f] flex items-center justify-between">
-                    <span>STATUS: ACTIVE SPRINTS</span>
+                    <span>SPRINT VELOCITY: COMMITTED</span>
                     <span className="font-bold text-[#008da4]">GUARANTEED SLAs</span>
                   </div>
                 </div>
 
-                {/* Right: Simulated Engineering Artifact / Telemetry Cockpit (6 cols) */}
-                <div className="lg:col-span-6">
-                  <div className="rounded-none border-2 border-[#0d2a4a] bg-[#091524] p-5 text-white shadow-inner">
-                    {/* Console Header */}
-                    <div className="flex items-center justify-between border-b border-white/10 pb-3 font-mono text-[11px]">
+                {/* Right: Architectural Visual Artifact & Milestone Showcase (6 cols - Cohesive Light Theme) */}
+                <div className="lg:col-span-6 flex flex-col justify-between border border-[#dce8ec] bg-[#f8fbfc] p-5 sm:p-6">
+                  <div>
+                    {/* Header Strip with Metrics */}
+                    <div className="flex items-center justify-between border-b border-[#e2ecee] pb-3">
                       <div className="flex items-center gap-2">
-                        <Terminal className="h-3.5 w-3.5 text-[#008da4]" />
-                        <span className="font-bold text-white tracking-wider">
-                          {activeDetail.telemetryTitle}
+                        <Sparkles className="h-3.5 w-3.5 text-[#008da4]" />
+                        <span className="font-mono text-xs font-black uppercase tracking-wider text-[#0d2a4a]">
+                          {activeDetail.artifactLabel}
                         </span>
                       </div>
-                      <span className="border border-[#008da4]/40 bg-[#008da4]/20 px-2 py-0.5 font-bold text-[#008da4] text-[10px]">
-                        {activeDetail.telemetryBadge}
+                      <span className="border border-[#dce8ec] bg-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-[#008da4]">
+                        {activeStep.badge}
                       </span>
                     </div>
 
-                    {/* Live Metric Cards Strip */}
-                    <div className="mt-4 grid grid-cols-3 gap-2.5">
-                      {activeDetail.metrics.map((m) => (
+                    {/* 3 Metric Chips (Light & Clean) */}
+                    <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+                      {activeDetail.metricChips.map((chip) => (
                         <div
-                          key={m.label}
-                          className="border border-white/10 bg-white/5 p-2.5 text-center"
+                          key={chip.label}
+                          className="border border-[#dce8ec] bg-white p-2.5 text-center shadow-2xs"
                         >
-                          <p className="text-[10px] font-mono text-[#8ea2b3] uppercase">
-                            {m.label}
+                          <p className="font-mono text-[9px] uppercase tracking-wider text-[#7a8f9f]">
+                            {chip.label}
                           </p>
-                          <p className="mt-1 text-xs sm:text-sm font-mono font-black text-[#008da4]">
-                            {m.value}
+                          <p className="mt-1 font-mono text-xs sm:text-sm font-black text-[#008da4]">
+                            {chip.value}
                           </p>
                         </div>
                       ))}
                     </div>
 
-                    {/* Console Stream */}
-                    <div className="mt-4 border border-white/10 bg-black/40 p-3.5 font-mono text-[11px] space-y-1.5 text-[#9ab0c2]">
-                      <div className="flex items-center gap-2 text-[#008da4] font-bold text-[10px] pb-1 border-b border-white/10">
-                        <Activity className="h-3 w-3 animate-pulse" />
-                        <span>VERIFIED RUNTIME LOG</span>
+                    {/* Rich Visual Viewport of the Deliverable */}
+                    <div className="relative mt-4 aspect-[16/9] w-full overflow-hidden border border-[#dce8ec] bg-white shadow-xs">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={activeStep.image}
+                        alt={activeStep.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105"
+                      />
+                      <div className="absolute top-2 left-2 border border-[#dce8ec] bg-white/95 px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-[#0d2a4a] shadow-xs">
+                        {activeStep.title} &middot; OUTPUT
                       </div>
-                      {activeDetail.terminalLog.map((log) => (
-                        <p key={log} className="leading-relaxed">
-                          <span className="text-[#008da4] mr-1.5">&gt;</span>
-                          {log}
-                        </p>
-                      ))}
                     </div>
 
-                    {/* Console Footer */}
-                    <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 font-mono text-[10px] text-[#6b8296]">
-                      <span>EVERACY PIPELINE TELEMETRY</span>
-                      <span className="text-white font-bold">100% AUDIT READY</span>
+                    {/* Sprint Milestone Progress Checklist */}
+                    <div className="mt-4 space-y-2 border-t border-[#e2ecee] pt-3">
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#7a8f9f]">
+                        Sprint Milestones Completed
+                      </p>
+                      {activeDetail.milestones.map((m) => (
+                        <div
+                          key={m.number}
+                          className="flex items-center justify-between border border-[#e8f0f2] bg-white px-3 py-1.5 text-xs font-mono"
+                        >
+                          <span className="flex items-center gap-2 text-[#0d2a4a]">
+                            <span className="font-bold text-[#008da4]">{m.number}</span>
+                            <span>{m.title}</span>
+                          </span>
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-[#008da4]">
+                            <Check className="h-3 w-3" />
+                            {m.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Handover Files Bar */}
+                  <div className="mt-4 border-t border-[#e2ecee] pt-3">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#7a8f9f] mb-1.5">
+                      Client Handover Artifacts:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {activeDetail.artifactFiles.map((file) => (
+                        <span
+                          key={file}
+                          className="inline-flex items-center gap-1.5 border border-[#dce8ec] bg-white px-2.5 py-1 font-mono text-[10px] font-medium text-[#405669]"
+                        >
+                          <FileText className="h-3 w-3 text-[#008da4]" />
+                          {file}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
