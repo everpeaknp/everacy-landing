@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { ServiceCardData } from "@/lib/api";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -27,6 +28,7 @@ interface CapabilityMetadata {
   keywords: string[];
   previewImage: string;
   badge: string;
+  metric: string;
 }
 
 function getServiceCapabilities(title: string): CapabilityMetadata {
@@ -40,6 +42,7 @@ function getServiceCapabilities(title: string): CapabilityMetadata {
       keywords: ["web", "website", "frontend", "nextjs", "react", "landing", "redesign", "ui", "cms", "e-commerce", "portal"],
       previewImage: "/images/service-previews/responsive-platforms.png",
       badge: "RESPONSIVE VIEWPORT",
+      metric: "99+ Performance Vitals",
     };
   }
 
@@ -51,6 +54,7 @@ function getServiceCapabilities(title: string): CapabilityMetadata {
       keywords: ["software", "system", "erp", "crm", "saas", "backend", "api", "automation", "dashboard", "internal", "database", "workflow"],
       previewImage: "/images/service-previews/saas-dashboard.svg",
       badge: "SAAS & BACKEND",
+      metric: "Enterprise Multi-Tenant",
     };
   }
 
@@ -62,6 +66,7 @@ function getServiceCapabilities(title: string): CapabilityMetadata {
       keywords: ["mobile", "app", "ios", "android", "flutter", "react native", "phone", "tablet", "push", "offline"],
       previewImage: "/images/appdevelopment.png",
       badge: "60FPS CROSS-PLATFORM",
+      metric: "Unified iOS & Android",
     };
   }
 
@@ -73,6 +78,7 @@ function getServiceCapabilities(title: string): CapabilityMetadata {
       keywords: ["seo", "search", "google", "ranking", "traffic", "organic", "schema", "vitals", "speed", "keywords"],
       previewImage: "/images/service-previews/service-workflow.png",
       badge: "SERP & SCHEMA",
+      metric: "Top-Tier Organic Rank",
     };
   }
 
@@ -84,6 +90,7 @@ function getServiceCapabilities(title: string): CapabilityMetadata {
       keywords: ["marketing", "growth", "ads", "campaigns", "social", "conversion", "funnel", "analytics", "leads", "brand"],
       previewImage: "/images/service-previews/service-outcomes.png",
       badge: "GROWTH ATTRIBUTION",
+      metric: "Direct CAPI Attribution",
     };
   }
 
@@ -94,6 +101,7 @@ function getServiceCapabilities(title: string): CapabilityMetadata {
     keywords: ["sms", "bulk", "messaging", "otp", "alerts", "notifications", "telecom", "dispatch", "api"],
     previewImage: "/images/service-previews/service-interface-systems.png",
     badge: "CARRIER GATEWAY",
+    metric: "Sub-Second SMS Latency",
   };
 }
 
@@ -131,7 +139,7 @@ const COMMAND_PRESETS = [
 export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   const cards = data ?? [];
 
-  const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
+  const [activeIndex, setActiveIndex] = useState<number>(0);
   const [selectedPresetId, setSelectedPresetId] = useState<string>(COMMAND_PRESETS[0].id);
   const [customQuery, setCustomQuery] = useState<string>("");
   const [typedText, setTypedText] = useState<string>(COMMAND_PRESETS[0].query);
@@ -185,31 +193,17 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
     return matches.length > 0 ? matches.slice(0, 3) : scored.slice(0, 3);
   }, [cards, customQuery, activePreset]);
 
-  const filteredCards = useMemo(() => {
-    if (selectedFilter === "ALL") return cards;
-    return cards.filter((s) => {
-      const info = getServiceCapabilities(s.title);
-      return info.category.toLowerCase().includes(selectedFilter.toLowerCase());
-    });
-  }, [cards, selectedFilter]);
-
   if (cards.length === 0) {
     return <EmptyState title="No services published yet" />;
   }
 
-  const categoryFilters = [
-    { label: "ALL SERVICES", value: "ALL" },
-    { label: "WEB PLATFORMS", value: "WEB" },
-    { label: "SYSTEMS & BACKEND", value: "SYSTEMS" },
-    { label: "MOBILE NATIVE", value: "MOBILE" },
-    { label: "SEARCH ARCHITECTURE", value: "SEARCH" },
-    { label: "GROWTH & ADS", value: "GROWTH" },
-    { label: "TELECOM & SMS", value: "TELECOM" },
-  ];
+  const activeService = cards[activeIndex] ?? cards[0];
+  const activeInfo = getServiceCapabilities(activeService.title);
+  const activeImage = activeService.image || activeInfo.previewImage;
 
   return (
     <section
-      className="border-b border-[#e2ecee] bg-[#f6fafb] py-20 sm:py-28"
+      className="border-b border-[#e2ecee] bg-[#f6fafb] py-16 sm:py-24"
       style={{ fontFamily: "'Montserrat', sans-serif" }}
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -241,116 +235,147 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
           </header>
         </FadeIn>
 
-        {/* Interactive Category Filter Bar */}
-        <div className="mb-8 flex flex-wrap items-center gap-2">
-          {categoryFilters.map((f) => {
-            const isActive = selectedFilter === f.value;
-            return (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => setSelectedFilter(f.value)}
-                className={`rounded-none border px-3.5 py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                  isActive
-                    ? "border-[#008da4] bg-[#008da4] text-white shadow-[2px_2px_0px_0px_#0d2a4a]"
-                    : "border-[#dce8ec] bg-white text-[#5c7288] hover:border-[#008da4] hover:text-[#0d2a4a]"
-                }`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
+        {/* WorkOS Style Interactive Split Showcase (Zero Bloated Cards, Compact ~460px Height) */}
+        <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-12">
+          {/* Left Navigation Rail: Compact Service Ledger (5 cols) */}
+          <div className="flex flex-col gap-2 lg:col-span-5">
+            {cards.map((service, index) => {
+              const info = getServiceCapabilities(service.title);
+              const isActive = activeIndex === index;
+              const num = String(index + 1).padStart(2, "0");
 
-        {/* Sharp Boxy Architectural Services Grid with Visual Preview Frames */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredCards.map((service, index) => {
-            const info = getServiceCapabilities(service.title);
-            const num = String(index + 1).padStart(2, "0");
-            const imageSrc = service.image || info.previewImage;
+              return (
+                <button
+                  key={service.id}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  className={`group relative flex w-full items-center justify-between border p-3.5 text-left transition-all duration-150 rounded-none cursor-pointer sm:p-4 ${
+                    isActive
+                      ? "border-[#008da4] bg-white shadow-[3px_3px_0px_0px_#008da4]"
+                      : "border-[#dce8ec] bg-white/70 hover:border-[#008da4]/50 hover:bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <span
+                      className={`font-mono text-xs font-black shrink-0 ${
+                        isActive ? "text-[#008da4]" : "text-[#8ea2b3]"
+                      }`}
+                    >
+                      {num}
+                    </span>
+                    <div className="min-w-0">
+                      <p
+                        className={`truncate text-sm sm:text-[15px] font-black tracking-tight transition-colors ${
+                          isActive ? "text-[#008da4]" : "text-[#0d2a4a] group-hover:text-[#008da4]"
+                        }`}
+                      >
+                        {service.title}
+                      </p>
+                      <p className="truncate font-mono text-[10px] font-semibold uppercase tracking-wider text-[#7a8f9f]">
+                        {info.category}
+                      </p>
+                    </div>
+                  </div>
 
-            return (
-              <FadeIn
-                key={service.id}
-                className="h-full"
-                delay={Math.min(index * 0.05, 0.25)}
-                duration={0.4}
-              >
-                <Link
-                  href={serviceHref(service)}
-                  className="group relative flex h-full flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[4px_4px_0px_0px_#008da4,0_14px_28px_-12px_rgba(13,42,74,0.12)] sm:p-7"
+                  <ArrowRight
+                    className={`h-4 w-4 shrink-0 transition-transform ${
+                      isActive
+                        ? "translate-x-0.5 text-[#008da4]"
+                        : "text-[#b0c4cf] opacity-0 group-hover:opacity-100"
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right Stage: Interactive Visual Preview & Architecture Spec (7 cols) */}
+          <div className="lg:col-span-7">
+            <div className="relative flex h-full flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-6 shadow-[4px_4px_0px_0px_#008da4] sm:p-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeService.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex h-full flex-col justify-between"
                 >
                   <div>
-                    {/* Sharp Header: Tabular Index + Category Label */}
-                    <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-3.5">
-                      <span className="font-mono text-xs font-black text-[#008da4]">
-                        {num}
-                      </span>
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#7a8f9f]">
-                        {info.category}
-                      </span>
-                    </div>
-
-                    {/* Sharp Minimal Image Preview Frame */}
-                    <div className="relative mt-4 aspect-[16/10] w-full overflow-hidden rounded-none border border-[#e2ecee] bg-[#f4f8fa]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={imageSrc}
-                        alt={service.image_alt || service.title}
-                        title={service.image_title || service.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
-                      />
-
-                      {/* Monospace Architectural Corner Badge */}
-                      <div className="absolute top-2.5 right-2.5 z-10 border border-[#dce8ec] bg-white/95 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-widest text-[#008da4] backdrop-blur-xs shadow-xs">
-                        {info.badge}
-                      </div>
-
-                      {/* Subtle hover overlay prompt */}
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#0d2a4a]/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                        <span className="border border-[#0d2a4a] bg-white px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#0d2a4a] shadow-sm">
-                          Explore Architecture &rarr;
+                    {/* Top Bar inside Stage */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#eef4f6] pb-3.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-black text-[#008da4]">
+                          [ {String(activeIndex + 1).padStart(2, "0")} ]
+                        </span>
+                        <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#0d2a4a]">
+                          {activeInfo.category}
                         </span>
                       </div>
+
+                      <div className="inline-flex items-center gap-1.5 border border-[#dce8ec] bg-[#f8fbfc] px-2.5 py-0.5 text-[10px] font-mono text-[#008da4]">
+                        <span className="h-1.5 w-1.5 bg-[#008da4]" />
+                        <span>{activeInfo.metric}</span>
+                      </div>
                     </div>
 
-                    {/* Title */}
-                    <h3 className="mt-5 text-xl font-extrabold leading-snug tracking-tight text-[#0d2a4a] transition-colors group-hover:text-[#008da4]">
-                      {service.title}
-                    </h3>
+                    {/* Compact Precision Visual Preview */}
+                    <div className="relative mt-4 aspect-[16/8] w-full overflow-hidden rounded-none border border-[#e2ecee] bg-[#f4f8fa]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={activeImage}
+                        alt={activeService.title}
+                        className="h-full w-full object-cover object-top transition-transform duration-500 hover:scale-[1.03]"
+                      />
 
-                    {/* Description */}
-                    <p className="mt-2 text-sm leading-relaxed text-[#586d82]">
-                      {service.description || info.summary}
-                    </p>
+                      <div className="absolute top-2.5 right-2.5 border border-[#dce8ec] bg-white/95 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-[#008da4] shadow-xs">
+                        {activeInfo.badge}
+                      </div>
+                    </div>
 
-                    {/* Concrete Capabilities Checklist */}
-                    <ul className="mt-5 space-y-2 border-t border-[#f0f4f6] pt-4">
-                      {info.capabilities.map((cap) => (
-                        <li
-                          key={cap}
-                          className="flex items-center gap-2 text-xs font-semibold text-[#405669]"
-                        >
-                          <span className="h-1 w-1 shrink-0 bg-[#008da4]" />
-                          <span>{cap}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {/* Service Info */}
+                    <div className="mt-5">
+                      <h3 className="text-xl sm:text-2xl font-black tracking-tight text-[#0d2a4a]">
+                        {activeService.title}
+                      </h3>
+                      <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[#586d82]">
+                        {activeService.description || activeInfo.summary}
+                      </p>
+
+                      {/* Concrete Capability Badges */}
+                      <div className="mt-4 flex flex-wrap gap-2 border-t border-[#f0f4f6] pt-3.5">
+                        {activeInfo.capabilities.map((cap) => (
+                          <span
+                            key={cap}
+                            className="inline-flex items-center gap-1.5 rounded-none border border-[#dce8ec] bg-[#f8fbfc] px-2.5 py-1 text-[11px] font-mono font-medium text-[#405669]"
+                          >
+                            <span className="h-1 w-1 bg-[#008da4]" />
+                            <span>{cap}</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Sharp Action Link */}
-                  <div className="mt-7 flex items-center justify-between border-t border-[#f0f4f6] pt-4 text-xs font-black text-[#008da4] transition-colors group-hover:text-[#0d2a4a]">
-                    <span>Learn more</span>
-                    <ArrowRight
-                      aria-hidden="true"
-                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
-                    />
+                  {/* Stage Footer Link */}
+                  <div className="mt-6 flex items-center justify-between border-t border-[#eef4f6] pt-4">
+                    <span className="font-mono text-xs text-[#7a8f9f]">
+                      SPECIFICATION 0{activeIndex + 1} OF 0{cards.length}
+                    </span>
+
+                    <Link
+                      href={serviceHref(activeService)}
+                      className="inline-flex items-center gap-2 rounded-none border border-[#0d2a4a] bg-[#0d2a4a] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition-all hover:border-[#008da4] hover:bg-[#008da4]"
+                    >
+                      <span>Explore {activeService.title}</span>
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
                   </div>
-                </Link>
-              </FadeIn>
-            );
-          })}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
 
         {/* "Describe what you are building" Interactive Solution Finder */}
