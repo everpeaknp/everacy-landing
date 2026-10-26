@@ -426,84 +426,67 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                       )}
                     </div>
 
-                    {/* Sharp Boxy Filter Chips Row */}
-                    <div className="flex flex-wrap items-center gap-2 border-b border-[#f1f5f9] bg-[#fafcfd] px-5 py-2.5 sm:px-6">
-                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
-                        Filters:
-                      </span>
-                      {(customQuery.trim()
-                        ? [
-                            `query: "${customQuery.trim().slice(0, 24)}"`,
-                            `matched: ${matchedServices.length} modules`,
-                            "delivery: Full-Stack",
-                          ]
-                        : activePreset.tags
-                      ).map((chip, idx) => (
-                        <span
-                          key={chip}
-                          className={`rounded-none px-2.5 py-0.5 font-mono text-[11px] font-medium ${
-                            idx === 2
-                              ? "bg-[#0d2a4a] text-white"
-                              : "border border-[#dce8ec] bg-white text-[#475569]"
-                          }`}
-                        >
-                          {chip}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Matched Services Results List */}
-                    <div className="divide-y divide-[#f1f5f9] px-5 py-1 sm:px-6">
+                    {/* Matched Services Results List (Clean Search Results View) */}
+                    <div className="divide-y divide-[#eef4f6]">
                       {matchedServices.map(({ service, info }) => {
                         const slug = service.slug || service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
                         return (
                           <div
                             key={service.id}
-                            className="group py-3.5 transition-colors rounded-none hover:bg-[#fafcfd] px-2 sm:px-2.5 -mx-2 sm:-mx-2.5"
+                            className="group px-5 py-4 sm:px-6 sm:py-5 transition-colors hover:bg-[#fafcfd]"
                           >
-                            {/* 1. Realistic URL Breadcrumb with Official Everacy Logo */}
-                            <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#586d82] mb-1">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src="/logo/everacy_wo_bg.png"
-                                alt="Everacy"
-                                className="h-3 w-auto object-contain shrink-0"
-                              />
-                              <span className="truncate">everacy.com › services › {slug}</span>
+                            {/* 1. Search Result URL & Category Badge */}
+                            <div className="flex items-center justify-between gap-3 mb-1.5">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src="/logo/everacy_wo_bg.png"
+                                  alt="Everacy"
+                                  className="h-3 w-auto object-contain shrink-0"
+                                />
+                                <span className="font-mono text-[11px] text-[#64748b] truncate">
+                                  everacy.com › services › {slug}
+                                </span>
+                              </div>
+                              <span className="hidden sm:inline-block font-mono text-[9.5px] font-bold uppercase tracking-wider text-[#008da4] bg-[#008da4]/8 border border-[#008da4]/20 px-2 py-0.5 shrink-0">
+                                {info.category || "ENGINEERING"}
+                              </span>
                             </div>
 
-                            {/* 2. Headline & View Action */}
-                            <div className="flex items-start justify-between gap-3">
+                            {/* 2. Headline & Interactive View Action */}
+                            <div className="flex items-start justify-between gap-4">
                               <div className="min-w-0 flex-1">
                                 <Link
                                   href={serviceHref(service)}
-                                  className="text-base font-bold text-[#0d2a4a] hover:text-[#008da4] hover:underline transition-colors leading-snug"
+                                  className="text-[15px] sm:text-base font-bold text-[#0d2a4a] hover:text-[#008da4] hover:underline transition-colors leading-snug"
                                 >
                                   {service.title}
                                 </Link>
-                                {/* 3. Snippet Excerpt */}
-                                <p className="mt-1 text-xs leading-relaxed text-[#586d82]">
+                                {/* 3. Search Result Snippet */}
+                                <p className="mt-1.5 text-xs sm:text-[13px] leading-relaxed text-[#586d82]">
                                   {info.summary}
                                 </p>
                               </div>
 
                               <Link
                                 href={serviceHref(service)}
-                                className="hidden sm:inline-flex items-center gap-1 text-xs font-mono font-bold text-[#008da4] hover:underline shrink-0 mt-0.5"
+                                className="hidden sm:inline-flex items-center gap-1.5 border border-[#dce8ec] bg-white px-3 py-1.5 text-xs font-mono font-bold text-[#0d2a4a] transition-all shrink-0 hover:border-[#008da4] hover:bg-[#008da4] hover:text-white shadow-sm mt-0.5"
                               >
                                 <span>View spec</span>
                                 <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                               </Link>
                             </div>
 
-                            {/* 4. Minimal Sitelinks / Modular Tags */}
+                            {/* 4. Structured Capability Sitelink Badges */}
                             {info.capabilities && info.capabilities.length > 0 && (
-                              <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] font-mono text-[#7a8f9f]">
-                                {info.capabilities.slice(0, 3).map((cap, i) => (
-                                  <span key={cap} className="inline-flex items-center gap-2">
-                                    {i > 0 && <span className="text-[#cbd5e1]">·</span>}
-                                    <span className="text-[#586d82] hover:text-[#008da4] transition-colors">{cap}</span>
+                              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                                {info.capabilities.slice(0, 3).map((cap) => (
+                                  <span
+                                    key={cap}
+                                    className="inline-flex items-center border border-[#e2ecee] bg-[#f8fafc] px-2 py-0.5 text-[10.5px] font-mono font-medium text-[#475569] group-hover:border-[#cbd5e1] group-hover:bg-white transition-colors"
+                                  >
+                                    {cap}
                                   </span>
                                 ))}
                               </div>
