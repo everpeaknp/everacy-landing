@@ -224,87 +224,98 @@ export function TechnologyStack({
     return matchedPillars.length > 0 ? matchedPillars : DEFAULT_PILLARS;
   }, [requestedNames, logoMap]);
 
-  // Responsive grid class depending on pillar count so service page never feels congested
-  const gridClass = useMemo(() => {
+  // Responsive card width class based on pillar count
+  // When 5 pillars are present, 3 sit on top row, and 2 cards below are aligned in the center!
+  const cardWidthClass = useMemo(() => {
     switch (pillars.length) {
       case 1:
-        return "grid grid-cols-1 max-w-2xl mx-auto";
+        return "w-full max-w-xl";
       case 2:
-        return "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto";
+        return "w-full sm:w-[calc(50%-12px)] max-w-lg";
       case 3:
-        return "grid grid-cols-1 md:grid-cols-3 gap-6";
+        return "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[390px]";
+      case 4:
+        return "w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] max-w-[320px]";
+      case 5:
+        // Row 1: 3 cards. Row 2: 2 cards aligned center under those 3 cards!
+        return "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[390px]";
       default:
-        return "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6";
+        return "w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] max-w-[390px]";
     }
   }, [pillars.length]);
 
   return (
     <div className="w-full text-left" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-      {/* Dynamic Architectural Matrix Grid (Spacious, Balanced, Zero Cramped Rows) */}
-      <div className={gridClass}>
-        {pillars.map((pillar) => (
-          <div
-            key={pillar.id}
-            className="group flex flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[5px_5px_0px_0px_#008da4] sm:p-6"
-          >
-            <div>
-              {/* Pillar Header */}
-              <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-3">
-                <span className="font-mono text-xs font-black text-[#008da4]">
-                  [ {pillar.number} ]
-                </span>
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#7a8f9f]">
-                  {pillar.tools.length} CORE {pillar.tools.length === 1 ? "TOOL" : "TOOLS"}
-                </span>
-              </div>
+      {/* Dynamic Architectural Matrix Grid (Centered layout with 2 cards centered below 3 cards) */}
+      <div className="flex flex-wrap justify-center gap-6 w-full">
+        {pillars.map((pillar) => {
+          // Keep a strict cap of max 6 tools per card as requested
+          const visibleTools = pillar.tools.slice(0, 6);
 
-              {/* Pillar Title & Summary */}
-              <div className="mt-4">
-                <h3 className="text-base font-black tracking-tight text-[#0d2a4a] uppercase transition-colors group-hover:text-[#008da4]">
-                  {pillar.title}
-                </h3>
-                <p className="mt-1.5 text-xs font-medium leading-relaxed text-[#5c7288]">
-                  {pillar.summary}
-                </p>
-              </div>
+          return (
+            <div
+              key={pillar.id}
+              className={`group flex flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-5 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[5px_5px_0px_0px_#008da4] sm:p-6 ${cardWidthClass}`}
+            >
+              <div>
+                {/* Pillar Header */}
+                <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-3">
+                  <span className="font-mono text-xs font-black text-[#008da4]">
+                    [ {pillar.number} ]
+                  </span>
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#7a8f9f]">
+                    {visibleTools.length} CORE {visibleTools.length === 1 ? "TOOL" : "TOOLS"}
+                  </span>
+                </div>
 
-              {/* Vertical Stack of Clean Tool Rows with Generous Breathing Room */}
-              <div className="mt-5 space-y-2.5">
-                {pillar.tools.map((tool) => (
-                  <div
-                    key={`${pillar.id}-${tool.name}`}
-                    className="flex items-center gap-3 rounded-none border border-[#f0f4f6] bg-[#fbfdfd] p-2.5 transition-all duration-150 hover:border-[#008da4]/40 hover:bg-white hover:shadow-xs"
-                  >
-                    {/* Tool Logo Frame */}
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none border border-[#e2ecee] bg-white p-1.5">
-                      <TechnologyMark
-                        name={tool.name}
-                        logoUrl={tool.logoUrl}
-                        className="h-5 w-5 object-contain"
-                      />
-                    </span>
+                {/* Pillar Title & Summary */}
+                <div className="mt-4">
+                  <h3 className="text-base font-black tracking-tight text-[#0d2a4a] uppercase transition-colors group-hover:text-[#008da4]">
+                    {pillar.title}
+                  </h3>
+                  <p className="mt-1.5 text-xs font-medium leading-relaxed text-[#5c7288]">
+                    {pillar.summary}
+                  </p>
+                </div>
 
-                    {/* Tool Info - No Ellipsis Truncation, Clean and Legible */}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold text-[#0d2a4a] leading-tight">
-                        {tool.name}
-                      </p>
-                      <p className="text-[10px] font-mono font-medium text-[#7a8f9f] leading-tight mt-0.5">
-                        {tool.role}
-                      </p>
+                {/* Vertical Stack of Clean Tool Rows (Capped at 6 max) */}
+                <div className="mt-5 space-y-2.5">
+                  {visibleTools.map((tool) => (
+                    <div
+                      key={`${pillar.id}-${tool.name}`}
+                      className="flex items-center gap-3 rounded-none border border-[#f0f4f6] bg-[#fbfdfd] p-2.5 transition-all duration-150 hover:border-[#008da4]/40 hover:bg-white hover:shadow-xs"
+                    >
+                      {/* Tool Logo Frame */}
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-none border border-[#e2ecee] bg-white p-1.5">
+                        <TechnologyMark
+                          name={tool.name}
+                          logoUrl={tool.logoUrl}
+                          className="h-5 w-5 object-contain"
+                        />
+                      </span>
+
+                      {/* Tool Info - No Ellipsis Truncation, Clean and Legible */}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-[#0d2a4a] leading-tight">
+                          {tool.name}
+                        </p>
+                        <p className="text-[10px] font-mono font-medium text-[#7a8f9f] leading-tight mt-0.5">
+                          {tool.role}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              {/* Pillar Footer */}
+              <div className="mt-6 border-t border-[#f0f4f6] pt-3 flex items-center justify-between text-[10px] font-mono text-[#7a8f9f]">
+                <span>STANDARDS LOCK</span>
+                <span className="font-bold text-[#008da4]">PRODUCTION READY</span>
               </div>
             </div>
-
-            {/* Pillar Footer */}
-            <div className="mt-6 border-t border-[#f0f4f6] pt-3 flex items-center justify-between text-[10px] font-mono text-[#7a8f9f]">
-              <span>STANDARDS LOCK</span>
-              <span className="font-bold text-[#008da4]">PRODUCTION READY</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Auxiliary Ecosystem Strip (Shown when 4 pillars or general view) */}
