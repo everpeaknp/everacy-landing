@@ -60,8 +60,11 @@ export default async function HomePage() {
           } : null}
         />
       </div>
+
+      {/* 2. Software Built For Real-World Action (Engineering in Motion Video Showcase) */}
+      <EngineeringMotionSection />
       
-      {/* 2. Capabilities & Engineering (Our Services + Continuous Scenario Palette) */}
+      {/* 3. Capabilities & Engineering (Our Services + Continuous Scenario Palette) */}
       <div style={{ position: "relative", zIndex: 2, isolation: "isolate" }}>
         <ArchSection
           data={homeData?.services}
@@ -69,21 +72,18 @@ export default async function HomePage() {
         />
       </div>
 
-      {/* 3. The Technology Behind The Work */}
+      {/* 4. The Technology Behind The Work */}
       <HomeTechnologySection
         services={homeData?.services}
         technologySection={homeData?.technology_section}
       />
 
-      {/* 4. Our Delivery Process (Visual Engineering Pipeline) */}
+      {/* 5. Our Delivery Process (Visual Engineering Pipeline) */}
       <ProcessSection
         data={homeData?.process}
         sectionTitle={homeData?.process_section?.title}
         sectionSubtitle={homeData?.process_section?.subtitle}
       />
-
-      {/* 5. Production in Motion (Autoplayed Looping Video & Interactive Play/Pause) */}
-      <EngineeringMotionSection />
 
       {/* 6. Systems Built For Impact & Scale (Featured Case Studies: YummyEver & SajiloWork) */}
       <HomeProjectsSection projects={projectsData?.projects} />

@@ -22,8 +22,6 @@ import {
   Users,
   Check,
   Sparkles,
-  Play,
-  Pause,
 } from "lucide-react";
 import { processBg } from "@/lib/site-theme";
 import type { ProcessStepData } from "@/lib/api";
@@ -192,11 +190,8 @@ interface ProcessSectionProps {
   sectionSubtitle?: string;
 }
 
-const AUTO_CHANGE_INTERVAL_MS = 2800; // 2.8 seconds snappy quick-flow
-
 export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessSectionProps) {
   const [activeIdx, setActiveIdx] = useState<number>(0);
-  const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
 
   const steps: NormalisedStep[] = (data ?? []).map((s, idx) => {
@@ -212,28 +207,27 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
     };
   });
 
-  // Snappy auto-advancing pipeline with smooth step flow
+  // Stable, consistent auto-advancing pipeline: guarantees equal 3.2s display for every phase
   useEffect(() => {
-    if (!isAutoPlay || steps.length === 0) {
-      setProgress(0);
-      return;
-    }
+    if (steps.length === 0) return;
 
-    const tickMs = 30;
-    const increment = (tickMs / AUTO_CHANGE_INTERVAL_MS) * 100;
+    setProgress(0);
+    const startTime = Date.now();
+    const durationMs = 3200; // 3.2s per phase
 
     const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          setActiveIdx((curr) => (curr + 1) % steps.length);
-          return 0;
-        }
-        return prev + increment;
-      });
-    }, tickMs);
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / durationMs) * 100);
+      setProgress(pct);
+
+      if (elapsed >= durationMs) {
+        clearInterval(timer);
+        setActiveIdx((curr) => (curr + 1) % steps.length);
+      }
+    }, 35);
 
     return () => clearInterval(timer);
-  }, [isAutoPlay, steps.length, activeIdx]);
+  }, [steps.length, activeIdx]);
 
   if (steps.length === 0) return <EmptyState title="No process steps published yet" />;
 
@@ -251,11 +245,6 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
 
   const handleNext = () => {
     selectPhase(activeIdx < steps.length - 1 ? activeIdx + 1 : 0);
-  };
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlay((prev) => !prev);
-    setProgress(0);
   };
 
   return (
@@ -330,7 +319,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                         <div
                           className="h-full bg-[#008da4] transition-all ease-linear"
                           style={{
-                            width: isPast ? "100%" : isActive && isAutoPlay ? `${progress}%` : "0%",
+                            width: isPast ? "100%" : isActive ? `${progress}%` : "0%",
                           }}
                         />
                       </div>
@@ -338,36 +327,6 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                   </div>
                 );
               })}
-            </div>
-
-            {/* Auto-Play Toggle & Status */}
-            <div className="ml-4 flex items-center gap-2.5 border-l border-[#dce8ec] pl-4">
-              <button
-                type="button"
-                onClick={toggleAutoPlay}
-                className="flex items-center gap-1.5 border border-[#dce8ec] bg-white px-2.5 py-1 text-[10px] font-mono font-bold text-[#0d2a4a] hover:border-[#008da4] hover:text-[#008da4] transition-colors cursor-pointer"
-                aria-label={isAutoPlay ? "Pause auto-advance" : "Resume auto-advance"}
-              >
-                {isAutoPlay ? (
-                  <>
-                    <Pause className="h-3 w-3 text-[#008da4]" />
-                    <span>AUTO</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-3 w-3 text-[#008da4] ml-0.5" />
-                    <span>PAUSED</span>
-                  </>
-                )}
-              </button>
-              <span className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#7a8f9f]">
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    isAutoPlay ? "bg-[#008da4] animate-pulse" : "bg-[#94a3b8]"
-                  }`}
-                />
-                <span className="hidden lg:inline">{isAutoPlay ? "QUICK FLOW" : "MANUAL"}</span>
-              </span>
             </div>
           </div>
         </div>
