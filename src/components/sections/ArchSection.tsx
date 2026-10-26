@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import type { ServiceCardData } from "@/lib/api";
+import { FadeIn } from "@/components/animations/FadeIn";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 interface ArchSectionProps {
@@ -18,40 +20,58 @@ function serviceHref(service: ServiceCardData): string {
   return service.link_href && service.link_href !== "/services" ? service.link_href : "/services";
 }
 
-function getServiceKeywordsAndSummary(title: string): { summary: string; keywords: string[] } {
+function getServiceCapabilities(title: string): { category: string; summary: string; capabilities: string[]; keywords: string[] } {
   const value = title.toLowerCase();
+
   if (value.includes("website") || value.includes("web")) {
     return {
-      summary: "Next.js & React web platforms · Responsive UI · Headless CMS",
+      category: "PLATFORMS & WEB",
+      summary: "High-speed marketing sites and web applications with sub-second page loads and seamless CMS control.",
+      capabilities: ["Next.js & React Core", "Responsive Viewport Systems", "Headless CMS Integration", "Core Web Vitals Lock"],
       keywords: ["web", "website", "frontend", "nextjs", "react", "landing", "redesign", "ui", "cms", "e-commerce", "portal"],
     };
   }
+
   if (value.includes("software") || value.includes("system")) {
     return {
-      summary: "Distributed architecture · Role-based access · Custom APIs & ERP sync",
+      category: "SYSTEMS & BACKEND",
+      summary: "Custom internal portals, distributed backends, and multi-tenant software shaped around your business operations.",
+      capabilities: ["Role-Based Access (RBAC)", "High-Throughput APIs", "Relational ACID Integrity", "Third-Party ERP Sync"],
       keywords: ["software", "system", "erp", "crm", "saas", "backend", "api", "automation", "dashboard", "internal", "database", "workflow"],
     };
   }
+
   if (value.includes("app") || value.includes("mobile")) {
     return {
-      summary: "iOS & Android apps · Offline-first sync · Push notifications",
+      category: "MOBILE NATIVE",
+      summary: "Single-codebase cross-platform mobile products for iOS and Android with smooth 60fps gesture response.",
+      capabilities: ["Flutter & React Native", "Offline-First Data Sync", "Push Notification Routing", "App Store & Play Store CI/CD"],
       keywords: ["mobile", "app", "ios", "android", "flutter", "react native", "phone", "tablet", "push", "offline"],
     };
   }
+
   if (value.includes("seo") || value.includes("search")) {
     return {
-      summary: "Technical Core Web Vitals · JSON-LD Schema · Search authority",
+      category: "SEARCH ARCHITECTURE",
+      summary: "Technical and content-led search engineering that earns high-intent organic rankings on Google.",
+      capabilities: ["Technical Web Audits", "Programmatic JSON-LD Schema", "Intent Keyword Mapping", "Crawl Budget Optimization"],
       keywords: ["seo", "search", "google", "ranking", "traffic", "organic", "schema", "vitals", "speed", "keywords"],
     };
   }
+
   if (value.includes("marketing") || value.includes("social")) {
     return {
-      summary: "Conversion funnels · Server-side tracking · Performance campaigns",
+      category: "GROWTH & ATTRIBUTION",
+      summary: "Data-driven performance campaigns, server-side conversion tracking, and high-converting acquisition funnels.",
+      capabilities: ["Server-Side Conversion APIs", "Targeted Paid Campaigns", "Funnel A/B Optimization", "Attribution Dashboards"],
       keywords: ["marketing", "growth", "ads", "campaigns", "social", "conversion", "funnel", "analytics", "leads", "brand"],
     };
   }
+
   return {
-    summary: "Direct carrier routing · Instant OTP & alerts · Webhook delivery logs",
+    category: "TELECOM & DISPATCH",
+    summary: "Reliable transactional and promotional SMS dispatch pipelines with direct carrier routing and delivery webhooks.",
+    capabilities: ["Sub-Second SMS Dispatch", "Direct Carrier Binds", "Automated Webhook Callbacks", "Delivery Analytics"],
     keywords: ["sms", "bulk", "messaging", "otp", "alerts", "notifications", "telecom", "dispatch", "api"],
   };
 }
@@ -87,7 +107,7 @@ const COMMAND_PRESETS = [
   },
 ];
 
-export function ArchSection({ data }: ArchSectionProps) {
+export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
   const cards = data ?? [];
 
   const [selectedPresetId, setSelectedPresetId] = useState<string>(COMMAND_PRESETS[0].id);
@@ -124,12 +144,12 @@ export function ArchSection({ data }: ArchSectionProps) {
   const matchedServices = useMemo(() => {
     const q = (customQuery.trim() || activePreset.query).toLowerCase();
     const scored = cards.map((s, idx) => {
-      const meta = getServiceKeywordsAndSummary(s.title);
+      const info = getServiceCapabilities(s.title);
       let score = 0;
       if (s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)) {
         score += 5;
       }
-      for (const kw of meta.keywords) {
+      for (const kw of info.keywords) {
         if (q.includes(kw)) score += 3;
       }
       if (!customQuery.trim()) {
@@ -137,7 +157,7 @@ export function ArchSection({ data }: ArchSectionProps) {
           if (s.title.toLowerCase().includes(mk)) score += 6;
         }
       }
-      return { service: s, summary: meta.summary, score, idx };
+      return { service: s, info, score, idx };
     });
     const matches = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score);
     return matches.length > 0 ? matches.slice(0, 3) : scored.slice(0, 3);
@@ -152,154 +172,251 @@ export function ArchSection({ data }: ArchSectionProps) {
       className="border-b border-[#e2ecee] bg-[#f6fafb] py-20 sm:py-28"
       style={{ fontFamily: "'Montserrat', sans-serif" }}
     >
-      <div className="mx-auto max-w-4xl px-5 sm:px-8">
-        <div className="text-center">
-          <span
-            className="mx-auto block h-20 w-px bg-gradient-to-b from-transparent via-[#cbd5e1] to-[#64748b]"
-            aria-hidden="true"
-          />
-          <h2 className="mt-6 text-3xl font-black tracking-[-0.025em] text-[#0d2a4a] sm:text-4xl">
-            Describe what you are building
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#586d82]">
-            Pick a common project scenario or type your requirements in plain words—see how our capabilities combine into one delivery plan.
-          </p>
-        </div>
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        {/* Clean, Sharp Header */}
+        <FadeIn direction="up" duration={0.45}>
+          <header className="mb-14 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#008da4]">
+                Capabilities &amp; Engineering
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-[-0.03em] text-[#0d2a4a] sm:text-5xl">
+                {sectionTitle || "Our Services"}
+              </h2>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-[#586d82]">
+                Web, mobile, custom software, and digital growth — designed, built, and maintained under one roof.
+              </p>
+            </div>
 
-        {/* Sharp Boxy Scenario Buttons */}
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
-          {COMMAND_PRESETS.map((preset) => {
-            const isSelected = customQuery.trim() === "" && selectedPresetId === preset.id;
+            <Link
+              href="/services"
+              className="group inline-flex shrink-0 items-center gap-2 rounded-none border border-[#0d2a4a] bg-white px-5 py-2.5 text-xs font-black uppercase tracking-wider text-[#0d2a4a] transition-all hover:bg-[#0d2a4a] hover:text-white"
+            >
+              <span>View all services</span>
+              <ArrowRight
+                aria-hidden="true"
+                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+              />
+            </Link>
+          </header>
+        </FadeIn>
+
+        {/* Sharp Boxy Architectural Services Grid (Uniform 3-Column Ledger, Zero Round Squircles, Zero Mismatches) */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {cards.map((service, index) => {
+            const info = getServiceCapabilities(service.title);
+            const num = String(index + 1).padStart(2, "0");
+
             return (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => {
-                  setCustomQuery("");
-                  setSelectedPresetId(preset.id);
-                }}
-                className={`rounded-none border px-4 py-2.5 text-xs font-semibold transition-all ${
-                  isSelected
-                    ? "border-[#0d2a4a] bg-[#0d2a4a] text-white"
-                    : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#00a6cb] hover:text-[#0d2a4a]"
-                }`}
+              <FadeIn
+                key={service.id}
+                className="h-full"
+                delay={Math.min(index * 0.05, 0.25)}
+                duration={0.4}
               >
-                {preset.label}
-              </button>
+                <Link
+                  href={serviceHref(service)}
+                  className="group relative flex h-full flex-col justify-between rounded-none border border-[#dce8ec] bg-white p-7 transition-all duration-200 hover:-translate-y-1 hover:border-[#008da4] hover:shadow-[4px_4px_0px_0px_#008da4,0_14px_28px_-12px_rgba(13,42,74,0.12)] sm:p-8"
+                >
+                  <div>
+                    {/* Sharp Header: Tabular Index + Category Label */}
+                    <div className="flex items-center justify-between border-b border-[#f0f4f6] pb-4">
+                      <span className="font-mono text-xs font-black text-[#008da4]">
+                        {num}
+                      </span>
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#7a8f9f]">
+                        {info.category}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="mt-5 text-xl font-extrabold leading-snug tracking-tight text-[#0d2a4a] transition-colors group-hover:text-[#008da4]">
+                      {service.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="mt-2.5 text-sm leading-relaxed text-[#586d82]">
+                      {service.description || info.summary}
+                    </p>
+
+                    {/* Concrete Capabilities Checklist */}
+                    <ul className="mt-6 space-y-2 border-t border-[#f0f4f6] pt-5">
+                      {info.capabilities.map((cap) => (
+                        <li
+                          key={cap}
+                          className="flex items-center gap-2 text-xs font-semibold text-[#405669]"
+                        >
+                          <span className="h-1 w-1 shrink-0 bg-[#008da4]" />
+                          <span>{cap}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Sharp Action Link */}
+                  <div className="mt-8 flex items-center justify-between border-t border-[#f0f4f6] pt-4 text-xs font-black text-[#008da4] transition-colors group-hover:text-[#0d2a4a]">
+                    <span>Learn more</span>
+                    <ArrowRight
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"
+                    />
+                  </div>
+                </Link>
+              </FadeIn>
             );
           })}
         </div>
 
-        {/* Sharp Boxy Interactive Command Palette */}
-        <div className="mt-6 overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
-          <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-6 py-4 sm:px-7 sm:py-5">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-5 w-5 shrink-0 text-[#008da4]"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
+        {/* "Describe what you are building" Interactive Solution Finder */}
+        <div className="mx-auto mt-20 max-w-4xl">
+          <div className="text-center">
+            <span
+              className="mx-auto block h-20 w-px bg-gradient-to-b from-transparent via-[#cbd5e1] to-[#64748b]"
               aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="6.5" />
-              <path d="m16 16 4.5 4.5" />
-            </svg>
-            <input
-              type="text"
-              value={customQuery ? customQuery : typedText}
-              onChange={(e) => setCustomQuery(e.target.value)}
-              placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
-              aria-label="Describe your project requirements"
-              className="min-w-0 flex-1 bg-transparent text-base font-medium text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-[18px]"
             />
-            {isTyping && (
-              <span className="inline-block h-5 w-0.5 animate-pulse bg-[#008da4]" aria-hidden="true" />
-            )}
-            {customQuery && (
-              <button
-                type="button"
-                onClick={() => setCustomQuery("")}
-                className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
-              >
-                Reset
-              </button>
-            )}
+            <h3 className="mt-6 text-3xl font-black tracking-[-0.025em] text-[#0d2a4a] sm:text-4xl">
+              Describe what you are building
+            </h3>
+            <p className="mx-auto mt-3 max-w-xl text-[15px] leading-relaxed text-[#586d82]">
+              Pick a common project scenario or type your requirements in plain words—see how our capabilities combine into one delivery plan.
+            </p>
           </div>
 
-          {/* Sharp Boxy Filter Chips Row */}
-          <div className="flex flex-wrap items-center gap-2.5 border-b border-[#f1f5f9] bg-[#fafcfd] px-6 py-3 sm:px-7">
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-[#64748b]">
-              Architecture Filters
-            </span>
-            {(customQuery.trim()
-              ? [
-                  `query: "${customQuery.trim().slice(0, 24)}"`,
-                  `matched: ${matchedServices.length} modules`,
-                  "delivery: Full-Stack",
-                ]
-              : activePreset.tags
-            ).map((chip, idx) => (
-              <span
-                key={chip}
-                className={`rounded-none px-2.5 py-1 font-mono text-xs font-medium ${
-                  idx === 2
-                    ? "bg-[#0d2a4a] text-white"
-                    : "border border-[#dce8ec] bg-white text-[#475569]"
-                }`}
+          {/* Sharp Boxy Scenario Buttons */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+            {COMMAND_PRESETS.map((preset) => {
+              const isSelected = customQuery.trim() === "" && selectedPresetId === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => {
+                    setCustomQuery("");
+                    setSelectedPresetId(preset.id);
+                  }}
+                  className={`rounded-none border px-4 py-2.5 text-xs font-bold transition-all ${
+                    isSelected
+                      ? "border-[#0d2a4a] bg-[#0d2a4a] text-white"
+                      : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#008da4] hover:text-[#0d2a4a]"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Sharp Boxy Interactive Command Palette */}
+          <div className="mt-6 overflow-hidden rounded-none border border-[#dce8ec] bg-white text-left shadow-[0_18px_50px_-24px_rgba(13,42,74,0.16)]">
+            <div className="flex items-center gap-3.5 border-b border-[#e4ecef] px-6 py-4 sm:px-7 sm:py-5">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5 shrink-0 text-[#008da4]"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                aria-hidden="true"
               >
-                {chip}
+                <circle cx="11" cy="11" r="6.5" />
+                <path d="m16 16 4.5 4.5" />
+              </svg>
+              <input
+                type="text"
+                value={customQuery ? customQuery : typedText}
+                onChange={(e) => setCustomQuery(e.target.value)}
+                placeholder="Type what you want to build (e.g. mobile app, SEO, custom ERP)..."
+                aria-label="Describe your project requirements"
+                className="min-w-0 flex-1 bg-transparent text-base font-semibold text-[#0d2a4a] placeholder:text-[#94a3b8] focus:outline-none sm:text-[18px]"
+              />
+              {isTyping && (
+                <span className="inline-block h-5 w-0.5 animate-pulse bg-[#008da4]" aria-hidden="true" />
+              )}
+              {customQuery && (
+                <button
+                  type="button"
+                  onClick={() => setCustomQuery("")}
+                  className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-2.5 py-1 text-xs font-semibold text-[#475569] hover:border-[#0d2a4a] hover:text-[#0d2a4a]"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+
+            {/* Sharp Boxy Filter Chips Row */}
+            <div className="flex flex-wrap items-center gap-2.5 border-b border-[#f1f5f9] bg-[#fafcfd] px-6 py-3 sm:px-7">
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-[#64748b]">
+                Architecture Filters
               </span>
-            ))}
-          </div>
+              {(customQuery.trim()
+                ? [
+                    `query: "${customQuery.trim().slice(0, 24)}"`,
+                    `matched: ${matchedServices.length} modules`,
+                    "delivery: Full-Stack",
+                  ]
+                : activePreset.tags
+              ).map((chip, idx) => (
+                <span
+                  key={chip}
+                  className={`rounded-none px-2.5 py-1 font-mono text-xs font-medium ${
+                    idx === 2
+                      ? "bg-[#0d2a4a] text-white"
+                      : "border border-[#dce8ec] bg-white text-[#475569]"
+                  }`}
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
 
-          {/* Matched Services Results List (Sharp Boxy Index & Action Button) */}
-          <div className="divide-y divide-[#f1f5f9] px-6 py-2 sm:px-7">
-            {matchedServices.map(({ service, summary, idx }) => (
-              <div
-                key={service.id}
-                className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
-              >
-                <div className="flex items-start gap-4">
-                  <span className="mt-0.5 flex h-9 w-12 shrink-0 items-center justify-center rounded-none border border-[#dce8ec] bg-[#f8fafb] font-mono text-xs font-bold text-[#008da4]">
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
-                  <div>
+            {/* Matched Services Results List (Sharp Boxy Index & Action Button) */}
+            <div className="divide-y divide-[#f1f5f9] px-6 py-2 sm:px-7">
+              {matchedServices.map(({ service, info, idx }) => (
+                <div
+                  key={service.id}
+                  className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center"
+                >
+                  <div className="flex items-start gap-4">
+                    <span className="mt-0.5 flex h-9 w-12 shrink-0 items-center justify-center rounded-none border border-[#dce8ec] bg-[#f8fafb] font-mono text-xs font-bold text-[#008da4]">
+                      {String(idx + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                      <Link
+                        href={serviceHref(service)}
+                        className="text-[15px] font-bold text-[#0d2a4a] hover:text-[#008da4]"
+                      >
+                        {service.title}
+                      </Link>
+                      <p className="mt-0.5 text-xs text-[#586d82]">{info.summary}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-3 self-end sm:self-center">
                     <Link
                       href={serviceHref(service)}
-                      className="text-[15px] font-bold text-[#0d2a4a] hover:text-[#008da4]"
+                      className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-3.5 py-1.5 text-xs font-bold text-[#0d2a4a] transition-colors hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
                     >
-                      {service.title}
+                      Open spec →
                     </Link>
-                    <p className="mt-0.5 text-xs text-[#586d82]">{summary}</p>
                   </div>
                 </div>
-
-                <div className="flex shrink-0 items-center gap-3 self-end sm:self-center">
-                  <Link
-                    href={serviceHref(service)}
-                    className="rounded-none border border-[#dce8ec] bg-[#f8fafb] px-3.5 py-1.5 text-xs font-bold text-[#0d2a4a] transition-colors hover:border-[#008da4] hover:bg-[#008da4] hover:text-white"
-                  >
-                    Open spec →
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Palette Footer Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#e4ecef] bg-[#f8fafb] px-6 py-3.5 text-xs text-[#64748b] sm:px-7">
-            <div className="flex items-center gap-5">
-              <span>Click any scenario tab to test</span>
-              <span className="hidden sm:inline">·</span>
-              <span className="hidden sm:inline">Type custom keywords to filter</span>
+              ))}
             </div>
-            <Link
-              href="/services"
-              className="font-bold text-[#0d2a4a] hover:text-[#008da4]"
-            >
-              Browse all {cards.length} capabilities →
-            </Link>
+
+            {/* Palette Footer Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#e4ecef] bg-[#f8fafb] px-6 py-3.5 text-xs text-[#64748b] sm:px-7">
+              <div className="flex items-center gap-5">
+                <span>Click any scenario tab to test</span>
+                <span className="hidden sm:inline">·</span>
+                <span className="hidden sm:inline">Type custom keywords to filter</span>
+              </div>
+              <Link
+                href="/services"
+                className="font-bold text-[#0d2a4a] hover:text-[#008da4]"
+              >
+                Browse all {cards.length} capabilities →
+              </Link>
+            </div>
           </div>
         </div>
       </div>
