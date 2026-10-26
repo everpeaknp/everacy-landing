@@ -305,10 +305,10 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
         {/* "Describe what you are building" Interactive Solution Finder & Services Showcase */}
         <div className="mt-20 sm:mt-28 border-t border-[#dce8ec] pt-14 sm:pt-20">
           <div className="mx-auto max-w-[1400px]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-8 items-stretch">
               
-              {/* Left Column: Solution Finder & Interactive Command Palette */}
-              <div className="lg:col-span-8 xl:col-span-7 flex flex-col">
+              {/* Left Column: Solution Finder & Interactive Command Palette (8 cols) */}
+              <div className="lg:col-span-8 flex flex-col">
                 <div>
                   <div className="mb-5 text-left">
                     <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-white px-3 py-1 shadow-sm mb-3">
@@ -326,7 +326,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                   </div>
 
                   {/* Sharp Boxy Scenario Buttons — Wide Single-Row Inline Layout */}
-                  <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 mb-5 overflow-x-auto no-scrollbar">
+                  <div className="flex flex-nowrap items-center gap-1.5 sm:gap-2 mb-5 overflow-x-auto no-scrollbar lg:overflow-visible">
                     {COMMAND_PRESETS.map((preset, idx) => {
                       const isSelected = (!hasUserEdited && presetIndex === idx) || customQuery === preset.query;
                       return (
@@ -338,7 +338,7 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                             setCustomQuery(preset.query);
                             setHasUserEdited(true);
                           }}
-                          className={`rounded-none border px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-[11.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                          className={`rounded-none border px-2 sm:px-2.5 xl:px-3 py-1.5 text-[10.5px] sm:text-[11px] xl:text-[11.5px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                             isSelected
                               ? "border-[#0d2a4a] bg-[#0d2a4a] text-white shadow-[2px_2px_0px_0px_#008da4]"
                               : "border-[#dce8ec] bg-white text-[#475569] hover:border-[#008da4] hover:text-[#0d2a4a]"
@@ -531,8 +531,8 @@ export function ArchSection({ data, sectionTitle }: ArchSectionProps) {
                 </div>
               </div>
 
-              {/* Right Column: Editorial Image Frame (Full Height & Bottom-Aligned Straight) */}
-              <div className="lg:col-span-4 xl:col-span-5 lg:ml-auto w-full max-w-[480px] h-full flex flex-col">
+              {/* Right Column: Editorial Image Frame (4 cols - Bottom-Aligned Straight) */}
+              <div className="lg:col-span-4 lg:ml-auto w-full max-w-[480px] h-full flex flex-col">
                 <figure className="relative w-full h-full flex-1 flex flex-col">
                   {/* Single Asymmetric Bottom-Right Curve Image Frame (rounded-br-[3.75rem]) */}
                   <div className="relative w-full h-full min-h-[460px] lg:min-h-0 flex-1 overflow-hidden rounded-br-[3.75rem] bg-[#0d2a4a] shadow-[0_20px_50px_-24px_rgba(13,42,74,0.3)] border border-[#dce8ec]">
