@@ -814,7 +814,7 @@ export async function fetchServicesPage(): Promise<ServicesPageData | null> {
 }
 
 export async function fetchServiceCategories(): Promise<ServiceCategoryData[]> {
-  const data = await apiFetch<ServiceCategoryData[]>("/service-categories/");
+  const data = await apiFetch<ServiceCategoryData[]>("/service-categories/", undefined, true);
   return data ?? [];
 }
 
