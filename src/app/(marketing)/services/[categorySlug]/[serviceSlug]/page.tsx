@@ -147,6 +147,10 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           imageAlt={service.capabilities_image_alt}
           imageTitle={service.capabilities_image_title}
           imageIsDecorative={service.capabilities_image_is_decorative}
+          bottomTitle={service.capabilities_bottom_title}
+          bottomSubtext={service.capabilities_bottom_subtext}
+          bottomCtaLabel={service.capabilities_bottom_cta_label}
+          bottomCtaHref={service.capabilities_bottom_cta_url}
         />
       )}
 

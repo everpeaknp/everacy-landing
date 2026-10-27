@@ -304,6 +304,10 @@ export interface ServiceCardData {
   show_articles?: boolean;
   journal_link_label?: string;
   article_link_label?: string;
+  capabilities_bottom_title?: string;
+  capabilities_bottom_subtext?: string;
+  capabilities_bottom_cta_label?: string;
+  capabilities_bottom_cta_url?: string;
   show_bottom_cta?: boolean;
   bottom_cta_button_label?: string;
   pipeline: ServicePipelineStepData[] | null;
@@ -342,6 +346,9 @@ export interface ServiceCategoryData {
   description: string;
   breadcrumb_label?: string;
   hero_eyebrow?: string;
+  secondary_description?: string;
+  primary_cta_label?: string;
+  primary_cta_url?: string;
   cta_label?: string;
   service_link_label?: string;
   empty_state_text?: string;

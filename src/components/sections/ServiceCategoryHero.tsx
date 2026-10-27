@@ -80,16 +80,16 @@ export function ServiceCategoryHero({ category }: { category: ServiceCategoryDat
             </p>
 
             <p className="mt-4 text-sm leading-7 text-[#65798e] sm:text-base">
-              Every engagement is structured around measurable outcomes — weekly working demos, clean architecture, and
-              senior specialists who work as an extension of your team.
+              {category.secondary_description ||
+                "Every engagement is structured around measurable outcomes — weekly working demos, clean architecture, and senior specialists who work as an extension of your team."}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
-                href="/contact"
+                href={category.primary_cta_url || "/contact"}
                 className="group inline-flex min-h-12 items-center gap-3 bg-[#00a6cb] px-6 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#078eaa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d2a4a] focus-visible:ring-offset-2"
               >
-                Build with us
+                {category.primary_cta_label || "Build with us"}
                 <ArrowUpRight
                   aria-hidden="true"
                   className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
@@ -115,6 +115,7 @@ export function ServiceCategoryHero({ category }: { category: ServiceCategoryDat
                 priority
                 sizes="(max-width: 1024px) 100vw, 44vw"
                 className="object-cover object-center transition-transform duration-700 hover:scale-[1.03]"
+                unoptimized={Boolean(heroImageSrc && (heroImageSrc.startsWith("http") || heroImageSrc.startsWith("/media")))}
               />
             </div>
           </figure>

@@ -31,13 +31,23 @@ const chapters = [
   },
 ];
 
+interface ServicesPlaybookBannerProps {
+  serviceTitle?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+}
+
 export function ServicesPlaybookBanner({
   serviceTitle,
   ctaHref = "/contact",
-}: {
-  serviceTitle?: string;
-  ctaHref?: string;
-}) {
+  ctaLabel = "Request your project blueprint",
+  eyebrow = "Architecture & Delivery Blueprint",
+  title,
+  description,
+}: ServicesPlaybookBannerProps) {
   const [activeChapter, setActiveChapter] = useState(0);
   const current = chapters[activeChapter];
 
@@ -61,17 +71,29 @@ export function ServicesPlaybookBanner({
         {/* Left Column: Narrative & CTA */}
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#7fdcf0]">
-            Architecture & Delivery Blueprint
+            {eyebrow}
           </p>
           <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
-            Join forces with our engineers to build{" "}
-            <span className="text-[#00a6cb]">defensible products</span>
+            {title ? (
+              title
+            ) : (
+              <>
+                Join forces with our engineers to build{" "}
+                <span className="text-[#00a6cb]">defensible products</span>
+              </>
+            )}
           </h2>
           <p className="mt-5 max-w-xl text-base leading-7 text-white/80 sm:text-lg">
-            Whether you&apos;re launching a new{" "}
-            {serviceTitle ? serviceTitle.toLowerCase() : "digital product"} initiative or modernising an existing
-            platform, we deliver a clear architectural roadmap, milestone schedule, and transparent budget breakdown
-            before production work begins.
+            {description ? (
+              description
+            ) : (
+              <>
+                Whether you&apos;re launching a new{" "}
+                {serviceTitle ? serviceTitle.toLowerCase() : "digital product"} initiative or modernising an existing
+                platform, we deliver a clear architectural roadmap, milestone schedule, and transparent budget breakdown
+                before production work begins.
+              </>
+            )}
           </p>
 
           <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
@@ -93,7 +115,7 @@ export function ServicesPlaybookBanner({
               href={ctaHref}
               className="group inline-flex min-h-12 items-center gap-3 bg-[#00a6cb] px-6 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#078fae] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0d2a4a]"
             >
-              Request your project blueprint
+              {ctaLabel}
               <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

@@ -15,6 +15,10 @@ interface ServiceCapabilityExplorerProps {
   imageAlt?: string;
   imageTitle?: string;
   imageIsDecorative?: boolean;
+  bottomTitle?: string;
+  bottomSubtext?: string;
+  bottomCtaLabel?: string;
+  bottomCtaHref?: string;
 }
 
 interface CapabilityShowcase {
@@ -89,6 +93,10 @@ export function ServiceCapabilityExplorer({
   eyebrow,
   title,
   description,
+  bottomTitle,
+  bottomSubtext,
+  bottomCtaLabel,
+  bottomCtaHref,
 }: ServiceCapabilityExplorerProps) {
   if (capabilities.length === 0) return null;
 
@@ -194,17 +202,17 @@ export function ServiceCapabilityExplorer({
         <div className="mt-8 flex flex-col items-start justify-between gap-4 border border-[#d5e4e8] bg-white px-6 py-5 sm:flex-row sm:items-center sm:px-8">
           <div>
             <p className="text-sm font-extrabold text-[#0d2a4a]">
-              Have a custom architecture or multi-platform build in mind?
+              {bottomTitle || "Have a custom architecture or multi-platform build in mind?"}
             </p>
             <p className="mt-0.5 text-xs font-medium text-[#586d82]">
-              We can combine any of these capabilities into a single roadmap.
+              {bottomSubtext || "We can combine any of these capabilities into a single roadmap."}
             </p>
           </div>
           <Link
-            href="/contact"
+            href={bottomCtaHref || "/contact"}
             className="inline-flex shrink-0 items-center gap-2 bg-[#0d2a4a] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-[#00a6cb]"
           >
-            Scope your project
+            {bottomCtaLabel || "Scope your project"}
             <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
           </Link>
         </div>

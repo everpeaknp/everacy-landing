@@ -132,14 +132,15 @@ export default async function ServiceCategoryPage({ params }: PageProps) {
       <div id="service-playbook" className="scroll-mt-24">
         <ServicesPlaybookBanner
           serviceTitle={category.title}
-          ctaHref={`/contact?service=${encodeURIComponent(category.title)}`}
+          ctaHref={category.primary_cta_url || `/contact?service=${encodeURIComponent(category.title)}`}
+          ctaLabel={category.cta_label || undefined}
         />
       </div>
 
       {/* 6. Dual Action Cards ("Ready to get started?") */}
       <ServicesCta
         serviceTitle={category.title}
-        ctaHref={`/contact?service=${encodeURIComponent(category.title)}`}
+        ctaHref={category.primary_cta_url || `/contact?service=${encodeURIComponent(category.title)}`}
         ctaSection={servicesPage?.cta_section}
       />
     </main>
