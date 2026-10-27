@@ -41,7 +41,7 @@ export function CTASectionComponent({ data }: CTASectionComponentProps) {
         <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3 py-1 shadow-sm mb-6">
           <span className="h-2 w-2 bg-[#008da4]" />
           <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
-            Start Your Project
+            {data?.micro_tag || "Start Your Project"}
           </span>
         </div>
 

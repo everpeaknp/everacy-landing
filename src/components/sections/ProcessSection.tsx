@@ -188,9 +188,10 @@ interface ProcessSectionProps {
   data?: ProcessStepData[];
   sectionTitle?: string;
   sectionSubtitle?: string;
+  sectionDescription?: string;
 }
 
-export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessSectionProps) {
+export function ProcessSection({ data, sectionTitle, sectionSubtitle, sectionDescription }: ProcessSectionProps) {
   const [activeIdx, setActiveIdx] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
 
@@ -201,9 +202,9 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
       stepNumber: String(s.step_number || idx + 1).padStart(2, "0"),
       title: s.title,
       detail: s.description,
-      image: meta.image,
-      badge: meta.badge,
-      deliverable: meta.deliverable,
+      image: s.image || s.image_url || meta.image,
+      badge: s.badge || meta.badge,
+      deliverable: s.deliverable || meta.deliverable,
     };
   });
 
@@ -232,7 +233,33 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
   if (steps.length === 0) return <EmptyState title="No process steps published yet" />;
 
   const activeStep = steps[activeIdx] ?? steps[0];
-  const activeDetail = PHASE_DETAILS[activeIdx] ?? PHASE_DETAILS[0];
+  const rawStep = (data ?? [])[activeIdx];
+  const fallbackDetail = PHASE_DETAILS[activeIdx % PHASE_DETAILS.length] ?? PHASE_DETAILS[0];
+  const activeDetail: PhaseDetail = {
+    duration: rawStep?.duration || fallbackDetail.duration,
+    squad: rawStep?.squad || fallbackDetail.squad,
+    activities:
+      rawStep?.activities && rawStep.activities.length > 0
+        ? rawStep.activities
+        : fallbackDetail.activities,
+    deliverablesList:
+      rawStep?.deliverables_list && rawStep.deliverables_list.length > 0
+        ? rawStep.deliverables_list
+        : fallbackDetail.deliverablesList,
+    artifactLabel: rawStep?.artifact_label || fallbackDetail.artifactLabel,
+    metricChips:
+      rawStep?.metric_chips && rawStep.metric_chips.length > 0
+        ? rawStep.metric_chips
+        : fallbackDetail.metricChips,
+    milestones:
+      rawStep?.milestones && rawStep.milestones.length > 0
+        ? rawStep.milestones
+        : fallbackDetail.milestones,
+    artifactFiles:
+      rawStep?.artifact_files && rawStep.artifact_files.length > 0
+        ? rawStep.artifact_files
+        : fallbackDetail.artifactFiles,
+  };
 
   const selectPhase = (idx: number) => {
     setActiveIdx(idx);
@@ -269,7 +296,8 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
             {sectionTitle || "Our Delivery Process"}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#586d82] sm:text-base">
-            From technical discovery to zero-downtime release—watch our automated delivery pipeline in motion or select any phase to inspect verified engineering deliverables.
+            {sectionDescription ||
+              "From technical discovery to zero-downtime release—watch our automated delivery pipeline in motion or select any phase to inspect verified engineering deliverables."}
           </p>
         </div>
 
@@ -553,7 +581,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle }: ProcessS
                     <div className="relative mt-4 aspect-[16/9] w-full overflow-hidden border border-[#dce8ec] bg-white shadow-xs">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={activeStep.image}
+                        src={rawStep?.artifact_image || rawStep?.artifact_image_url || activeStep.image}
                         alt={activeStep.title}
                         loading="lazy"
                         className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105"

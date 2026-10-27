@@ -15,6 +15,9 @@ import type { ProjectData } from "@/lib/api";
 
 interface HomeProjectsSectionProps {
   projects?: ProjectData[] | null;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
 }
 
 const FALLBACK_PROJECTS = [
@@ -81,7 +84,7 @@ const ENGINEERING_METRICS = [
   },
 ];
 
-export function HomeProjectsSection({ projects }: HomeProjectsSectionProps) {
+export function HomeProjectsSection({ projects, eyebrow, title, description }: HomeProjectsSectionProps) {
   const displayProjects = (projects && projects.length > 0)
     ? projects.slice(0, 2).map((p, idx) => {
         const fallback = FALLBACK_PROJECTS[idx % FALLBACK_PROJECTS.length];
@@ -91,7 +94,7 @@ export function HomeProjectsSection({ projects }: HomeProjectsSectionProps) {
           id: p.id,
           name: p.name,
           slug: p.slug,
-          category: idx === 0 ? "RESTAURANT OS & ENTERPRISE SAAS" : "TWO-SIDED TASK MARKETPLACE",
+          category: fallback.category,
           tagline: p.tagline?.text || p.description || fallback.tagline,
           description: p.description || fallback.description,
           image: screen,
@@ -112,15 +115,16 @@ export function HomeProjectsSection({ projects }: HomeProjectsSectionProps) {
             <div className="inline-flex items-center gap-2 border border-[#dce8ec] bg-[#f8fbfc] px-3 py-1 shadow-sm">
               <span className="h-2 w-2 bg-[#008da4]" />
               <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#008da4]">
-                Proven Track Record
+                {eyebrow || "Proven Track Record"}
               </span>
             </div>
 
             <h2 className="mt-4 text-3xl font-black uppercase tracking-tight text-[#0d2a4a] sm:text-4xl lg:text-5xl">
-              Systems Built For Impact &amp; Scale
+              {title || "Systems Built For Impact & Scale"}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-[#586d82]">
-              From multi-location restaurant operating systems to high-concurrency labor marketplaces—see how our engineering squads turn complex requirements into market-leading production products.
+              {description ||
+                "From multi-location restaurant operating systems to high-concurrency labor marketplaces—see how our engineering squads turn complex requirements into market-leading production products."}
             </p>
           </div>
 

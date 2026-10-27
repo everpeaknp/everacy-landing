@@ -455,6 +455,21 @@ export interface ProcessStepData {
   step_label: string;
   title: string;
   description: string;
+  badge?: string;
+  deliverable?: string;
+  image?: string | null;
+  image_url?: string | null;
+  duration?: string;
+  squad?: string;
+  activities?: string[];
+  deliverables_list?: string[];
+  artifact_label?: string;
+  artifact_badge?: string;
+  artifact_image?: string | null;
+  artifact_image_url?: string | null;
+  metric_chips?: { label: string; value: string }[];
+  milestones?: { number: string; title: string; status: string }[];
+  artifact_files?: string[];
   order: number;
 }
 
@@ -560,6 +575,7 @@ export interface FooterData {
 
 export interface CTASectionData {
   id: number;
+  micro_tag?: string;
   heading: string;
   button_text: string;
   button_link: string;
@@ -613,8 +629,9 @@ export interface HomeData {
   motion_section?: HomeMotionSectionData | null;
   solution_presets?: SolutionFinderPresetData[] | null;
   technology_section?: HomeTechnologySectionData | null;
-  process_section?: { title: string; subtitle: string } | null;
-  services_section?: { title: string } | null;
+  process_section?: { title: string; subtitle: string; description?: string } | null;
+  services_section?: { title: string; description?: string } | null;
+  projects_section?: { eyebrow?: string; title: string; description?: string } | null;
   testimonials_section?: { title: string; subtitle: string } | null;
   cta: CTASectionData | null;
   navbar: NavbarData;
@@ -625,7 +642,7 @@ export interface HomeData {
   contact: ContactPageData | null;
   footer: FooterData;
   featured_blogs?: BlogPostData[];
-  featured_blogs_section?: { title: string; subtitle: string } | null;
+  featured_blogs_section?: { title: string; subtitle: string; description?: string } | null;
   seo?: SEOFieldData | null;
 }
 

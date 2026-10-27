@@ -69,6 +69,7 @@ export default async function HomePage() {
         <ArchSection
           data={homeData?.services}
           sectionTitle={homeData?.services_section?.title}
+          sectionDescription={homeData?.services_section?.description}
           presets={homeData?.solution_presets}
         />
       </div>
@@ -84,10 +85,16 @@ export default async function HomePage() {
         data={homeData?.process}
         sectionTitle={homeData?.process_section?.title}
         sectionSubtitle={homeData?.process_section?.subtitle}
+        sectionDescription={homeData?.process_section?.description}
       />
 
       {/* 6. Systems Built For Impact & Scale (Featured Case Studies: YummyEver & SajiloWork) */}
-      <HomeProjectsSection projects={projectsData?.projects} />
+      <HomeProjectsSection
+        projects={projectsData?.projects}
+        eyebrow={homeData?.projects_section?.eyebrow}
+        title={homeData?.projects_section?.title}
+        description={homeData?.projects_section?.description}
+      />
 
       {/* 6. Wall of Trust (Testimonials & Client Logos) */}
       <TestimonialsSection 
@@ -101,6 +108,7 @@ export default async function HomePage() {
         posts={homeData?.featured_blogs} 
         sectionTitle={homeData?.featured_blogs_section?.title}
         sectionSubtitle={homeData?.featured_blogs_section?.subtitle}
+        sectionDescription={homeData?.featured_blogs_section?.description}
       />
 
       {/* 8. Call to Action Banner */}

@@ -19,6 +19,7 @@ interface FeaturedBlogsProps {
   posts?: BlogPostData[];
   sectionTitle?: string;
   sectionSubtitle?: string;
+  sectionDescription?: string;
 }
 
 const FALLBACK_BLOG_IMAGES = [
@@ -28,7 +29,7 @@ const FALLBACK_BLOG_IMAGES = [
   "/images/saas.jpg",
 ];
 
-export function FeaturedBlogs({ posts = [], sectionTitle, sectionSubtitle }: FeaturedBlogsProps) {
+export function FeaturedBlogs({ posts = [], sectionTitle, sectionSubtitle, sectionDescription }: FeaturedBlogsProps) {
   const featuredPosts = posts.slice(0, 3);
 
   if (featuredPosts.length === 0) return <EmptyState title="No articles published yet" />;
@@ -50,7 +51,8 @@ export function FeaturedBlogs({ posts = [], sectionTitle, sectionSubtitle }: Fea
               {sectionTitle || "Stay Ahead With Engineering Insights"}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-[#586d82]">
-              In-depth architectural breakdowns, zero-trust security paradigms, and technical blueprints from our senior engineers.
+              {sectionDescription ||
+                "In-depth architectural breakdowns, zero-trust security paradigms, and technical blueprints from our senior engineers."}
             </p>
           </div>
 

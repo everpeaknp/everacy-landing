@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 interface ArchSectionProps {
   data?: ServiceCardData[];
   sectionTitle?: string;
+  sectionDescription?: string;
   presets?: SolutionFinderPresetData[] | null;
 }
 
@@ -117,7 +118,7 @@ const COMMAND_PRESETS = [
   },
 ];
 
-export function ArchSection({ data, sectionTitle, presets }: ArchSectionProps) {
+export function ArchSection({ data, sectionTitle, sectionDescription, presets }: ArchSectionProps) {
   const cards = data ?? [];
 
   const activePresets = useMemo(() => {
@@ -208,9 +209,23 @@ export function ArchSection({ data, sectionTitle, presets }: ArchSectionProps) {
   const matchedServices = useMemo(() => {
     const q = (hasUserEdited ? customQuery.trim() : (customQuery.trim() || activePreset.query)).toLowerCase();
     const scored = cards.map((s, idx) => {
-      const info = getServiceCapabilities(s.title);
+      const fallbackInfo = getServiceCapabilities(s.title);
+      const cmsCapabilities =
+        s.capabilities && s.capabilities.length > 0
+          ? s.capabilities.map((c) => c.title)
+          : fallbackInfo.capabilities;
+      const cmsSummary = s.description || s.tagline || fallbackInfo.summary;
+      const cmsCategory = s.category?.title ? s.category.title.toUpperCase() : fallbackInfo.category;
+
+      const info = {
+        category: cmsCategory,
+        summary: cmsSummary,
+        capabilities: cmsCapabilities,
+        keywords: fallbackInfo.keywords,
+      };
+
       let score = 0;
-      if (s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)) {
+      if (s.title.toLowerCase().includes(q) || (s.description && s.description.toLowerCase().includes(q))) {
         score += 5;
       }
       for (const kw of info.keywords) {
@@ -248,7 +263,8 @@ export function ArchSection({ data, sectionTitle, presets }: ArchSectionProps) {
                 {sectionTitle || "Our Services"}
               </h2>
               <p className="mt-3 max-w-2xl text-base leading-7 text-[#586d82]">
-                Web, mobile, custom software, and digital growth — designed, built, and maintained under one roof.
+                {sectionDescription ||
+                  "Web, mobile, custom software, and digital growth — designed, built, and maintained under one roof."}
               </p>
             </div>
 
