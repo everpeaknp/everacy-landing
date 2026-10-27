@@ -43,7 +43,11 @@ interface ServicesHeroProps {
   eyebrow?: string;
   title?: string;
   description?: string | null;
+  secondaryDescription?: string | null;
   ctaLabel?: string;
+  ctaHref?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
   image?: string | null;
   stats?: ServicesHeroStatData[] | null;
 }
@@ -52,7 +56,11 @@ export function ServicesHero({
   eyebrow,
   title,
   description,
+  secondaryDescription,
   ctaLabel,
+  ctaHref = "/contact",
+  secondaryCtaLabel,
+  secondaryCtaHref = "#service-skills",
   image,
   stats,
 }: ServicesHeroProps) {
@@ -94,12 +102,12 @@ export function ServicesHero({
               "From first prototype to production at scale, we design, build, and run the software your business depends on."}
           </p>
           <p className="mt-4 max-w-xl text-sm leading-7 text-[#65798e] sm:text-base">
-            We partner with founders, product leaders, and enterprise teams to ship high-impact web, mobile, cloud, and
-            growth systems without technical debt.
+            {secondaryDescription ||
+              "We partner with founders, product leaders, and enterprise teams to ship high-impact web, mobile, cloud, and growth systems without technical debt."}
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
-              href="/contact"
+              href={ctaHref}
               className="group inline-flex min-h-12 items-center gap-3 bg-[#00a6cb] px-6 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#078eaa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d2a4a] focus-visible:ring-offset-2"
             >
               {ctaLabel || "Build with us"}
@@ -109,10 +117,10 @@ export function ServicesHero({
               />
             </Link>
             <a
-              href="#service-skills"
+              href={secondaryCtaHref}
               className="inline-flex min-h-12 items-center gap-2 px-2 text-sm font-bold text-[#31536c] transition hover:text-[#008da4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#008da4]"
             >
-              Explore capabilities
+              {secondaryCtaLabel || "Explore capabilities"}
               <ArrowDownRight aria-hidden="true" className="h-4 w-4 text-[#008da4]" />
             </a>
           </div>

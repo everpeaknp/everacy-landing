@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Compass, Layers, Rocket, Sparkles } from "lucide-react";
 import { useReducedMotion } from "@/hooks";
-import type { ServicePipelineStepData } from "@/lib/api";
+import type { ServiceEngagementModelData, ServicePipelineStepData } from "@/lib/api";
+import { ServiceContentIcon } from "@/components/sections/ServiceContentIcon";
 import { engagementModels, processPhases } from "./servicesContent";
 import { ServicesIcon } from "./ServicesIcon";
 
@@ -13,7 +14,7 @@ interface ServicesWorkTogetherProps {
   title?: string;
   description?: string;
   pipelineSteps?: ServicePipelineStepData[] | null;
-  engagementModels?: Array<{ title: string; text: string; icon?: string }> | null;
+  engagementModels?: ServiceEngagementModelData[] | null;
 }
 
 export function ServicesWorkTogether({
@@ -223,7 +224,9 @@ export function ServicesWorkTogether({
               className="flex flex-col bg-white p-8 text-[#0d2a4a] sm:p-10"
             >
               <span className="grid h-12 w-12 place-items-center rounded-full bg-[#f0f5f7] text-[#0d2a4a]">
-                {index === 0 ? (
+                {model.icon && !["users", "target", "layers"].includes(model.icon.toLowerCase()) ? (
+                  <ServiceContentIcon name={model.icon} className="h-5 w-5" />
+                ) : index === 0 ? (
                   <Sparkles aria-hidden="true" className="h-5 w-5" />
                 ) : index === 1 ? (
                   <ServicesIcon name={model.icon || "target"} className="h-5 w-5" />
@@ -237,7 +240,7 @@ export function ServicesWorkTogether({
               </h3>
 
               <p className="mt-3.5 text-sm leading-7 text-[#586d82]">
-                {model.text}
+                {("description" in model && model.description) || ("text" in model && model.text) || ""}
               </p>
             </motion.article>
           ))}

@@ -26,9 +26,17 @@ const defaultItemIcons = [
 
 interface ServicesSkillsTabsProps {
   tabs?: ServiceSkillTabData[] | null;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
 }
 
-export function ServicesSkillsTabs({ tabs }: ServicesSkillsTabsProps) {
+export function ServicesSkillsTabs({
+  tabs,
+  eyebrow = "Capabilities",
+  title = "Skills at a glance",
+  description = "Everything you need under one roof, from the first architectural blueprint to production operations.",
+}: ServicesSkillsTabsProps) {
   const reduced = useReducedMotion();
 
   const formattedTabs = useMemo(() => {
@@ -95,12 +103,19 @@ export function ServicesSkillsTabs({ tabs }: ServicesSkillsTabsProps) {
     >
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">Capabilities</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">{eyebrow}</p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
-            <span className="text-[#00a6cb]">Skills</span> at a glance
+            {title.includes(" ") ? (
+              <>
+                <span className="text-[#00a6cb]">{title.split(" ")[0]}</span>{" "}
+                {title.split(" ").slice(1).join(" ")}
+              </>
+            ) : (
+              title
+            )}
           </h2>
           <p className="mt-5 text-base leading-7 text-[#586d82] sm:text-lg">
-            Everything you need under one roof, from the first architectural blueprint to production operations.
+            {description}
           </p>
         </div>
 

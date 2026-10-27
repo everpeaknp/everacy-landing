@@ -58,12 +58,24 @@ const defaultPillars = [
 
 interface ServicesDifferentiatorProps {
   pillars?: ServiceDifferentiatorPillarData[] | null;
+  eyebrow?: string;
+  title?: string;
+  primaryCtaLabel?: string;
+  primaryCtaUrl?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaUrl?: string;
   serviceTitle?: string;
   ctaHref?: string;
 }
 
 export function ServicesDifferentiator({
   pillars,
+  eyebrow,
+  title,
+  primaryCtaLabel,
+  primaryCtaUrl,
+  secondaryCtaLabel,
+  secondaryCtaUrl,
   serviceTitle,
   ctaHref = "/contact",
 }: ServicesDifferentiatorProps) {
@@ -138,10 +150,23 @@ export function ServicesDifferentiator({
           {/* Right: Editorial Copy & Boxy Pillar Switcher */}
           <div>
             <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">
-              Why teams choose us
+              {eyebrow || "Why teams choose us"}
             </p>
             <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
-              Here&apos;s what <span className="text-[#00a6cb]">sets us apart</span>
+              {title ? (
+                title.toLowerCase().includes("sets us apart") ? (
+                  <>
+                    {title.substring(0, title.toLowerCase().indexOf("sets us apart"))}
+                    <span className="text-[#00a6cb]">sets us apart</span>
+                  </>
+                ) : (
+                  title
+                )
+              ) : (
+                <>
+                  Here&apos;s what <span className="text-[#00a6cb]">sets us apart</span>
+                </>
+              )}
             </h2>
 
             {/* Sharp Boxy Pillar Tabs */}
@@ -188,17 +213,17 @@ export function ServicesDifferentiator({
 
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <Link
-                href={ctaHref}
+                href={primaryCtaUrl || ctaHref}
                 className="inline-flex min-h-12 items-center gap-3 bg-[#00a6cb] px-6 py-3.5 text-sm font-extrabold text-white transition hover:bg-[#078fae] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d2a4a] focus-visible:ring-offset-2"
               >
-                {serviceTitle ? `Discuss ${serviceTitle}` : "Work with us"}
+                {primaryCtaLabel || (serviceTitle ? `Discuss ${serviceTitle}` : "Work with us")}
                 <ArrowRight aria-hidden="true" className="h-4 w-4" />
               </Link>
               <Link
-                href="/about"
+                href={secondaryCtaUrl || "/about"}
                 className="inline-flex min-h-12 items-center gap-2 px-3 py-3 text-sm font-extrabold text-[#0d2a4a] transition hover:text-[#008da4]"
               >
-                Meet our team
+                {secondaryCtaLabel || "Meet our team"}
                 <ArrowRight aria-hidden="true" className="h-4 w-4 text-[#00a6cb]" />
               </Link>
             </div>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { ServiceCapabilityData } from "@/lib/api";
+import { resolveMetadataImageUrl, siteConfig } from "@/lib/seo";
 
 interface ServiceCapabilityExplorerProps {
   capabilities: ServiceCapabilityData[];
@@ -118,8 +119,12 @@ export function ServiceCapabilityExplorer({
         <div className="grid gap-8 md:grid-cols-2">
           {capabilities.map((capability, index) => {
             const showcase = getCapabilityShowcase(capability.title, index);
-            const photoSrc = capability.image || showcase.photoSrc;
-            const categoryLabel = capability.category_label || showcase.categoryLabel;
+            const rawImage = capability.image?.trim() || "";
+            const resolvedImage = rawImage
+              ? resolveMetadataImageUrl(rawImage, siteConfig.url) || rawImage
+              : "";
+            const photoSrc = resolvedImage || showcase.photoSrc;
+            const categoryLabel = capability.category_label?.trim() || showcase.categoryLabel;
             const highlights =
               capability.highlights && capability.highlights.length > 0
                 ? capability.highlights

@@ -42,7 +42,11 @@ export default async function ServicesPage() {
         eyebrow={pageData?.hero?.eyebrow}
         title={pageData?.hero?.title}
         description={pageData?.hero?.subtitle}
-        ctaLabel={pageData?.hero?.cta_label}
+        secondaryDescription={pageData?.hero?.secondary_description}
+        ctaLabel={pageData?.hero?.primary_cta_label || pageData?.hero?.cta_label}
+        ctaHref={pageData?.hero?.primary_cta_url}
+        secondaryCtaLabel={pageData?.hero?.secondary_cta_label}
+        secondaryCtaHref={pageData?.hero?.secondary_cta_url}
         image={pageData?.hero?.background_image}
         stats={pageData?.stats}
       />
@@ -57,15 +61,28 @@ export default async function ServicesPage() {
             <div className="mb-16 flex flex-col justify-between gap-6 border-b border-[#d5e4e8] pb-8 lg:flex-row lg:items-end">
               <div className="max-w-2xl">
                 <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">
-                  Practice Directory
+                  {pageData?.hero?.directory_eyebrow || "Practice Directory"}
                 </p>
                 <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
-                  Browse our <span className="text-[#00a6cb]">capabilities</span>
+                  {pageData?.hero?.directory_title ? (
+                    pageData.hero.directory_title.toLowerCase().includes("capabilities") ? (
+                      <>
+                        {pageData.hero.directory_title.substring(0, pageData.hero.directory_title.toLowerCase().indexOf("capabilities"))}
+                        <span className="text-[#00a6cb]">capabilities</span>
+                      </>
+                    ) : (
+                      pageData.hero.directory_title
+                    )
+                  ) : (
+                    <>
+                      Browse our <span className="text-[#00a6cb]">capabilities</span>
+                    </>
+                  )}
                 </h2>
               </div>
               <p className="max-w-md text-sm leading-6 text-[#586d82] sm:text-base">
-                Explore our specialized engineering, product design, and growth practices — or dive directly into a
-                specific service.
+                {pageData?.hero?.directory_description ||
+                  "Explore our specialized engineering, product design, and growth practices — or dive directly into a specific service."}
               </p>
             </div>
 
@@ -148,10 +165,23 @@ export default async function ServicesPage() {
       )}
 
       {/* 3. Cross-Discipline Skills & Stack Matrix */}
-      <ServicesSkillsTabs tabs={pageData?.skill_tabs} />
+      <ServicesSkillsTabs
+        tabs={pageData?.skill_tabs}
+        eyebrow={pageData?.hero?.skills_eyebrow}
+        title={pageData?.hero?.skills_title}
+        description={pageData?.hero?.skills_description}
+      />
 
       {/* 4. Agency-Wide Engineering Standard */}
-      <ServicesDifferentiator pillars={pageData?.differentiators} />
+      <ServicesDifferentiator
+        pillars={pageData?.differentiators}
+        eyebrow={pageData?.hero?.differentiator_eyebrow}
+        title={pageData?.hero?.differentiator_title}
+        primaryCtaLabel={pageData?.hero?.differentiator_cta_label}
+        primaryCtaUrl={pageData?.hero?.differentiator_cta_url}
+        secondaryCtaLabel={pageData?.hero?.differentiator_secondary_cta_label}
+        secondaryCtaUrl={pageData?.hero?.differentiator_secondary_cta_url}
+      />
 
       {/* 5. Dual Action Cards */}
       <ServicesCta ctaSection={pageData?.cta_section} />

@@ -30,8 +30,14 @@ export function ServicesCta({
     (serviceTitle
       ? `Have a ${serviceTitle.toLowerCase()} initiative on your roadmap? Let’s scope the fastest, safest path from concept to production.`
       : "Partner with a dedicated squad of senior engineers and product designers to turn your roadmap into shipped software.");
+  const card1Subtext =
+    ctaSection?.card1_subtext ||
+    "We reply within one business day with honest architectural feedback and a clear delivery plan.";
+  const card1Image = ctaSection?.card1_image || ctaSection?.card1_image_url || "/images/saas.jpg";
   const card1CtaLabel = ctaSection?.card1_cta_label || "Start a project";
   const card1CtaHref = ctaSection?.card1_cta_href || ctaHref;
+  const card1SecondaryCtaLabel = ctaSection?.card1_secondary_cta_label || "See our work";
+  const card1SecondaryCtaHref = ctaSection?.card1_secondary_cta_href || "/projects";
 
   const card2Badge = ctaSection?.card2_badge || "Careers at Everacy";
   const card2BadgeColor = ctaSection?.card2_badge_color || "#7fdcf0";
@@ -39,8 +45,14 @@ export function ServicesCta({
   const card2Description =
     ctaSection?.card2_description ||
     "Looking to solve meaningful engineering and product design problems alongside curious, low-ego teammates?";
+  const card2Subtext =
+    ctaSection?.card2_subtext ||
+    "Explore open roles across frontend, backend, mobile, and product design and grow your craft with us.";
+  const card2Image = ctaSection?.card2_image || ctaSection?.card2_image_url || "/images/cloudcomputing.jpg";
   const card2CtaLabel = ctaSection?.card2_cta_label || "Explore careers";
   const card2CtaHref = ctaSection?.card2_cta_href || "/careers";
+  const card2SecondaryCtaLabel = ctaSection?.card2_secondary_cta_label || "Meet the team";
+  const card2SecondaryCtaHref = ctaSection?.card2_secondary_cta_href || "/about";
 
   return (
     <section
@@ -59,11 +71,12 @@ export function ServicesCta({
           {/* Card 1: Build with us (Photographic background + asymmetric top-right corner) */}
           <div className="group relative flex min-h-[380px] flex-col justify-end overflow-hidden rounded-tr-[3.25rem] border border-white/15 bg-[#0a2036] p-8 sm:min-h-[420px] sm:p-10">
             <Image
-              src="/images/saas.jpg"
+              src={card1Image}
               alt="Engineers building digital products at Everacy"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
+              unoptimized={Boolean(card1Image && (card1Image.startsWith("http") || card1Image.startsWith("/media")))}
             />
             <div
               aria-hidden="true"
@@ -81,9 +94,11 @@ export function ServicesCta({
               <p className="mt-3 max-w-md text-sm leading-7 text-white/80 sm:text-base">
                 {card1Description}
               </p>
-              <p className="mt-2 text-sm leading-6 text-white/65">
-                We reply within one business day with honest architectural feedback and a clear delivery plan.
-              </p>
+              {card1Subtext && (
+                <p className="mt-2 text-sm leading-6 text-white/65">
+                  {card1Subtext}
+                </p>
+              )}
 
               <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-white/15 pt-5">
                 <Link
@@ -93,13 +108,15 @@ export function ServicesCta({
                   {card1CtaLabel}
                   <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
-                <Link
-                  href="/projects"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-white/85 transition hover:text-[#7fdcf0]"
-                >
-                  See our work
-                  <ArrowRight aria-hidden="true" className="h-4 w-4 text-[#00a6cb]" />
-                </Link>
+                {card1SecondaryCtaLabel && (
+                  <Link
+                    href={card1SecondaryCtaHref}
+                    className="inline-flex items-center gap-2 text-sm font-bold text-white/85 transition hover:text-[#7fdcf0]"
+                  >
+                    {card1SecondaryCtaLabel}
+                    <ArrowRight aria-hidden="true" className="h-4 w-4 text-[#00a6cb]" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -107,11 +124,12 @@ export function ServicesCta({
           {/* Card 2: Join us (Photographic background + asymmetric top-right corner) */}
           <div className="group relative flex min-h-[380px] flex-col justify-end overflow-hidden rounded-tr-[3.25rem] border border-white/15 bg-[#0a2036] p-8 sm:min-h-[420px] sm:p-10">
             <Image
-              src="/images/cloudcomputing.jpg"
+              src={card2Image}
               alt="Join the engineering and design team at Everacy"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
+              unoptimized={Boolean(card2Image && (card2Image.startsWith("http") || card2Image.startsWith("/media")))}
             />
             <div
               aria-hidden="true"
@@ -129,9 +147,11 @@ export function ServicesCta({
               <p className="mt-3 max-w-md text-sm leading-7 text-white/80 sm:text-base">
                 {card2Description}
               </p>
-              <p className="mt-2 text-sm leading-6 text-white/65">
-                Explore open roles across frontend, backend, mobile, and product design and grow your craft with us.
-              </p>
+              {card2Subtext && (
+                <p className="mt-2 text-sm leading-6 text-white/65">
+                  {card2Subtext}
+                </p>
+              )}
 
               <div className="mt-7 flex flex-wrap items-center gap-5 border-t border-white/15 pt-5">
                 <Link
@@ -141,13 +161,15 @@ export function ServicesCta({
                   {card2CtaLabel}
                   <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
-                <Link
-                  href="/about"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-white/85 transition hover:text-[#7fdcf0]"
-                >
-                  Meet the team
-                  <ArrowRight aria-hidden="true" className="h-4 w-4 text-[#00a6cb]" />
-                </Link>
+                {card2SecondaryCtaLabel && (
+                  <Link
+                    href={card2SecondaryCtaHref}
+                    className="inline-flex items-center gap-2 text-sm font-bold text-white/85 transition hover:text-[#7fdcf0]"
+                  >
+                    {card2SecondaryCtaLabel}
+                    <ArrowRight aria-hidden="true" className="h-4 w-4 text-[#00a6cb]" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>

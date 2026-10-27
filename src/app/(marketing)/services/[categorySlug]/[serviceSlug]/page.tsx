@@ -63,9 +63,12 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     fetchTestimonials(),
     fetchServicesPage(),
   ]);
-  const projects = (projectsData?.projects ?? [])
-    .filter((project) => project.is_active && project.is_featured)
-    .slice(0, 3);
+  const projects =
+    service.related_projects && service.related_projects.length > 0
+      ? service.related_projects.filter((project) => project.is_active !== false)
+      : (projectsData?.projects ?? [])
+          .filter((project) => project.is_active && project.is_featured)
+          .slice(0, 3);
   const articles = (blogsData?.posts ?? []).slice(0, 3);
   const caseStudies = (service.case_studies ?? []).map((study) => ({
     ...study,
@@ -201,6 +204,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         title={sectionCopy("pipeline", "title") || undefined}
         description={sectionCopy("pipeline", "description") || undefined}
         pipelineSteps={service.pipeline}
+        engagementModels={service.engagement_models}
       />
 
       {/* 6. Service-Specific Business Outcomes (service.benefits) */}
@@ -369,13 +373,18 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         >
           <FadeIn className="mx-auto max-w-7xl" duration={0.5}>
             <div className="flex flex-wrap items-end justify-between gap-5">
-              <div>
+              <div className="max-w-2xl">
                 <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#008da4]">
                   {sectionCopy("projects", "eyebrow") || "Proof in production"}
                 </p>
                 <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-4xl">
                   {sectionCopy("projects", "title") || "Selected client work"}
                 </h2>
+                {sectionCopy("projects", "description") && (
+                  <p className="mt-3 text-sm leading-6 text-[#586d82] sm:text-base">
+                    {sectionCopy("projects", "description")}
+                  </p>
+                )}
               </div>
               <Link
                 href="/projects"

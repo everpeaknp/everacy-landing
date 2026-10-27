@@ -6,7 +6,7 @@ import { ServiceCategoryHero } from "@/components/sections/ServiceCategoryHero";
 import { ServiceSectionNav } from "@/components/sections/ServiceSectionNav";
 import { FadeIn } from "@/components/animations/FadeIn";
 import { ServiceContentIcon } from "@/components/sections/ServiceContentIcon";
-import { fetchGlobalSEO, fetchServiceCategory } from "@/lib/api";
+import { fetchGlobalSEO, fetchServiceCategory, fetchServicesPage } from "@/lib/api";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { ServicesValueCards } from "@/components/services/ServicesValueCards";
@@ -37,7 +37,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ServiceCategoryPage({ params }: PageProps) {
   const { categorySlug } = await params;
-  const category = await fetchServiceCategory(categorySlug);
+  const [category, servicesPage] = await Promise.all([
+    fetchServiceCategory(categorySlug),
+    fetchServicesPage(),
+  ]);
   if (!category) notFound();
 
   const sectionNavItems = [
@@ -134,7 +137,11 @@ export default async function ServiceCategoryPage({ params }: PageProps) {
       </div>
 
       {/* 6. Dual Action Cards ("Ready to get started?") */}
-      <ServicesCta serviceTitle={category.title} ctaHref={`/contact?service=${encodeURIComponent(category.title)}`} />
+      <ServicesCta
+        serviceTitle={category.title}
+        ctaHref={`/contact?service=${encodeURIComponent(category.title)}`}
+        ctaSection={servicesPage?.cta_section}
+      />
     </main>
   );
 }

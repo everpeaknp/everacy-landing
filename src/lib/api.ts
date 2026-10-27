@@ -219,6 +219,13 @@ export interface ServicePipelineStepData {
   detail: string;
 }
 
+export interface ServiceEngagementModelData {
+  title: string;
+  description?: string;
+  text?: string;
+  icon?: string;
+}
+
 export interface ServiceBenefitData {
   title: string;
   description: string;
@@ -300,10 +307,12 @@ export interface ServiceCardData {
   show_bottom_cta?: boolean;
   bottom_cta_button_label?: string;
   pipeline: ServicePipelineStepData[] | null;
+  engagement_models?: ServiceEngagementModelData[] | null;
   benefits?: ServiceBenefitData[] | null;
   faqs?: ServiceFaqData[] | null;
   features?: ServiceFeatureData[] | null;
   case_studies?: ServiceCaseStudyPreviewData[] | null;
+  related_projects?: ProjectData[] | null;
   section_solutions_title?: string;
   section_case_studies_title?: string;
   section_pipeline_title?: string;
@@ -351,12 +360,29 @@ export interface ServicesPageHeroData {
   title: string;
   eyebrow?: string;
   subtitle: string;
+  secondary_description?: string;
   cta_label?: string;
+  primary_cta_label?: string;
+  primary_cta_url?: string;
+  secondary_cta_label?: string;
+  secondary_cta_url?: string;
   category_link_label?: string;
   service_link_label?: string;
   empty_state_text?: string;
   background_image: string | null;
   scroll_text: string | null;
+  directory_eyebrow?: string;
+  directory_title?: string;
+  directory_description?: string;
+  skills_eyebrow?: string;
+  skills_title?: string;
+  skills_description?: string;
+  differentiator_eyebrow?: string;
+  differentiator_title?: string;
+  differentiator_cta_label?: string;
+  differentiator_cta_url?: string;
+  differentiator_secondary_cta_label?: string;
+  differentiator_secondary_cta_url?: string;
   seo?: SEOFieldData | null;
 }
 
@@ -409,14 +435,24 @@ export interface ServicesCtaSectionData {
   card1_badge_color?: string;
   card1_title: string;
   card1_description: string;
+  card1_subtext?: string;
+  card1_image?: string | null;
+  card1_image_url?: string;
   card1_cta_label: string;
   card1_cta_href: string;
+  card1_secondary_cta_label?: string;
+  card1_secondary_cta_href?: string;
   card2_badge: string;
   card2_badge_color?: string;
   card2_title: string;
   card2_description: string;
+  card2_subtext?: string;
+  card2_image?: string | null;
+  card2_image_url?: string;
   card2_cta_label: string;
   card2_cta_href: string;
+  card2_secondary_cta_label?: string;
+  card2_secondary_cta_href?: string;
 }
 
 export interface ServicesPageData {
