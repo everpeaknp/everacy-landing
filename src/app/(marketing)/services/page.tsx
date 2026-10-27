@@ -61,27 +61,32 @@ export default async function ServicesPage() {
             <div className="mb-16 flex flex-col justify-between gap-6 border-b border-[#d5e4e8] pb-8 lg:flex-row lg:items-end">
               <div className="max-w-2xl">
                 <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#008da4]">
-                  {pageData?.hero?.directory_eyebrow || "Practice Directory"}
+                  {pageData?.directory_section?.eyebrow || pageData?.hero?.directory_eyebrow || "Practice Directory"}
                 </p>
                 <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#0d2a4a] sm:text-5xl">
-                  {pageData?.hero?.directory_title ? (
-                    pageData.hero.directory_title.toLowerCase().includes("capabilities") ? (
+                  {(() => {
+                    const dirTitle = pageData?.directory_section?.title || pageData?.hero?.directory_title;
+                    if (dirTitle) {
+                      return dirTitle.toLowerCase().includes("capabilities") ? (
+                        <>
+                          {dirTitle.substring(0, dirTitle.toLowerCase().indexOf("capabilities"))}
+                          <span className="text-[#00a6cb]">capabilities</span>
+                        </>
+                      ) : (
+                        dirTitle
+                      );
+                    }
+                    return (
                       <>
-                        {pageData.hero.directory_title.substring(0, pageData.hero.directory_title.toLowerCase().indexOf("capabilities"))}
-                        <span className="text-[#00a6cb]">capabilities</span>
+                        Browse our <span className="text-[#00a6cb]">capabilities</span>
                       </>
-                    ) : (
-                      pageData.hero.directory_title
-                    )
-                  ) : (
-                    <>
-                      Browse our <span className="text-[#00a6cb]">capabilities</span>
-                    </>
-                  )}
+                    );
+                  })()}
                 </h2>
               </div>
               <p className="max-w-md text-sm leading-6 text-[#586d82] sm:text-base">
-                {pageData?.hero?.directory_description ||
+                {pageData?.directory_section?.description ||
+                  pageData?.hero?.directory_description ||
                   "Explore our specialized engineering, product design, and growth practices — or dive directly into a specific service."}
               </p>
             </div>
@@ -113,7 +118,7 @@ export default async function ServicesPage() {
                         href={"/services/" + category.slug}
                         className="mt-6 inline-flex items-center gap-2 bg-[#0d2a4a] px-5 py-3 text-xs font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-[#00a6cb]"
                       >
-                        {(pageData?.hero?.category_link_label || `Explore ${category.title}`).replaceAll(
+                        {(pageData?.directory_section?.category_link_label || pageData?.hero?.category_link_label || `Explore ${category.title}`).replaceAll(
                           "{category}",
                           category.title
                         )}
@@ -167,20 +172,20 @@ export default async function ServicesPage() {
       {/* 3. Cross-Discipline Skills & Stack Matrix */}
       <ServicesSkillsTabs
         tabs={pageData?.skill_tabs}
-        eyebrow={pageData?.hero?.skills_eyebrow}
-        title={pageData?.hero?.skills_title}
-        description={pageData?.hero?.skills_description}
+        eyebrow={pageData?.skills_section?.eyebrow || pageData?.hero?.skills_eyebrow}
+        title={pageData?.skills_section?.title || pageData?.hero?.skills_title}
+        description={pageData?.skills_section?.description || pageData?.hero?.skills_description}
       />
 
       {/* 4. Agency-Wide Engineering Standard */}
       <ServicesDifferentiator
         pillars={pageData?.differentiators}
-        eyebrow={pageData?.hero?.differentiator_eyebrow}
-        title={pageData?.hero?.differentiator_title}
-        primaryCtaLabel={pageData?.hero?.differentiator_cta_label}
-        primaryCtaUrl={pageData?.hero?.differentiator_cta_url}
-        secondaryCtaLabel={pageData?.hero?.differentiator_secondary_cta_label}
-        secondaryCtaUrl={pageData?.hero?.differentiator_secondary_cta_url}
+        eyebrow={pageData?.differentiator_section?.eyebrow || pageData?.hero?.differentiator_eyebrow}
+        title={pageData?.differentiator_section?.title || pageData?.hero?.differentiator_title}
+        primaryCtaLabel={pageData?.differentiator_section?.primary_cta_label || pageData?.hero?.differentiator_cta_label}
+        primaryCtaUrl={pageData?.differentiator_section?.primary_cta_url || pageData?.hero?.differentiator_cta_url}
+        secondaryCtaLabel={pageData?.differentiator_section?.secondary_cta_label || pageData?.hero?.differentiator_secondary_cta_label}
+        secondaryCtaUrl={pageData?.differentiator_section?.secondary_cta_url || pageData?.hero?.differentiator_secondary_cta_url}
       />
 
       {/* 5. Dual Action Cards */}

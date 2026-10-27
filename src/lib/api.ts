@@ -455,11 +455,39 @@ export interface ServicesCtaSectionData {
   card2_secondary_cta_href?: string;
 }
 
+export interface ServiceDirectorySectionData {
+  id: number;
+  eyebrow?: string;
+  title: string;
+  description: string;
+  category_link_label?: string;
+}
+
+export interface ServiceSkillsSectionData {
+  id: number;
+  eyebrow?: string;
+  title: string;
+  description: string;
+}
+
+export interface ServiceDifferentiatorSectionData {
+  id: number;
+  eyebrow?: string;
+  title: string;
+  primary_cta_label?: string;
+  primary_cta_url?: string;
+  secondary_cta_label?: string;
+  secondary_cta_url?: string;
+}
+
 export interface ServicesPageData {
   hero: ServicesPageHeroData | null;
   services: ServiceCardData[];
   stats?: ServicesHeroStatData[] | null;
+  directory_section?: ServiceDirectorySectionData | null;
+  skills_section?: ServiceSkillsSectionData | null;
   skill_tabs?: ServiceSkillTabData[] | null;
+  differentiator_section?: ServiceDifferentiatorSectionData | null;
   differentiators?: ServiceDifferentiatorPillarData[] | null;
   cta_section?: ServicesCtaSectionData | null;
   seo?: SEOFieldData | null;
