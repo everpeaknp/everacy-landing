@@ -22,6 +22,7 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle, sectionDes
     label: step.step_label?.trim() && step.step_label.trim().toUpperCase() !== "PROCESS"
       ? step.step_label.trim()
       : "",
+    icon: step.icon?.trim() ?? "",
     image: step.image || step.image_url || "",
     artifactImage: step.artifact_image || step.artifact_image_url || "",
     activities: nonEmpty(step.activities),
@@ -140,9 +141,16 @@ export function ProcessSection({ data, sectionTitle, sectionSubtitle, sectionDes
                 }`}
               >
                 <div className="flex w-full items-center justify-between border-b border-[#edf2f4] px-4 py-3">
-                  <span className={`font-mono text-xs font-black ${selected ? "text-[#008da4]" : "text-[#0d2a4a]"}`}>
-                    {item.number}
-                  </span>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className={`font-mono text-xs font-black ${selected ? "text-[#008da4]" : "text-[#0d2a4a]"}`}>
+                      {item.number}
+                    </span>
+                    {item.icon && (
+                      // CMS icon is decorative here; the step title provides its meaning.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.icon} alt="" aria-hidden="true" loading="lazy" className="h-8 w-8 object-contain" />
+                    )}
+                  </div>
                   {item.label && (
                     <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#71879a]">{item.label}</span>
                   )}

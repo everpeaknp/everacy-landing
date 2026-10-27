@@ -47,3 +47,15 @@ test('homepage delivery process has no hardcoded phase or marketing content fall
   }
   assert.match(source, /if \(!steps\.length\) return null/);
 });
+
+test('homepage delivery process renders its optional CMS icon without a static fallback', () => {
+  const api = fs.readFileSync('src/lib/api.ts', 'utf8');
+  const source = fs.readFileSync('src/components/sections/ProcessSection.tsx', 'utf8');
+  const processStep = api.match(/export interface ProcessStepData \{([\s\S]*?)\n\}/)?.[1] ?? '';
+
+  assert.match(processStep, /icon\?: string \| null/);
+  assert.match(source, /icon:\s*step\.icon\?\.trim\(\)\s*\?\?\s*""/);
+  assert.match(source, /item\.icon &&/);
+  assert.match(source, /src=\{item\.icon\}/);
+  assert.doesNotMatch(source, /fallback.*icon|default.*icon/i);
+});

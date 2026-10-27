@@ -526,6 +526,7 @@ export interface ProcessStepData {
   step_label: string;
   title: string;
   description: string;
+  icon?: string | null;
   badge?: string;
   deliverable?: string;
   image?: string | null;
