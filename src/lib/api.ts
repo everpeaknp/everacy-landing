@@ -700,7 +700,7 @@ export interface HomeData {
   motion_section?: HomeMotionSectionData | null;
   solution_presets?: SolutionFinderPresetData[] | null;
   technology_section?: HomeTechnologySectionData | null;
-  process_section?: { title: string; subtitle: string; description?: string } | null;
+    process_section?: { title: string | null; subtitle: string | null; description?: string | null } | null;
   services_section?: { title: string; description?: string } | null;
   projects_section?: { eyebrow?: string; title: string; description?: string } | null;
   testimonials_section?: { title: string; subtitle: string } | null;

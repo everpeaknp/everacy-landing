@@ -30,3 +30,20 @@ test('public content renderers do not define sample-record fallback collections'
     assert.ok(!source.includes(marker), 'unexpected fabricated content source: ' + marker);
   }
 });
+
+test('homepage delivery process has no hardcoded phase or marketing content fallbacks', () => {
+  const source = fs.readFileSync('src/components/sections/ProcessSection.tsx', 'utf8');
+  for (const marker of [
+    'PHASE_DETAILS',
+    'STEP_METAS',
+    'How We Turn Your Vision Into World-Class Infrastructure',
+    'automated delivery pipeline in motion',
+    'SPRINT VELOCITY: COMMITTED',
+    'GUARANTEED SLAs',
+    '98.2%',
+    'Zero-Downtime Scale',
+  ]) {
+    assert.ok(!source.includes(marker), 'unexpected hardcoded delivery-process content: ' + marker);
+  }
+  assert.match(source, /if \(!steps\.length\) return null/);
+});
